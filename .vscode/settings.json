@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "Oracle.oracle-java"
+  }
+}
