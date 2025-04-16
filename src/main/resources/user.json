@@ -1,3 +1,44 @@
 [
-
+  {
+    "id": "87a3d636-2adf-4640-9872-83e1050427e7",
+    "userName": "seller_01",
+    "firstName": "Carlos",
+    "lastName": "Martínez",
+    "email": "carlos.martinez@example.com"
+  },
+  {
+    "id": "928f7404-bd16-43f5-bb3e-25a8c01b68d4",
+    "userName": "seller_02",
+    "firstName": "Lucía",
+    "lastName": "Gómez",
+    "email": "lucia.gomez@example.com"
+  },
+  {
+    "id": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "userName": "seller_03",
+    "firstName": "Martín",
+    "lastName": "Fernández",
+    "email": "martin.fernandez@example.com"
+  },
+  {
+    "id": "0f91d65b-3c7f-4876-8de9-c056b8bba1d5",
+    "userName": "buyer_01",
+    "firstName": "Ana",
+    "lastName": "Pérez",
+    "email": "ana.perez@example.com"
+  },
+  {
+    "id": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
+    "userName": "buyer_02",
+    "firstName": "Tomás",
+    "lastName": "Suárez",
+    "email": "tomas.suarez@example.com"
+  },
+  {
+    "id": "d5e9c14f-3b64-47bb-96ca-6f047477f7f5",
+    "userName": "buyer_03",
+    "firstName": "Paula",
+    "lastName": "Rojas",
+    "email": "paula.rojas@example.com"
+  }
 ]

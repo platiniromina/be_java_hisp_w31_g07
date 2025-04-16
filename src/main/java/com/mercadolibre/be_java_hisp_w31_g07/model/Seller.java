@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Seller{
-    private Integer id;
+    private UUID id;
     private List<Buyer> followers;
     private String billingAddress;
     private String cuil;

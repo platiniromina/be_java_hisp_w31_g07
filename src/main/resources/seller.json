@@ -1,3 +1,38 @@
 [
-
+  {
+    "id": "87a3d636-2adf-4640-9872-83e1050427e7",
+    "billingAddress": "123 Calle Ficticia, Ciudad, País",
+    "cuil": "20-12345678-9",
+    "followerCount": 1,
+    "followers": [
+      {
+        "id": "0f91d65b-3c7f-4876-8de9-c056b8bba1d5",
+        "user_name": "buyer_01"
+      }
+    ]
+  },
+  {
+    "id": "928f7404-bd16-43f5-bb3e-25a8c01b68d4",
+    "billingAddress": "12343 Calle Ficticia, Ciudad, País",
+    "cuil": "20-12889678-9",
+    "followerCount": 1,
+    "followers": [
+      {
+        "id": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
+        "user_name": "buyer_02"
+      }
+    ]
+  },
+  {
+    "id": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "billingAddress": "123 Calle Falsa, Ciudad, País",
+    "cuil": "20-12345678-9",
+    "followerCount": 1,
+    "followers": [
+      {
+        "id": "d5e9c14f-3b64-47bb-96ca-6f047477f7f5",
+        "user_name": "buyer_03"
+      }
+    ]
+  }
 ]
