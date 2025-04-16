@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Post {
     private UUID id;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private UUID productId;
     private String category;
