@@ -1,9 +1,10 @@
-package com.mercadolibre.be_java_hisp_w31_g07.dto.request;
+package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -11,7 +12,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostDto {
+public class PostResponseDto {
+    private UUID id;
     private LocalDate date;
     private UUID productId;
     private String category;

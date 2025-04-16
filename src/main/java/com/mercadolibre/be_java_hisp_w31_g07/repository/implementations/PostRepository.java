@@ -32,4 +32,9 @@ public class PostRepository implements IPostRepository {
 
         postList = posts;
     }
+
+    @Override
+    public void createPost(Post post) {
+        postList.add(post);
+    }
 }
