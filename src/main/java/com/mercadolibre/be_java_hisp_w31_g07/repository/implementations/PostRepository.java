@@ -25,7 +25,7 @@ public class PostRepository implements IPostRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Post> posts;
 
-        file= ResourceUtils.getFile("");
+        file= ResourceUtils.getFile("classpath:post.json");
         posts= objectMapper.readValue(file,new TypeReference<List<Post>>(){});
 
         postList = posts;

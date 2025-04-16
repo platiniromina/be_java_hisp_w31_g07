@@ -27,7 +27,7 @@ public class SellerRepository implements ISellerRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Seller> sellers;
 
-        file= ResourceUtils.getFile("");
+        file= ResourceUtils.getFile("classpath:seller.json");
         sellers= objectMapper.readValue(file,new TypeReference<List<Seller>>(){});
 
         sellerList = sellers;

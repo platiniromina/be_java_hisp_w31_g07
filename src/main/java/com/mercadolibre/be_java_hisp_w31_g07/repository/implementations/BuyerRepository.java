@@ -26,7 +26,7 @@ public class BuyerRepository implements IBuyerRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Buyer> buyers;
 
-        file= ResourceUtils.getFile("");
+        file= ResourceUtils.getFile("classpath:buyer.json");
         buyers= objectMapper.readValue(file,new TypeReference<List<Buyer>>(){});
 
         buyerList = buyers;
