@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.BuyerRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.SellerRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.UserRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,10 +16,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
-    private final IUserRepository userRepository;
-    private final ISellerRepository sellerRepository;
-    private final IBuyerRepository buyerRepository;
+    private final UserRepository userRepository;
+    private final SellerRepository sellerRepository;
+    private final BuyerRepository buyerRepository;
 
+    @Override
     public void followUser(UUID userId, UUID userIdToFollow) {
         Buyer buyer = buyerRepository.findBuyerById(userId)
                 .orElseThrow(() -> new RuntimeException("Buyer not found"));
