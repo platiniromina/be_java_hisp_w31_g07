@@ -1,5 +1,6 @@
-package com.mercadolibre.be_java_hisp_w31_g07.dto;
+package com.mercadolibre.be_java_hisp_w31_g07.dto.request;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
