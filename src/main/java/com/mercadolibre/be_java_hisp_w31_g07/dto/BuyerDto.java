@@ -1,4 +1,4 @@
-package com.mercadolibre.be_java_hisp_w31_g07.model;
+package com.mercadolibre.be_java_hisp_w31_g07.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Seller{
+public class BuyerDto {
     private Integer id;
-    private List<Buyer> followers;
-    private String billingAddress;
-    private String cuil;
-    private Integer followerCount;
+    private List<SellerDto> followed;
 }

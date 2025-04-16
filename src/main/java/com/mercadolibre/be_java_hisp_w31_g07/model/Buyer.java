@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class Buyer {
-    private Integer buyerId;
-    private Integer followed;
+public class Buyer{
+    private Integer id;
+    private List<Seller> followed;
 }
