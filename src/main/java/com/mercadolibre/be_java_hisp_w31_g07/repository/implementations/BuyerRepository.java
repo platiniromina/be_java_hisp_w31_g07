@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
@@ -12,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class BuyerRepository implements IBuyerRepository {
@@ -26,9 +30,28 @@ public class BuyerRepository implements IBuyerRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Buyer> buyers;
 
-        file= ResourceUtils.getFile("classpath:buyer.json");
-        //buyers= objectMapper.readValue(file,new TypeReference<List<Buyer>>(){});
+        file = ResourceUtils.getFile("classpath:buyer.json");
+        // buyers= objectMapper.readValue(file,new TypeReference<List<Buyer>>(){});
 
-       // buyerList = buyers;
+        // buyerList = buyers;
+    }
+
+    @Override
+    public Optional<Seller> followSeller(Seller seller, UUID buyerId) {
+        return buyerList.stream()
+                .filter(buyer -> buyer.getId().equals(
+                        buyerId))
+                .findFirst()
+                .map(buyer -> {
+                    buyer.getFollowed().add(seller);
+                    return null;
+                });
+    }
+
+    @Override
+    public Optional<Buyer> findBuyerById(UUID userId) {
+        return buyerList.stream()
+                .filter(buyer -> buyer.getId().equals(userId))
+                .findFirst();
     }
 }
