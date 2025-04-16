@@ -2,13 +2,11 @@ package com.mercadolibre.be_java_hisp_w31_g07.repository.implementations;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
-import javax.swing.plaf.SliderUI;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
