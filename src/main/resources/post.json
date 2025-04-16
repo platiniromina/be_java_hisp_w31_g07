@@ -1,3 +1,53 @@
 [
+  {
+    "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "date": "2025-04-10",
+    "productId": 101,
+    "category": "Electronics",
+    "price": 499.99,
+    "sellerId": 87,
+    "hasPromo": true,
+    "discount": 10
+  },
+  {
+    "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
+    "date": "2025-04-12",
+    "productId": 102,
+    "category": "Books",
+    "price": 24.99,
+    "sellerId": 92,
+    "hasPromo": false,
+    "discount": 0
+  },
+  {
+    "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
+    "date": "2025-04-08",
+    "productId": 103,
+    "category": "Home & Kitchen",
+    "price": 149.90,
+    "sellerId": 87,
+    "hasPromo": true,
+    "discount": 20
+  },
+  {
+    "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
+    "date": "2025-03-30",
+    "productId": 104,
+    "category": "Toys",
+    "price": 39.50,
+    "sellerId": 93,
+    "hasPromo": false,
+    "discount": 0
+  },
+  {
+    "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
+    "date": "2025-04-14",
+    "productId": 105,
+    "category": "Fashion",
+    "price": 89.90,
+    "sellerId": 92,
+    "hasPromo": true,
+    "discount": 25
+  }
 
 ]
