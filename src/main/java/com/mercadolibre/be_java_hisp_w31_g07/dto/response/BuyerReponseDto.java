@@ -17,5 +17,5 @@ import java.util.UUID;
 public class BuyerReponseDto {
     private UUID id;
     @JsonIgnore
-    private List<Seller> followed;
+    private List<SellerResponseDto> followed;
 }
