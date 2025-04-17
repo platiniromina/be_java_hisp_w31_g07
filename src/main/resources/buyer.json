@@ -8,7 +8,12 @@
   {
     "id": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
     "followed": [
-
+      {
+        "id": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+        "billingAddress": "12343 Calle Ficticia, Ciudad, País",
+        "cuil": "20-12889678-9",
+        "followerCount": 1
+      }
     ]
   },
   {

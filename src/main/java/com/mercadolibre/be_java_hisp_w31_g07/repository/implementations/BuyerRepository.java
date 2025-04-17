@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class BuyerRepository implements IBuyerRepository {
@@ -30,5 +32,12 @@ public class BuyerRepository implements IBuyerRepository {
         buyers= objectMapper.readValue(file,new TypeReference<List<Buyer>>(){});
 
         buyerList = buyers;
+    }
+
+    @Override
+    public Optional<Buyer> findFollowed(UUID userId){
+        return buyerList.stream()
+                .filter(x->String.valueOf(x.getId()).equals(String.valueOf(userId)))
+                .findFirst();
     }
 }

@@ -14,6 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class SellerDto {
     private UUID id;
-    private String userName;
+    private String billingAddress;
+    private String cuil;
     private List<BuyerDto> followers;
+    private Integer followerCount;
 }
