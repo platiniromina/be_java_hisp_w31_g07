@@ -1,5 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BuyerReponseDto {
     private UUID id;
-    private String user_name;
+    @JsonIgnore
+    private List<Seller> followed;
 }
