@@ -43,5 +43,5 @@ public interface IBuyerRepository {
      * @param seller The seller to be removed from the buyer's followed list.
      * @param buyerId The unique identifier of the buyer.
      */
-    public void removeSellerToFollowedList(Seller seller, UUID buyerId);
+    public void removeSellerFromFollowedList(Seller seller, UUID buyerId);
 }

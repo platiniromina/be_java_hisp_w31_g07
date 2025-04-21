@@ -36,7 +36,7 @@ public class BuyerService implements IBuyerService {
 
     @Override
     public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
-        buyerRepository.removeSellerToFollowedList(seller, buyerId);
+        buyerRepository.removeSellerFromFollowedList(seller, buyerId);
     }
-    
+
 }
