@@ -37,14 +37,7 @@ public class PostService implements IPostService {
     public UUID createPost(PostDto newPost) {
 
         // to convert PostDto from request to Post
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        Post post;
-        try {
-            post = mapper.convertValue(newPost, Post.class);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest("Unable to parse the post");
-        }
+        Post post = mapper.convertValue(newPost, Post.class);
 
         // validate that seller exists
         Seller seller = findSellerById(newPost.getSellerId());
@@ -67,7 +60,6 @@ public class PostService implements IPostService {
 
     @Override
     public PostResponseDto findPost(UUID postId) {
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         Optional<Post> post = postRepository.findById(postId);
         if (post.isEmpty()) {
