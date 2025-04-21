@@ -28,11 +28,12 @@ public interface ISellerRepository {
     public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId);
 
     /**
-     * Checks if a buyer is already following a seller.
+     * Checks if a given seller is being followed by a specific buyer.
      *
-     * @param buyer    the buyer to check
-     * @param sellerId the ID of the seller to check against
-     * @return true if the buyer is following the seller, false otherwise
+     * @param buyer    The buyer whose following status is to be checked.
+     * @param sellerId The unique identifier of the seller.
+     * @return {@code true} if the seller is being followed by the buyer,
+     *         {@code false} otherwise.
      */
-    public boolean buyerIsFollowingSeller(Buyer buyer, UUID sellerId);
+    public boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId);
 }

@@ -56,7 +56,7 @@ public class SellerRepository implements ISellerRepository {
     }
 
     @Override
-    public boolean buyerIsFollowingSeller(Buyer buyer, UUID sellerId) {
+    public boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId) {
         return sellerList.stream()
                 .filter(seller -> seller.getId().equals(sellerId))
                 .flatMap(seller -> seller.getFollowers().stream())

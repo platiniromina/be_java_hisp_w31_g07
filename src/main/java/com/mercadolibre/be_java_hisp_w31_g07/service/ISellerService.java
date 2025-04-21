@@ -3,7 +3,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 import java.util.UUID;
 
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 public interface ISellerService {
@@ -36,15 +35,6 @@ public interface ISellerService {
      * @throws BadRequest if the seller cannot be found
      */
     public Seller findSellerById(UUID userId);
-
-    /**
-     * Retrieves a buyer by their unique identifier.
-     *
-     * @param buyerId the unique identifier of the buyer to be retrieved
-     * @return a Buyer object containing the buyer's information
-     * @throws BadRequest if the buyer cannot be found
-     */
-    public Buyer findBuyerById(UUID buyerId);
 
     // ------------------------------ END TESTING ------------------------------
 }
