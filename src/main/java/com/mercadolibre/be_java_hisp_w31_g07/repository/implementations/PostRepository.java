@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class PostRepository implements IPostRepository {
@@ -35,6 +37,14 @@ public class PostRepository implements IPostRepository {
 
     @Override
     public void createPost(Post post) {
+        post.setProductId(post.getId());
         postList.add(post);
+    }
+
+    @Override
+    public Optional<Post> findById(UUID postId) {
+        return postList.stream()
+                .filter(post -> post.getId().equals(postId))
+                .findFirst();
     }
 }

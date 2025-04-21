@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class SellerRepository implements ISellerRepository {
@@ -29,5 +31,12 @@ public class SellerRepository implements ISellerRepository {
         sellers= objectMapper.readValue(file,new TypeReference<List<Seller>>(){});
 
         sellerList = sellers;
+    }
+
+    @Override
+    public Optional<Seller> findSellerById(UUID sellerId) {
+        return sellerList.stream()
+                .filter(s -> s.getId().equals(sellerId))
+                .findFirst();
     }
 }
