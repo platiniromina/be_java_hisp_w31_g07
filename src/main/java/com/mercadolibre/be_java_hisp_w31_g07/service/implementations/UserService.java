@@ -18,14 +18,13 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto findById(UUID id) {
-        ObjectMapper mapper = new ObjectMapper();
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("No se encontro al usuario"));
-
+                .orElseThrow(()-> new NotFoundException(
+                        "No se encontro al usuario: " + id));
         return mapToDto(user);
     }
 
-    public UserDto mapToDto(User user){
+    private UserDto mapToDto(User user){
         return new UserDto(
                 user.getId(),
                 user.getUserName(),

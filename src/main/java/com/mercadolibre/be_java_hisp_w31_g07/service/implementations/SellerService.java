@@ -26,8 +26,8 @@ public class SellerService implements ISellerService {
     @Override
     public SellerDto findFollowers(UUID userId){
         Seller seller = sellerRepository.findFollowers(userId)
-                .orElseThrow(()-> new NotFoundException("No se encontro el usuario"));
-
+                .orElseThrow(()-> new NotFoundException(
+                        "No se encontro el usuario: " + userId));
         return mapToDto(seller);
     }
 
