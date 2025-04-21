@@ -1,8 +1,14 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
@@ -20,6 +26,11 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Seller", description = "Operations related to sellers")
 public class SellerController {
     private final ISellerService sellerService;
+
+    @GetMapping("/users/{userId}/followers/list")
+    public ResponseEntity<SellerDto> getFollowers(@PathVariable UUID userId) {
+        return new ResponseEntity<>(sellerService.findFollowers(userId), HttpStatus.OK);
+    }
 
     @Operation(summary = "Follow a seller", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
     @ApiResponses(value = {
