@@ -62,4 +62,13 @@ public class SellerRepository implements ISellerRepository {
                 .flatMap(seller -> seller.getFollowers().stream())
                 .anyMatch(follower -> follower.getId().equals(buyer.getId()));
     }
+
+    @Override
+    public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId) {
+        this.findSellerById(sellerId).map(seller -> {
+            seller.removeFollower(buyer);
+            seller.decrementFollowerCount();
+            return seller;
+        });
+    }
 }

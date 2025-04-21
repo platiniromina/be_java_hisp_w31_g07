@@ -60,4 +60,10 @@ public class BuyerService implements IBuyerService {
                 userService.findById(buyer.getId()).getUserName(),
                 followedSellers);
     }
+
+    @Override
+    public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
+        buyerRepository.removeSellerFromFollowedList(seller, buyerId);
+    }
+
 }

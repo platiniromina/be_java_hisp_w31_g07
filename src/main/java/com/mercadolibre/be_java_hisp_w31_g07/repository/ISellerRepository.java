@@ -36,4 +36,13 @@ public interface ISellerRepository {
      *         {@code false} otherwise.
      */
     public boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId);
+
+    /**
+     * Removes the buyer from the seller's list of followers.
+     *
+     * @param buyer The buyer to be removed from the seller's list of followers.
+     * @param sellerId The unique identifier of the seller.
+     */
+    public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId);
+
 }
