@@ -3,10 +3,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -26,7 +23,7 @@ public class SellerController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
+    @PutMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<Void> unfollowSeller(
             @PathVariable UUID userId,
             @PathVariable UUID userIdToUnfollow) {
