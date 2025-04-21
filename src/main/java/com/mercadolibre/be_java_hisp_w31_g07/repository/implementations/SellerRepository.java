@@ -12,6 +12,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 
@@ -33,6 +34,33 @@ public class SellerRepository implements ISellerRepository {
         });
 
         sellerList = sellers;
+    }
+
+    @Override
+    public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
+        return sellerList.stream()
+                .filter(seller -> seller.getId().equals(sellerId))
+                .findFirst()
+                .map(seller -> {
+                    seller.addFollower(buyer);
+                    seller.incrementFollowerCount();
+                    return seller;
+                });
+    }
+
+    @Override
+    public Optional<Seller> findSellerById(UUID userId) {
+        return sellerList.stream()
+                .filter(seller -> seller.getId().equals(userId))
+                .findFirst();
+    }
+
+    @Override
+    public boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId) {
+        return sellerList.stream()
+                .filter(seller -> seller.getId().equals(sellerId))
+                .flatMap(seller -> seller.getFollowers().stream())
+                .anyMatch(follower -> follower.getId().equals(buyer.getId()));
     }
 
     @Override
