@@ -5,7 +5,17 @@ import java.util.UUID;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+
 public interface ISellerService {
+    /**
+     * Returns a seller that match with the param userId.
+     *
+     * @param userId id to find the Seller.
+     * @return a seller dto with his followers list.
+     */
+    public SellerDto findFollowers(UUID userId);
+
     /**
      * Allows a buyer to follow a seller by adding the seller to the buyer's
      * followed list
