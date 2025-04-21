@@ -20,7 +20,7 @@ public class Buyer {
         this.followed.add(seller);
     }
 
-    public void removeFollowdSeller(Seller seller) {
+    public void removeFollowedSeller(Seller seller) {
         this.followed.remove(seller);
     }
 

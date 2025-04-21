@@ -65,7 +65,7 @@ public class BuyerRepository implements IBuyerRepository {
     @Override
     public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
         this.findBuyerById(buyerId).map(buyer -> {
-            buyer.removeFollowdSeller(seller);
+            buyer.removeFollowedSeller(seller);
             return buyer;
         });
     }
