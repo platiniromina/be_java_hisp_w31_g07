@@ -16,5 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BuyerDto {
     private UUID id;
+    private String userName;
     private List<SellerResponseDto> followed;
 }

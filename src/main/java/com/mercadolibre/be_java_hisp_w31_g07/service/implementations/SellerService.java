@@ -45,8 +45,7 @@ public class SellerService implements ISellerService {
 
         return new SellerDto(
                 seller.getId(),
-                seller.getBillingAddress(),
-                seller.getCuil(),
+                userService.findById(seller.getId()).getUserName(),
                 followers,
                 seller.getFollowerCount()
         );
