@@ -17,10 +17,6 @@ import lombok.RequiredArgsConstructor;
 public class BuyerService implements IBuyerService {
     private final IBuyerRepository buyerRepository;
 
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
     @Override
     public Buyer findBuyerById(UUID id) {
         return buyerRepository.findBuyerById(id)
