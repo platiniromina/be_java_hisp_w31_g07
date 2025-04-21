@@ -5,5 +5,12 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import java.util.UUID;
 
 public interface IUserService {
+    /**
+     * Returns a user that match with the param id.
+     *
+     * @param id id to find a user.
+     * @return a user dto if the user is found,
+     *         or an exception.
+     */
     UserDto findById(UUID id);
 }

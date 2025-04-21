@@ -6,5 +6,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IBuyerRepository {
+    /**
+     * Returns a buyer that match with the param userId.
+     *
+     * @param userId id to find a buyer.
+     * @return a buyer with his followed list if the buyer is found,
+     *         or an empty Optional otherwise.
+     */
     Optional<Buyer> findFollowed(UUID userId);
 }
