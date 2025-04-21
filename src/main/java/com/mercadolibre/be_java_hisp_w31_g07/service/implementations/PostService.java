@@ -14,7 +14,10 @@ import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IProductRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,16 +27,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService implements IPostService {
     private final IPostRepository postRepository;
-    private final ISellerRepository sellerRepository;
-    private final IProductRepository productRepository;
+    private final ISellerService sellerService;
+    private final IProductService productService;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Override
     public UUID createPost(PostDto newPost) {
 
         // to convert PostDto from request to Post
-        ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.registerModule(new JavaTimeModule());
 
         Post post;
         try {
@@ -51,25 +55,25 @@ public class PostService implements IPostService {
         post.getProduct().setId(newPostId);
 
         // create post and product in their repositories
-        productRepository.createProduct(post.getProduct());
+        productService.createProduct(post.getProduct());
         postRepository.createPost(post);
 
         return newPostId;
     }
 
     public Seller findSellerById(UUID sellerId) {
-        return sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new BadRequest("Seller " + sellerId + " not found"));
+        return sellerService.findSellerById(sellerId);
     }
 
     @Override
     public PostResponseDto findPost(UUID postId) {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         Optional<Post> post = postRepository.findById(postId);
         if (post.isEmpty()) {
             throw new NotFoundException("Post " + postId + " not found");
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(post.get(), PostResponseDto.class);
     }
 
