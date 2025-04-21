@@ -14,7 +14,7 @@ public interface IBuyerService {
      * @return a buyer with his followed list if the buyer is found,
      *         or an Exception.
      */
-    BuyerDto findFollowed(UUID userId);
+    public BuyerDto findFollowed(UUID userId);
 
     /**
      * Adds a seller to the followed list of a buyer.

@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BuyerService implements IBuyerService {
     private final IBuyerRepository buyerRepository;
+    private final IUserService userService;
 
     @Override
     public Buyer findBuyerById(UUID id) {
@@ -36,12 +37,10 @@ public class BuyerService implements IBuyerService {
         return buyerRepository.buyerIsFollowingSeller(seller, buyerId);
     }
 
-    private final IUserService userService;
-
     @Override
     public BuyerDto findFollowed(UUID userId) {
         Buyer buyer = buyerRepository.findFollowed(userId)
-                .orElseThrow(() -> new NotFoundException("No se encontro al usuario: " + userId));
+                .orElseThrow(() -> new NotFoundException("Buyer: " + userId + " not found"));
 
         return mapToDto(buyer);
     }

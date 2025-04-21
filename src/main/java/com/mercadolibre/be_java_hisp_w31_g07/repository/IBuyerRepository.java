@@ -13,7 +13,7 @@ public interface IBuyerRepository {
      * @return a buyer with his followed list if the buyer is found,
      *         or an empty Optional otherwise.
      */
-    Optional<Buyer> findFollowed(UUID userId);
+    public Optional<Buyer> findFollowed(UUID userId);
 
     /**
      * Retrieves a Buyer from the list based on their unique ID.

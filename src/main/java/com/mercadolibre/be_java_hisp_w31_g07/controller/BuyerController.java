@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import java.util.UUID;
 
@@ -15,19 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/buyer")
 public class BuyerController {
     private final IBuyerService buyerService;
 
-    @GetMapping("/{userId}/followed/list")
-    public ResponseEntity<?> getFollowed(@PathVariable String userId) {
-        UUID userUuid;
-        try {
-            userUuid = UUID.fromString(userId);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest("Error en el formato del id");
-        }
-        return new ResponseEntity<>(buyerService.findFollowed(userUuid), HttpStatus.OK);
+    @GetMapping("/users/{userId}/followed/list")
+    public ResponseEntity<BuyerDto> getFollowed(@PathVariable UUID userId) {
+        return new ResponseEntity<>(buyerService.findFollowed(userId), HttpStatus.OK);
     }
 
     // FOR TESTING PURPOSES ONLY

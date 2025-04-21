@@ -37,7 +37,7 @@ public class BuyerRepository implements IBuyerRepository {
     @Override
     public Optional<Buyer> findFollowed(UUID userId) {
         return buyerList.stream()
-                .filter(x -> String.valueOf(x.getId()).equals(String.valueOf(userId)))
+                .filter(buyer -> buyer.getId().equals(userId))
                 .findFirst();
     }
 

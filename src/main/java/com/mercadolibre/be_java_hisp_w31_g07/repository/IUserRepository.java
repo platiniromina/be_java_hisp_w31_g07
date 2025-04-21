@@ -13,5 +13,5 @@ public interface IUserRepository {
      * @return a user with his attributes if the user is found,
      *         or an empty Optional otherwise.
      */
-    Optional<User> findById(UUID userId);
+    public Optional<User> findById(UUID userId);
 }
