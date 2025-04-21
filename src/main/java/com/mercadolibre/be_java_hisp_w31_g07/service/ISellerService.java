@@ -18,7 +18,7 @@ public interface ISellerService {
      * @throws BadRequest if the seller or buyer cannot be found
      * @throws BadRequest if the buyer is already following the seller
      */
-    public void followSeller(UUID userId, UUID userIdToFollow);
+    public void followSeller(UUID sellerId, UUID buyerId);
 
     // ------------------------------ START TESTING ------------------------------
 
