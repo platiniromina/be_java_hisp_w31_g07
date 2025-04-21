@@ -20,7 +20,7 @@ public class UserService implements IUserService {
     public UserDto findById(UUID id) {
         ObjectMapper mapper = new ObjectMapper();
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("No se encontro al usuario"));
+                .orElseThrow(()-> new NotFoundException("No se encontro al usuario: " + id));
 
         return mapToDto(user);
     }

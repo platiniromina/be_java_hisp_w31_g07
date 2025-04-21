@@ -25,14 +25,12 @@ public class BuyerService implements IBuyerService {
     @Override
     public BuyerDto findFollowed(UUID userId){
         Buyer buyer = buyerRepository.findFollowed(userId)
-                .orElseThrow(()-> new NotFoundException("No se encontro al usuario"));
+                .orElseThrow(()-> new NotFoundException("No se encontro al usuario: " + userId));
 
         return mapToDto(buyer);
     }
 
     private BuyerDto mapToDto(Buyer buyer){
-        ObjectMapper mapper = new ObjectMapper();
-
         List<SellerResponseDto> followedSellers = buyer.getFollowed().stream()
                 .map(seller -> {
                     SellerResponseDto sellerResponseDto = new SellerResponseDto();
