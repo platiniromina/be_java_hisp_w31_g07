@@ -22,7 +22,7 @@ public class SellerController {
     public ResponseEntity<Void> followSeller(
             @PathVariable UUID userId,
             @PathVariable UUID userIdToFollow) {
-        sellerService.followSeller(userId, userIdToFollow);
+        sellerService.followSeller(userIdToFollow, userId);
         return ResponseEntity.ok().build();
     }
 

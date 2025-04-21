@@ -73,8 +73,9 @@ public class SellerService implements ISellerService {
     }
 
     private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
-        boolean isFollowing = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, buyer.getId());
-        boolean isFollowedBy = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
-        return isFollowing && isFollowedBy;
+        boolean isFollowedBy = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, buyer.getId());
+        boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
+        System.out.println("isFollowedBy: " + isFollowedBy + " isFollowing: " + isFollowing);
+        return isFollowing || isFollowedBy;
     }
 }
