@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserRepository implements IUserRepository {
@@ -33,7 +35,12 @@ public class UserRepository implements IUserRepository {
         userList = users;
     }
 
-
+    @Override
+    public Optional<User> findById(UUID userId){
+        return userList.stream()
+                .filter(x->String.valueOf(x.getId()).equals(String.valueOf(userId)))
+                .findFirst();
+    }
 
 
 
