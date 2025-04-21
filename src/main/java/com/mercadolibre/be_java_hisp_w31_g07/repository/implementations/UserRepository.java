@@ -36,10 +36,9 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public Optional<String> findUserNameById(UUID userId) {
+    public Optional<User> findUserById(UUID userId) {
         return userList.stream()
                 .filter(user -> user.getId().equals(userId))
-                .map(User::getUserName)
                 .findFirst();
     }
 }
