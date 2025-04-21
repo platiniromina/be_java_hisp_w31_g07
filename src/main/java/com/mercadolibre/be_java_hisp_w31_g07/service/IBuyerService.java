@@ -1,12 +1,21 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import java.util.UUID;
-
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 public interface IBuyerService {
+    /**
+     * Returns a buyer that match with the param userId.
+     *
+     * @param userId id to find a buyer.
+     * @return a buyer with his followed list if the buyer is found,
+     *         or an Exception.
+     */
+    public BuyerDto findFollowed(UUID userId);
+
     /**
      * Adds a seller to the followed list of a buyer.
      *

@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -34,6 +32,13 @@ public class BuyerRepository implements IBuyerRepository {
         });
 
         buyerList = buyers;
+    }
+
+    @Override
+    public Optional<Buyer> findFollowed(UUID userId) {
+        return buyerList.stream()
+                .filter(buyer -> buyer.getId().equals(userId))
+                .findFirst();
     }
 
     @Override
