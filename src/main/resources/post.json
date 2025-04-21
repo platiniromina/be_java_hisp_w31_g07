@@ -2,7 +2,14 @@
   {
     "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
     "date": "2025-04-10",
-    "productId": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "product": {
+      "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+      "productName": "Wireless Headphones",
+      "type": "Audio",
+      "brand": "Sony",
+      "color": "Black",
+      "note": "Noise cancelling over-ear"
+    },
     "category": "Electronics",
     "price": 499.99,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
@@ -12,7 +19,14 @@
   {
     "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
     "date": "2025-04-12",
-    "productId": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "product": {
+      "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
+      "productName": "The Pragmatic Programmer",
+      "type": "Book",
+      "brand": "Addison-Wesley",
+      "color": "White",
+      "note": "20th Anniversary Edition"
+    },
     "category": "Books",
     "price": 24.99,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
@@ -22,7 +36,14 @@
   {
     "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
     "date": "2025-04-08",
-    "productId": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "product": {
+      "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
+      "productName": "Blender Pro 900",
+      "type": "Kitchen Appliance",
+      "brand": "NutriBullet",
+      "color": "Silver",
+      "note": "Includes travel cups"
+    },
     "category": "Home & Kitchen",
     "price": 149.90,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
@@ -32,7 +53,14 @@
   {
     "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
     "date": "2025-03-30",
-    "productId": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "product": {
+      "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
+      "productName": "Lego Star Wars Set",
+      "type": "Toy",
+      "brand": "LEGO",
+      "color": "Multicolor",
+      "note": "Includes 5 characters"
+    },
     "category": "Toys",
     "price": 39.50,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
@@ -42,7 +70,14 @@
   {
     "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
     "date": "2025-04-14",
-    "productId": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "product": {
+      "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
+      "productName": "Leather Jacket",
+      "type": "Clothing",
+      "brand": "Zara",
+      "color": "Brown",
+      "note": "Slim fit"
+    },
     "category": "Fashion",
     "price": 89.90,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",

@@ -1,6 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.dto.request;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +16,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BuyerDto {
     private UUID id;
-    private List<SellerDto> followed;
+    private List<SellerResponseDto> followed;
 }
