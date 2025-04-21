@@ -24,14 +24,14 @@ import lombok.RequiredArgsConstructor;
 public class SellerController {
     private final ISellerService sellerService;
 
-    @Operation(summary = "Follow a seller", description = "Allows a user to follow another user who is registered as a seller. This operation updates the user's followed sellers list and the seller's followers list.")
+    @Operation(summary = "Follow a seller", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully followed the seller. Response body is empty."),
-            @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, user or seller not found, or already following.")
+            @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, buyer or seller not found, or already following.")
     })
     @PostMapping("/users/{userId}/follow/{userIdToFollow}")
     public ResponseEntity<Void> followSeller(
-            @Parameter(description = "ID of the user who wants to follow the seller", required = true) @PathVariable UUID userId,
+            @Parameter(description = "ID of the buyer who wants to follow the seller", required = true) @PathVariable UUID userId,
             @Parameter(description = "ID of the seller to be followed", required = true) @PathVariable UUID userIdToFollow) {
         sellerService.followSeller(userIdToFollow, userId);
         return ResponseEntity.ok().build();
