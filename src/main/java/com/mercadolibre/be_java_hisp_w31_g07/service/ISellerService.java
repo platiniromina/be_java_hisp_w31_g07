@@ -18,6 +18,7 @@ public interface ISellerService {
      * @throws BadRequest if the seller with the given ID is not found
      */
     public SellerFollowersCountResponseDto findFollowersCount(UUID userId);
+
     /**
      * Allows a buyer to follow a seller by adding the seller to the buyer's
      * followed list

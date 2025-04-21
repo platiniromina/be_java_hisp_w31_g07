@@ -4,20 +4,14 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +30,7 @@ public class SellerService implements ISellerService {
 
         return new SellerFollowersCountResponseDto(sellerId, userName, count);
     }
+
     private final IBuyerService buyerService;
 
     // ------------------------------

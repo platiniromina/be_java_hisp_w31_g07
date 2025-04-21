@@ -36,6 +36,7 @@ public interface ISellerRepository {
      *         {@code false} otherwise.
      */
     public boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId);
+
     /**
      * Retrieves the count of followers for a specific seller identified by their
      * UUID.
