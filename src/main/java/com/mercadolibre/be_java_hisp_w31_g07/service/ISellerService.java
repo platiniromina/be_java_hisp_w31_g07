@@ -11,8 +11,8 @@ public interface ISellerService {
      * followed list
      * and the buyer to the seller's followers list.
      *
-     * @param sellerId the unique identifier of the seller to be followed
-     * @param buyerId  the unique identifier of the buyer who wants to follow the
+     * @param userId the unique identifier of the seller to be followed
+     * @param userIdToFollow   the unique identifier of the buyer who wants to follow the
      *                 seller
      * @throws BadRequest if the sellerId and buyerId are the same
      * @throws BadRequest if the seller or buyer cannot be found
