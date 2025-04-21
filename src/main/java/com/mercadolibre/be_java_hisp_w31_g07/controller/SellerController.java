@@ -11,17 +11,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Seller", description = "Operations related to sellers")
 public class SellerController {
     private final ISellerService sellerService;
 
+    @Operation(summary = "Follow a seller", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully followed the seller. Response body is empty."),
+            @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, buyer or seller not found, or already following.")
+    })
     @PostMapping("/users/{userId}/follow/{userIdToFollow}")
     public ResponseEntity<Void> followSeller(
-            @PathVariable UUID userId,
-            @PathVariable UUID userIdToFollow) {
+            @Parameter(description = "ID of the buyer who wants to follow the seller", required = true) @PathVariable UUID userId,
+            @Parameter(description = "ID of the seller to be followed", required = true) @PathVariable UUID userIdToFollow) {
         sellerService.followSeller(userIdToFollow, userId);
         return ResponseEntity.ok().build();
     }
