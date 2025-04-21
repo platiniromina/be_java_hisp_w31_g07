@@ -34,4 +34,13 @@ public interface IBuyerService {
      * @throws BadRequest if the buyer cannot be found
      */
     public Buyer findBuyerById(UUID buyerId);
+
+    /**
+     * Removes the seller from the buyer's followed list
+     *
+     * @param seller The seller to be removed from the buyer's followed list
+     * @param buyerId The unique identifier of the buyer.
+     */
+    public void removeSellerFromFollowedList(Seller seller, UUID buyerId);
+
 }

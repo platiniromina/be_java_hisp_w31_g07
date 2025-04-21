@@ -20,6 +20,19 @@ public interface ISellerService {
      */
     public void followSeller(UUID sellerId, UUID buyerId);
 
+    /**
+     * Allows a buyer to unfollow a seller by removing the seller from the buyer's
+     * followed list
+     * and the buyer from the seller's followers list.
+     *
+     * @param sellerId the unique identifier of the seller to be unfollowed
+     * @param buyerId  the unique identifier of the buyer who wants to unfollow the
+     *                 seller
+     * @throws BadRequest if the seller or buyer cannot be found
+     * @throws BadRequest if the buyer is not previously following the seller
+     */
+    public void unfollowSeller(UUID sellerId, UUID buyerId);
+
     // ------------------------------ START TESTING ------------------------------
 
     // FOR TESTING PURPOSES ONLY
