@@ -60,8 +60,6 @@ public class SellerService implements ISellerService {
     private void validateNotAlreadyFollowing(Buyer buyer, Seller seller) {
         boolean isFollowing = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, seller.getId()); 
         boolean isFollowedBy = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
-        System.out.println("isFollowing: " + isFollowing);
-        System.out.println("isFollowedBy: " + isFollowedBy);
         if (isFollowing && isFollowedBy)
             throw new BadRequest("Buyer " + buyer.getId() + " already follows seller " + seller.getId());
     }
