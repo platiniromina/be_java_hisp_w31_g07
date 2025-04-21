@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PostDto {
     private UUID id;
     private LocalDate date;
-    private UUID productId;
+    private ProductDto product;
     private String category;
     private Double price;
     private UUID sellerId;
