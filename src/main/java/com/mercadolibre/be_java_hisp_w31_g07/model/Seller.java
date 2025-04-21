@@ -18,4 +18,12 @@ public class Seller {
     private String cuil;
     private Integer followerCount;
     private List<Buyer> followers;
+
+    public void addFollower(Buyer buyer) {
+        this.followers.add(buyer);
+    }
+
+    public void incrementFollowerCount() {
+        this.followerCount++;
+    }
 }

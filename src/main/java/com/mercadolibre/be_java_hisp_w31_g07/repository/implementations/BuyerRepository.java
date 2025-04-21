@@ -42,7 +42,7 @@ public class BuyerRepository implements IBuyerRepository {
                 .filter(buyer -> buyer.getId().equals(buyerId))
                 .findFirst()
                 .map(buyer -> {
-                    buyer.getFollowed().add(seller);
+                    buyer.addFollowedSeller(seller);
                     return buyer;
                 });
     }

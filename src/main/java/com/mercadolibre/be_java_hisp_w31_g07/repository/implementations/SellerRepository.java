@@ -42,8 +42,8 @@ public class SellerRepository implements ISellerRepository {
                 .filter(seller -> seller.getId().equals(sellerId))
                 .findFirst()
                 .map(seller -> {
-                    seller.getFollowers().add(buyer);
-                    seller.setFollowerCount(seller.getFollowers().size());
+                    seller.addFollower(buyer);
+                    seller.incrementFollowerCount();
                     return seller;
                 });
     }
