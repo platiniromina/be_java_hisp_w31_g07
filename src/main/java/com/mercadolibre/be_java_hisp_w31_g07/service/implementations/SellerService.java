@@ -27,9 +27,24 @@ public class SellerService implements ISellerService {
         validateNotSameUser(sellerId, buyerId);
         Seller seller = getSellerById(sellerId);
         Buyer buyer = buyerService.findBuyerById(buyerId);
-        validateNotAlreadyFollowing(buyer, seller);
+
+        if (this.validateMutualFollowing(buyer, seller))
+            throw new BadRequest("Buyer " + buyer.getId() + " already follows seller " + seller.getId());
+
         sellerRepository.addBuyerToFollowersList(buyer, sellerId);
         buyerService.addSellerToFollowedList(seller, buyerId);
+    }
+
+    @Override
+    public void unfollowSeller(UUID sellerId, UUID buyerId) {
+        Seller seller = this.getSellerById(sellerId);
+        Buyer buyer = buyerService.findBuyerById(buyerId);
+
+        if (!this.validateMutualFollowing(buyer, seller))
+            throw new BadRequest("Buyer " + buyer.getId() + " is not following seller " + seller.getId() + ". Unfollow action cannot be done");
+
+        sellerRepository.removeBuyerFromFollowersList(buyer, sellerId);
+        buyerService.removeSellerFromFollowedList(seller, buyerId);
     }
 
     // FOR TESTING PURPOSES ONLY
@@ -57,10 +72,9 @@ public class SellerService implements ISellerService {
             throw new BadRequest("User cannot follow themselves.");
     }
 
-    private void validateNotAlreadyFollowing(Buyer buyer, Seller seller) {
+    private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
         boolean isFollowing = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, buyer.getId());
         boolean isFollowedBy = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
-        if (isFollowing || isFollowedBy)
-            throw new BadRequest("Buyer " + buyer.getId() + " already follows seller " + seller.getId());
+        return isFollowing && isFollowedBy;
     }
 }

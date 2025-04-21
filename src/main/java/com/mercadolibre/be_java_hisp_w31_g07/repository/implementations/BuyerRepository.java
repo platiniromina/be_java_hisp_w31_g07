@@ -61,4 +61,12 @@ public class BuyerRepository implements IBuyerRepository {
                 .flatMap(buyer -> buyer.getFollowed().stream())
                 .anyMatch(sellerFollowed -> sellerFollowed.getId().equals(seller.getId()));
     }
+
+    @Override
+    public void removeSellerToFollowedList(Seller seller, UUID buyerId) {
+        this.findBuyerById(buyerId).map(buyer -> {
+            buyer.removeFollowdSeller(seller);
+            return buyer;
+        });
+    }
 }

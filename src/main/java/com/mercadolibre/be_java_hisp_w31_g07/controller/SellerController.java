@@ -26,6 +26,14 @@ public class SellerController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
+    public ResponseEntity<Void> unfollowSeller(
+            @PathVariable UUID userId,
+            @PathVariable UUID userIdToUnfollow) {
+        sellerService.unfollowSeller(userIdToUnfollow, userId);
+        return ResponseEntity.ok().build();
+    }
+
     // FOR TESTING PURPOSES ONLY
     // This endpoint is not part of the original requirements
     // and is only used to verify the functionality of the followSeller method.

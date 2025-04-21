@@ -33,4 +33,10 @@ public class BuyerService implements IBuyerService {
     public boolean buyerIsFollowingSeller(Seller seller, UUID buyerId) {
         return buyerRepository.buyerIsFollowingSeller(seller, buyerId);
     }
+
+    @Override
+    public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
+        buyerRepository.removeSellerToFollowedList(seller, buyerId);
+    }
+    
 }
