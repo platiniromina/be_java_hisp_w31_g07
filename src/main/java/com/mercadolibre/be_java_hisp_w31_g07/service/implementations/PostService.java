@@ -30,16 +30,14 @@ public class PostService implements IPostService {
     @Override
     public UUID createPost(PostDto newPost) {
 
-        // to convert PostDto and ProductDto from request to Post and Product
+        // to convert PostDto from request to Post
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
         Post post;
-        Product product;
         try {
             post = mapper.convertValue(newPost, Post.class);
-            product = mapper.convertValue(newPost.getProduct(), Product.class);
         } catch (IllegalArgumentException e) {
             throw new BadRequest("Unable to parse the post");
         }
@@ -47,13 +45,13 @@ public class PostService implements IPostService {
         // validate that seller exists
         Seller seller = findSellerById(newPost.getSellerId());
 
-        // generate post and product ID
+        // generate post
         UUID newPostId = UUID.randomUUID();
         post.setId(newPostId);
-        product.setId(newPostId);
+        post.getProduct().setId(newPostId);
 
         // create post and product in their repositories
-        productRepository.createProduct(product);
+        productRepository.createProduct(post.getProduct());
         postRepository.createPost(post);
 
         return newPostId;

@@ -37,7 +37,6 @@ public class PostRepository implements IPostRepository {
 
     @Override
     public void createPost(Post post) {
-        post.setProductId(post.getId());
         postList.add(post);
     }
 
