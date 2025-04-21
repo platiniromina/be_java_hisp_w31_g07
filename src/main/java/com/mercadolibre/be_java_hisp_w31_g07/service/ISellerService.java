@@ -14,7 +14,7 @@ public interface ISellerService {
      * @param userId id to find the Seller.
      * @return a seller dto with his followers list.
      */
-    SellerDto findFollowers(UUID userId);
+    public SellerDto findFollowers(UUID userId);
 
     /**
      * Allows a buyer to follow a seller by adding the seller to the buyer's

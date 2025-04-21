@@ -39,7 +39,7 @@ public class SellerRepository implements ISellerRepository {
     @Override
     public Optional<Seller> findFollowers(UUID userId) {
         return sellerList.stream()
-                .filter(x -> String.valueOf(x.getId()).equals(String.valueOf(userId)))
+                .filter(seller -> seller.getId().equals(userId))
                 .findFirst();
     }
 

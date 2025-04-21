@@ -1,14 +1,14 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -21,14 +21,8 @@ public class SellerController {
     private final ISellerService sellerService;
 
     @GetMapping("/users/{userId}/followers/list")
-    public ResponseEntity<?> getFollowers(@PathVariable String userId) {
-        UUID userUuid;
-        try {
-            userUuid = UUID.fromString(userId);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest("Error en el formato del id");
-        }
-        return new ResponseEntity<>(sellerService.findFollowers(userUuid), HttpStatus.OK);
+    public ResponseEntity<SellerDto> getFollowers(@PathVariable UUID userId) {
+        return new ResponseEntity<>(sellerService.findFollowers(userId), HttpStatus.OK);
     }
 
     @PostMapping("/users/{userId}/follow/{userIdToFollow}")

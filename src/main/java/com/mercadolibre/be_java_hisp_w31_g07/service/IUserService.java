@@ -11,5 +11,5 @@ public interface IUserService {
      * @return a user dto if the user is found,
      *         or an exception.
      */
-    UserDto findById(UUID id);
+    public UserDto findById(UUID id);
 }

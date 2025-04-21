@@ -44,7 +44,7 @@ public class SellerService implements ISellerService {
     public SellerDto findFollowers(UUID userId) {
         Seller seller = sellerRepository.findFollowers(userId)
                 .orElseThrow(() -> new NotFoundException(
-                        "No se encontro el usuario: " + userId));
+                        "User not found: " + userId));
         return mapToDto(seller);
     }
 

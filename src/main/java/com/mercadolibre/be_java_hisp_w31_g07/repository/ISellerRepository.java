@@ -14,7 +14,7 @@ public interface ISellerRepository {
      * @return a seller with his followers list if the seller is found,
      *         or an empty Optional otherwise
      */
-    Optional<Seller> findFollowers(UUID userId);
+    public Optional<Seller> findFollowers(UUID userId);
 
     /**
      * Retrieves a Seller from the list based on their unique ID.
