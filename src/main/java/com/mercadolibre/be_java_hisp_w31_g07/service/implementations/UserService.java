@@ -1,6 +1,5 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
@@ -18,20 +17,18 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto findById(UUID id) {
-        ObjectMapper mapper = new ObjectMapper();
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("No se encontro al usuario: " + id));
+                .orElseThrow(() -> new NotFoundException("No se encontro al usuario: " + id));
 
         return mapToDto(user);
     }
 
-    public UserDto mapToDto(User user){
+    public UserDto mapToDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getUserName(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getEmail()
-        );
+                user.getEmail());
     }
 }
