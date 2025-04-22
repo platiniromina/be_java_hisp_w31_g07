@@ -22,5 +22,5 @@ public class PostResponseDto {
     private Double price;
     private UUID sellerId;
     private Boolean hasPromo;
-    private Integer discount;
+    private Double discount;
 }
