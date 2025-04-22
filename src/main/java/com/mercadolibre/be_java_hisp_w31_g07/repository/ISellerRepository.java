@@ -44,16 +44,4 @@ public interface ISellerRepository {
      * @param sellerId The unique identifier of the seller.
      */
     public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId);
-
-    /**
-     * Retrieves the count of followers for a specific seller identified by their
-     * UUID.
-     *
-     * @param sellerId the unique identifier of the seller whose follower count is
-     *                 to be retrieved.
-     * @return an Optional Integer containing the follower count if the seller is
-     *         found,
-     *         or an empty Optional otherwise.
-     */
-    public Optional<Integer> findFollowersCount(UUID sellerId);
 }

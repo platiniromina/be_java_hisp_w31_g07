@@ -66,11 +66,9 @@ public class SellerService implements ISellerService {
 
     @Override
     public SellerFollowersCountResponseDto findFollowersCount(UUID sellerId) {
-        Integer count = sellerRepository.findFollowersCount(sellerId)
-                .orElseThrow(() -> new BadRequest("User with id " + sellerId + " not found"));
-
+        Seller seller = this.getSellerById(sellerId);
+        Integer count = seller.getFollowerCount();
         String userName = userService.findById(sellerId).getUserName();
-
         return new SellerFollowersCountResponseDto(sellerId, userName, count);
     }
 

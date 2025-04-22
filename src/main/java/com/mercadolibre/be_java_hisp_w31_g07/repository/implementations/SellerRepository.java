@@ -69,10 +69,4 @@ public class SellerRepository implements ISellerRepository {
             return seller;
         });
     }
-
-    @Override
-    public Optional<Integer> findFollowersCount(UUID sellerId) {
-        return this.findSellerById(sellerId)
-                .map(Seller::getFollowerCount);
-    }
 }
