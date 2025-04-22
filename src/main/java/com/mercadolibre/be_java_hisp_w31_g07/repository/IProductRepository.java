@@ -14,5 +14,5 @@ public interface IProductRepository {
      *
      * @param product the {@link Product} instance to be created and stored in the internal repository.
      */
-    void createProduct(Product product);
+    public void createProduct(Product product);
 }
