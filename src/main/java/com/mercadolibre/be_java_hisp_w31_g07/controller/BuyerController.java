@@ -2,6 +2,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Buyer", description = "Operations related to buyers")
 public class BuyerController {
     private final IBuyerService buyerService;
 

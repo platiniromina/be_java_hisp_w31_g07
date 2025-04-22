@@ -3,6 +3,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,8 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-
 @RequestMapping("/products")
+@Tag(name = "Post", description = "Operations related to posts and products")
 public class PostController {
     private final IPostService postService;
 
