@@ -1,5 +1,12 @@
 package com.mercadolibre.be_java_hisp_w31_g07.repository.implementations;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.ResourceUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,15 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.ResourceUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 
 @Repository
 public class SellerRepository implements ISellerRepository {
@@ -38,17 +37,8 @@ public class SellerRepository implements ISellerRepository {
     }
 
     @Override
-    public Optional<Seller> findFollowers(UUID userId) {
-        return sellerList.stream()
-                .filter(seller -> seller.getId().equals(userId))
-                .findFirst();
-    }
-
-    @Override
     public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
-        return sellerList.stream()
-                .filter(seller -> seller.getId().equals(sellerId))
-                .findFirst()
+        return this.findSellerById(sellerId)
                 .map(seller -> {
                     seller.addFollower(buyer);
                     seller.incrementFollowerCount();

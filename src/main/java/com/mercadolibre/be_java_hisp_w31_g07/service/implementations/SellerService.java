@@ -9,14 +9,15 @@ import java.util.stream.Collectors;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import org.springframework.stereotype.Service;
 
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -49,9 +50,8 @@ public class SellerService implements ISellerService {
 
     @Override
     public SellerDto findFollowers(UUID userId) {
-        Seller seller = sellerRepository.findFollowers(userId)
-                .orElseThrow(() -> new NotFoundException(
-                        "User not found: " + userId));
+        Seller seller = sellerRepository.findSellerById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found: " + userId));
         return mapToDto(seller);
     }
 
@@ -68,10 +68,14 @@ public class SellerService implements ISellerService {
         buyerService.removeSellerFromFollowedList(seller, buyerId);
     }
 
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
+    @Override
+    public SellerFollowersCountResponseDto findFollowersCount(UUID sellerId) {
+        Seller seller = this.getSellerById(sellerId);
+        Integer count = seller.getFollowerCount();
+        String userName = userService.findById(sellerId).getUserName();
+        return new SellerFollowersCountResponseDto(sellerId, userName, count);
+    }
+
     @Override
     public Seller findSellerById(UUID sellerId) {
         return getSellerById(sellerId);
@@ -119,7 +123,7 @@ public class SellerService implements ISellerService {
     }
 
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
-        Seller seller = sellerRepository.findFollowers(sellerId)
+        Seller seller = sellerRepository.findSellerById(sellerId)
                 .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
 
         List<Buyer> followers = new ArrayList<>(seller.getFollowers());
@@ -143,7 +147,6 @@ public class SellerService implements ISellerService {
                 seller.getId(),
                 userService.findById(seller.getId()).getUserName(),
                 followersDto,
-                seller.getFollowerCount()
-        );
+                seller.getFollowerCount());
     }
 }
