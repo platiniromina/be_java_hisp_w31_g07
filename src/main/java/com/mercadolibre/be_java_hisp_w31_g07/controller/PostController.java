@@ -18,14 +18,22 @@ public class PostController {
     private final IPostService postService;
 
     @PostMapping("/post")
-    public ResponseEntity<String> createPost(@RequestBody PostDto newPost) {
-        UUID post = postService.createPost(newPost);
-        return new ResponseEntity<>("Post " + post + " succesfully created", HttpStatus.OK);
+    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostDto newPost) {
+        PostResponseDto post = postService.createPost(newPost);
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
-    // for testing
+    // ------------------------------ START TESTING ------------------------------
+
+    // FOR TESTING PURPOSES ONLY
+    // This endpoint is not part of the original requirements
+    // and is only used to verify the functionality of the followSeller method.
+    // It should be removed in the final version of the code.
+
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
         return new ResponseEntity<>(postService.findPost(postId), HttpStatus.FOUND);
     }
+
+    // ------------------------------ END TESTING ------------------------------
 }

@@ -1,26 +1,18 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.IProductRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
+import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -30,43 +22,39 @@ public class PostService implements IPostService {
     private final ISellerService sellerService;
     private final IProductService productService;
 
-    @Autowired
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     @Override
-    public UUID createPost(PostDto newPost) {
+    public PostResponseDto createPost(PostDto newPost) {
 
         // to convert PostDto from request to Post
         Post post = mapper.convertValue(newPost, Post.class);
 
         // validate that seller exists
-        Seller seller = findSellerById(newPost.getSellerId());
+        validateExistingSeller(newPost.getSellerId());
 
         // generate post
-        UUID newPostId = UUID.randomUUID();
-        post.setId(newPostId);
-        post.getProduct().setId(newPostId);
+        UUID newPostId = Utils.generateId();
+        post.setGeneratedId(newPostId);
 
         // create post and product in their repositories
         productService.createProduct(post.getProduct());
         postRepository.createPost(post);
 
-        return newPostId;
+        return mapper.convertValue(post, PostResponseDto.class);
     }
 
-    public Seller findSellerById(UUID sellerId) {
-        return sellerService.findSellerById(sellerId);
+    private void validateExistingSeller(UUID sellerId) {
+        sellerService.findSellerById(sellerId);
     }
 
     @Override
     public PostResponseDto findPost(UUID postId) {
 
-        Optional<Post> post = postRepository.findById(postId);
-        if (post.isEmpty()) {
-            throw new NotFoundException("Post " + postId + " not found");
-        }
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
 
-        return mapper.convertValue(post.get(), PostResponseDto.class);
+        return mapper.convertValue(post, PostResponseDto.class);
     }
 
 }

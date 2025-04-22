@@ -1,7 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PostResponseDto {
     private UUID id;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private ProductResponseDto product;
     private String category;

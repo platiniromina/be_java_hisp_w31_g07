@@ -20,13 +20,6 @@ public interface ISellerService {
      */
     public void followSeller(UUID userId, UUID userIdToFollow);
 
-    // ------------------------------ START TESTING ------------------------------
-
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
-
     /**
      * Retrieves a seller by their unique identifier.
      *
@@ -35,6 +28,4 @@ public interface ISellerService {
      * @throws BadRequest if the seller cannot be found
      */
     public Seller findSellerById(UUID userId);
-
-    // ------------------------------ END TESTING ------------------------------
 }
