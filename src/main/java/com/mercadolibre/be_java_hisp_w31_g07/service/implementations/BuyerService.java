@@ -38,10 +38,8 @@ public class BuyerService implements IBuyerService {
     }
 
     @Override
-    public BuyerDto findFollowed(UUID userId) {
-        Buyer buyer = buyerRepository.findFollowed(userId)
-                .orElseThrow(() -> new NotFoundException("Buyer: " + userId + " not found"));
-
+    public BuyerDto findFollowed(UUID buyerId) {
+        Buyer buyer = this.findBuyerById(buyerId);
         return mapToDto(buyer);
     }
 

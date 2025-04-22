@@ -44,10 +44,8 @@ public class SellerService implements ISellerService {
     }
 
     @Override
-    public SellerDto findFollowers(UUID userId) {
-        Seller seller = sellerRepository.findFollowers(userId)
-                .orElseThrow(() -> new NotFoundException(
-                        "User not found: " + userId));
+    public SellerDto findFollowers(UUID sellerId) {
+        Seller seller = this.getSellerById(sellerId);
         return mapToDto(seller);
     }
 
