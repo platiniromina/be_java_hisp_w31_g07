@@ -2,6 +2,8 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import java.util.UUID;
 
+import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import org.springframework.stereotype.Service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BuyerService implements IBuyerService {
         private final IBuyerRepository buyerRepository;
+        private final IUserService userService;
 
         @Override
         public Buyer findBuyerById(UUID id) {
@@ -42,7 +45,8 @@ public class BuyerService implements IBuyerService {
                 Buyer buyer = buyerRepository.findBuyerById(userId)
                                 .orElseThrow(() -> new NotFoundException("Buyer: " + userId + " not found"));
 
-                return BuyerMapper.toBuyerDto(buyer);
+                String buyerUserName = userService.findById(buyer.getId()).getUserName();
+                return BuyerMapper.toBuyerDto(buyer, buyerUserName);
         }
 
         @Override
