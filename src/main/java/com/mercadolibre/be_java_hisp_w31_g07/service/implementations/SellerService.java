@@ -1,9 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
@@ -123,30 +120,55 @@ public class SellerService implements ISellerService {
     }
 
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
-        Seller seller = sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
+        Seller seller = getExistingSeller(sellerId);
 
         List<Buyer> followers = new ArrayList<>(seller.getFollowers());
 
-        Comparator<Buyer> comparator = Comparator.comparing(
-                buyer -> userService.findById(buyer.getId()).getUserName());
-        if ("desc".equalsIgnoreCase(order)) {
-            comparator = comparator.reversed();
-        }
-
+        Comparator<Buyer> comparator = getComparatorForOrder(order);
         followers.sort(comparator);
 
-        List<BuyerResponseDto> followersDto = followers.stream()
+        seller.setFollowers(followers);
+
+        return mapToSellerDto(seller);
+    }
+
+    private Seller getExistingSeller(UUID sellerId) {
+        return sellerRepository.findSellerById(sellerId)
+                .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
+    }
+
+    private SellerDto mapToSellerDto(Seller seller) {
+        Map<UUID, String> userNames = new HashMap<>();
+        List<BuyerResponseDto> followers = seller.getFollowers().stream()
                 .map(buyer -> {
-                    String userName = userService.findById(buyer.getId()).getUserName(); // Obtener el userName
-                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());
-                })
+                    userNames.computeIfAbsent(buyer.getId(), id -> userService.findById(id).getUserName());
+
+                    String userName = userNames.get(buyer.getId());
+
+                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());})
                 .toList();
+
+        String sellerUsername = userNames.get(seller.getId());
 
         return new SellerDto(
                 seller.getId(),
-                userService.findById(seller.getId()).getUserName(),
-                followersDto,
+                sellerUsername,
+                followers,
                 seller.getFollowerCount());
     }
+
+    private Comparator<Buyer> getComparatorForOrder(String order) {
+        Comparator<Buyer> comparator = Comparator.comparing(
+                buyer -> userService.findById(buyer.getId()).getUserName()
+        );
+
+        if ("name_desc".equalsIgnoreCase(order)) {
+            return comparator.reversed();
+        } else if ("name_asc".equalsIgnoreCase(order)) {
+            return comparator;
+        } else {
+            throw new IllegalArgumentException("Invalid order: " + order);
+        }
+    }
+
 }
