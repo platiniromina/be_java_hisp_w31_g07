@@ -1,7 +1,7 @@
 [
   {
     "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
-    "date": "2025-04-10",
+    "date": "10-04-2025",
     "product": {
       "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
       "productName": "Wireless Headphones",
@@ -18,7 +18,7 @@
   },
   {
     "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
-    "date": "2025-04-12",
+    "date": "12-04-2025",
     "product": {
       "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
       "productName": "The Pragmatic Programmer",
@@ -35,7 +35,7 @@
   },
   {
     "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
-    "date": "2025-04-08",
+    "date": "08-04-2025",
     "product": {
       "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
       "productName": "Blender Pro 900",
@@ -52,7 +52,7 @@
   },
   {
     "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
-    "date": "2025-03-30",
+    "date": "30-03-2025",
     "product": {
       "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
       "productName": "Lego Star Wars Set",
@@ -69,7 +69,7 @@
   },
   {
     "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
-    "date": "2025-04-14",
+    "date": "14-04-2025",
     "product": {
       "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
       "productName": "Leather Jacket",
@@ -84,5 +84,4 @@
     "hasPromo": true,
     "discount": 25
   }
-
 ]

@@ -64,10 +64,6 @@ public class SellerService implements ISellerService {
         buyerService.removeSellerFromFollowedList(seller, buyerId);
     }
 
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
     @Override
     public Seller findSellerById(UUID sellerId) {
         return getSellerById(sellerId);
@@ -113,5 +109,4 @@ public class SellerService implements ISellerService {
         boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
         return isFollowing && isFollowedBy;
     }
-
 }

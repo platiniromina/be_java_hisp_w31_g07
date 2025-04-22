@@ -22,7 +22,7 @@ public interface ISellerService {
      * and the buyer to the seller's followers list.
      *
      * @param sellerId the unique identifier of the seller to be followed
-     * @param buyerId  the unique identifier of the buyer who wants to follow the
+     * @param buyerId the unique identifier of the buyer who wants to follow the
      *                 seller
      * @throws BadRequest if the sellerId and buyerId are the same
      * @throws BadRequest if the seller or buyer cannot be found
@@ -43,13 +43,6 @@ public interface ISellerService {
      */
     public void unfollowSeller(UUID sellerId, UUID buyerId);
 
-    // ------------------------------ START TESTING ------------------------------
-
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
-
     /**
      * Retrieves a seller by their unique identifier.
      *
@@ -58,6 +51,4 @@ public interface ISellerService {
      * @throws BadRequest if the seller cannot be found
      */
     public Seller findSellerById(UUID userId);
-
-    // ------------------------------ END TESTING ------------------------------
 }
