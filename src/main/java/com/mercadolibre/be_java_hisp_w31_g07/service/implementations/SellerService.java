@@ -142,9 +142,7 @@ public class SellerService implements ISellerService {
         List<BuyerResponseDto> followers = seller.getFollowers().stream()
                 .map(buyer -> {
                     userNames.computeIfAbsent(buyer.getId(), id -> userService.findById(id).getUserName());
-
                     String userName = userNames.get(buyer.getId());
-
                     return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());})
                 .toList();
 

@@ -16,6 +16,9 @@ import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.UUID;
 
 import java.util.ArrayList;
@@ -85,5 +88,28 @@ public class PostService implements IPostService {
 
         List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
+    }
+
+    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
+        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
+        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
+        return new FollowersPostsResponseDto(buyerId, sortedPosts);
+    }
+
+    private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
+        List<PostResponseDto> sortedPosts;
+
+        if ("date_desc".equalsIgnoreCase(order)) {
+            sortedPosts = posts.stream()
+                    .sorted(Comparator.comparing(PostResponseDto::getDate).reversed())
+                    .toList();
+        } else if ("date_asc".equalsIgnoreCase(order)) {
+            sortedPosts = posts.stream()
+                    .sorted(Comparator.comparing(PostResponseDto::getDate))
+                    .toList();
+        } else {
+            throw new IllegalArgumentException("Invalid order: " + order);
+        }
+        return sortedPosts;
     }
 }
