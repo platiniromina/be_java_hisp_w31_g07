@@ -33,7 +33,7 @@ public class PostService implements IPostService {
         // validate that seller exists
         validateExistingSeller(newPost.getSellerId());
 
-        // generate post
+        // generate UUID for the new post
         UUID newPostId = Utils.generateId();
         post.setGeneratedId(newPostId);
 
