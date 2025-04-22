@@ -8,15 +8,6 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 public interface ISellerRepository {
     /**
-     * Returns a seller that match with the param userId.
-     *
-     * @param userId id to find the Seller.
-     * @return a seller with his followers list if the seller is found,
-     *         or an empty Optional otherwise
-     */
-    public Optional<Seller> findFollowers(UUID userId);
-
-    /**
      * Retrieves a Seller from the list based on their unique ID.
      *
      * @param userId the UUID of the seller to be found
@@ -49,9 +40,8 @@ public interface ISellerRepository {
     /**
      * Removes the buyer from the seller's list of followers.
      *
-     * @param buyer The buyer to be removed from the seller's list of followers.
+     * @param buyer    The buyer to be removed from the seller's list of followers.
      * @param sellerId The unique identifier of the seller.
      */
     public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId);
-
 }

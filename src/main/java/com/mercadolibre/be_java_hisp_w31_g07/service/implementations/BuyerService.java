@@ -1,18 +1,21 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import java.util.UUID;
-import org.springframework.stereotype.Service;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
+
 import lombok.RequiredArgsConstructor;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class BuyerService implements IBuyerService {
 
     @Override
     public BuyerDto findFollowed(UUID userId) {
-        Buyer buyer = buyerRepository.findFollowed(userId)
+        Buyer buyer = buyerRepository.findBuyerById(userId)
                 .orElseThrow(() -> new NotFoundException("Buyer: " + userId + " not found"));
 
         return mapToDto(buyer);
