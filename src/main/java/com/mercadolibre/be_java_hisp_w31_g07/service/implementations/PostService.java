@@ -13,6 +13,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,7 +22,6 @@ public class PostService implements IPostService {
     private final IPostRepository postRepository;
     private final ISellerService sellerService;
     private final IProductService productService;
-
     private final ObjectMapper mapper;
 
     // ------------------------------
@@ -42,6 +42,18 @@ public class PostService implements IPostService {
                 .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
 
         return mapper.convertValue(post, PostResponseDto.class);
+    }
+
+    @Override
+    public List<PostResponseDto> findUserPostDisc(UUID userId){
+        List<Post> postList = postRepository.findAll().stream()
+                .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
+                .toList();
+
+        if(postList.isEmpty()){
+                throw new NotFoundException("Posts from: " + userId + " not found");
+        }
+        return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
 
     // ------------------------------

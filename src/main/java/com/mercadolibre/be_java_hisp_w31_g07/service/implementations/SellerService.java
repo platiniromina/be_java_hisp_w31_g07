@@ -3,6 +3,10 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import java.util.List;
 import java.util.UUID;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +31,9 @@ public class SellerService implements ISellerService {
     private final ISellerRepository sellerRepository;
     private final IUserService userService;
     private final IBuyerService buyerService;
+
+    @Autowired
+    private IPostService postService;
 
     // ------------------------------
     // Public methods
@@ -75,6 +82,17 @@ public class SellerService implements ISellerService {
     @Override
     public Seller findSellerById(UUID sellerId) {
         return getSellerById(sellerId);
+    }
+
+    @Override
+    public UserPostResponseDto getSellerPromProd(UUID userId){
+        Seller seller = getSellerById(userId);
+        List<PostResponseDto> postResponseDtos = postService.findUserPostDisc(userId);
+
+        return new UserPostResponseDto(
+                userService.findById(seller.getId()).getId(),
+                userService.findById(seller.getId()).getUserName(),
+                postResponseDtos);
     }
 
     // ------------------------------

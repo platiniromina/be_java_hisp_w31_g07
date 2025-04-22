@@ -2,6 +2,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,4 +33,6 @@ public interface IPostRepository {
      *         {@link Optional} if no post with the specified ID exists.
      */
     public Optional<Post> findById(UUID postId);
+
+    public List<Post> findAll();
 }

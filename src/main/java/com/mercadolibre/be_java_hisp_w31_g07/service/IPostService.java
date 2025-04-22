@@ -4,6 +4,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface IPostService {
@@ -18,6 +19,15 @@ public interface IPostService {
      */
     public PostResponseDto createPost(PostDto newPost);
 
+    /**
+     * Find the user's posts
+     *
+     * @param userId contains the user id to link with a Post
+     * @return list of Posts related with a user
+     * @throws BadRequest if the seller doesn't have a post with discount
+     */
+    public List<PostResponseDto> findUserPostDisc(UUID userId);
+
     // ------------------------------ START TESTING ------------------------------
 
     // FOR TESTING PURPOSES ONLY
@@ -26,6 +36,7 @@ public interface IPostService {
     // It should be removed in the final version of the code.
 
     public PostResponseDto findPost(UUID postId);
+
 
     // ------------------------------ END TESTING ------------------------------
 }

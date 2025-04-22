@@ -2,13 +2,10 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import java.util.UUID;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
@@ -53,6 +50,11 @@ public class SellerController {
         sellerService.unfollowSeller(userIdToUnfollow, userId);
         return ResponseEntity.ok().build();
     }
+
+    /*@GetMapping("/users/products/promo-post/list")
+    public ResponseEntity<UserPostResponseDto> getSellerPromProd(@RequestParam UUID userId){
+        return new ResponseEntity<>(sellerService.getSellerPromProd(userId), HttpStatus.OK);
+    }*/
 
     // FOR TESTING PURPOSES ONLY
     // This endpoint is not part of the original requirements

@@ -52,4 +52,9 @@ public class PostRepository implements IPostRepository {
                 .filter(post -> post.getId().equals(postId))
                 .findFirst();
     }
+
+    @Override
+    public List<Post> findAll(){
+        return postList;
+    }
 }
