@@ -22,7 +22,7 @@ public class Post {
     private Double price;
     private UUID sellerId;
     private Boolean hasPromo;
-    private Integer discount;
+    private Double discount;
 
     public void setGeneratedId(UUID id) {
         this.id = id;
