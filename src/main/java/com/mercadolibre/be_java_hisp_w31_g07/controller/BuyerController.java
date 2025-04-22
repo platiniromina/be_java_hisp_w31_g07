@@ -2,7 +2,12 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import java.util.UUID;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +28,10 @@ public class BuyerController {
     private final IBuyerService buyerService;
 
     @Operation(summary = "Get followings - [REQ - 4]", description = "Returns a list of the sellers that the given buyer is following.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
     @GetMapping("/users/{userId}/followed/list")
     public ResponseEntity<BuyerDto> getFollowed(@PathVariable UUID userId) {
         return new ResponseEntity<>(buyerService.findFollowed(userId), HttpStatus.OK);

@@ -2,6 +2,9 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import java.util.UUID;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,10 @@ public class SellerController {
     private final ISellerService sellerService;
 
     @Operation(summary = "Get followers - [REQ - 3]", description = "Returns a list of the buyers that follow the given seller.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Bad Request: seller not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
     @GetMapping("/users/{userId}/followers/list")
     public ResponseEntity<SellerDto> getFollowers(@PathVariable UUID userId) {
         return new ResponseEntity<>(sellerService.findFollowers(userId), HttpStatus.OK);
@@ -37,7 +44,7 @@ public class SellerController {
     @Operation(summary = "Follow a seller - [REQ - 1]", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully followed the seller. Response body is empty."),
-            @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, buyer or seller not found, or already following.")
+            @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, buyer or seller not found, or already following.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @PostMapping("/users/{userId}/follow/{userIdToFollow}")
     public ResponseEntity<Void> followSeller(
@@ -48,6 +55,10 @@ public class SellerController {
     }
 
     @Operation(summary = "Unfollow a seller - [REQ - 7]", description = "Allows a buyer to unfollow a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully unfollowed the seller. Response body is empty."),
+            @ApiResponse(responseCode = "400", description = "Bad Request: buyer or seller not found or buyer not following the given seller.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
     @PutMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<Void> unfollowSeller(
             @PathVariable UUID userId,
@@ -67,6 +78,10 @@ public class SellerController {
     }
 
     @Operation(summary = "Get followers count - [REQ - 2]", description = "Returns the number of buyers that follow the given seller.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Bad Request: seller not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
     @GetMapping("/users/{userId}/followers/count")
     public ResponseEntity<SellerFollowersCountResponseDto> getFollowersCount(@PathVariable UUID userId) {
         return ResponseEntity.ok(sellerService.findFollowersCount(userId));
