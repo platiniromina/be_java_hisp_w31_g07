@@ -16,6 +16,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,16 +61,31 @@ public class BuyerService implements IBuyerService {
         ObjectMapper mapper = new ObjectMapper();
         GenericObjectMapper mapToDtos = new GenericObjectMapper(mapper);
 
-        Map<String, Object> buyerExtraFields = Map.of("userName",
-                userService.findById(buyer.getId()).getUserName());
+        // Obtener userName para Buyer
+        Map<String, Object> buyerExtraFields = Map.of(
+                "userName", userService.findById(buyer.getId()).getUserName()
+        );
 
+        // Mapear los Sellers a SellerResponseDto
         List<SellerResponseDto> sellersWithExtras = buyer.getFollowed().stream()
-                .map(seller -> mapper.convertValue(seller, SellerResponseDto.class))
-                .toList();
+                .map(seller -> {
+                    // Mapear cada Seller y añadirle los campos adicionales
+                    SellerResponseDto sellerResponseDto = mapper.convertValue(seller, SellerResponseDto.class);
 
-        Map<String, Object> sellerExtraFields = Map.of("userName",
-                sellersWithExtras.stream()
-                        .map(seller -> userService.findById(seller.getId()).getUserName()));
+                    // Asignar el userName para cada Seller
+                    sellerResponseDto.setUserName(userService.findById(seller.getId()).getUserName());
+
+                    System.out.println("Mapeado Seller con ID: " + seller.getId() + " a SellerResponseDto");
+                    return sellerResponseDto;
+                })
+                .collect(Collectors.toList());
+
+        // Campos adicionales para Sellers
+        Map<String, Object> sellerExtraFields = Map.of(
+                "userName", sellersWithExtras.stream()
+                        .map(SellerResponseDto::getUserName) // obtener userName de cada SellerResponseDto
+                        .collect(Collectors.toList())
+        );
 
         Map<String, Map<String, Object>> nestedExtras = Map.of(
                 "followed", sellerExtraFields
@@ -80,8 +96,7 @@ public class BuyerService implements IBuyerService {
         System.out.println("Campos adicionales para Sellers: " + sellerExtraFields);
         System.out.println("Campos anidados (nested extras) configurados para 'followed': " + nestedExtras);
 
-
-
+        // Mapeo de Buyer a BuyerDto
         return mapToDtos.mapWithNestedExtraFields(
                 buyer,
                 BuyerDto.class,
