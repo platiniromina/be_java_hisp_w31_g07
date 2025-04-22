@@ -23,6 +23,12 @@ public class PostController {
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
+    @PostMapping("/promo-post")
+    public ResponseEntity<PostResponseDto> createPromoPost(@RequestBody PostDto newPromoPost) {
+        PostResponseDto promoPost = postService.createPost(newPromoPost);
+        return new ResponseEntity<>(promoPost, HttpStatus.OK);
+    }
+
     // ------------------------------ START TESTING ------------------------------
 
     // FOR TESTING PURPOSES ONLY
