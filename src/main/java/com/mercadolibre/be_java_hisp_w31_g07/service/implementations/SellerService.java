@@ -3,17 +3,16 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import java.util.List;
 import java.util.UUID;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerReponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -45,9 +44,8 @@ public class SellerService implements ISellerService {
     }
 
     @Override
-    public SellerDto findFollowers(UUID userId) {
-        Seller seller = sellerRepository.findSellerById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+    public SellerDto findFollowers(UUID sellerId) {
+        Seller seller = this.getSellerById(sellerId);
         return mapToDto(seller);
     }
 
@@ -117,4 +115,5 @@ public class SellerService implements ISellerService {
         boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
         return isFollowing && isFollowedBy;
     }
+
 }
