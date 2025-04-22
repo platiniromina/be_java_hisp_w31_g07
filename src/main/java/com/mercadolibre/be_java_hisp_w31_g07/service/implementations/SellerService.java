@@ -139,14 +139,16 @@ public class SellerService implements ISellerService {
 
     private SellerDto mapToSellerDto(Seller seller) {
         Map<UUID, String> userNames = new HashMap<>();
+        userNames.computeIfAbsent(seller.getId(), id -> userService.findById(id).getUserName());
+        String sellerUsername = userNames.get(seller.getId());
+
         List<BuyerResponseDto> followers = seller.getFollowers().stream()
                 .map(buyer -> {
                     userNames.computeIfAbsent(buyer.getId(), id -> userService.findById(id).getUserName());
                     String userName = userNames.get(buyer.getId());
-                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());})
+                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());
+                })
                 .toList();
-
-        String sellerUsername = userNames.get(seller.getId());
 
         return new SellerDto(
                 seller.getId(),
@@ -154,6 +156,7 @@ public class SellerService implements ISellerService {
                 followers,
                 seller.getFollowerCount());
     }
+
 
     private Comparator<Buyer> getComparatorForOrder(String order) {
         Comparator<Buyer> comparator = Comparator.comparing(
