@@ -37,17 +37,8 @@ public class SellerRepository implements ISellerRepository {
     }
 
     @Override
-    public Optional<Seller> findFollowers(UUID userId) {
-        return sellerList.stream()
-                .filter(seller -> seller.getId().equals(userId))
-                .findFirst();
-    }
-
-    @Override
     public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
-        return sellerList.stream()
-                .filter(seller -> seller.getId().equals(sellerId))
-                .findFirst()
+        return this.findSellerById(sellerId)
                 .map(seller -> {
                     seller.addFollower(buyer);
                     seller.incrementFollowerCount();
@@ -81,9 +72,7 @@ public class SellerRepository implements ISellerRepository {
 
     @Override
     public Optional<Integer> findFollowersCount(UUID sellerId) {
-        return sellerList.stream()
-                .filter(seller -> seller.getId().equals(sellerId))
-                .findFirst()
+        return this.findSellerById(sellerId)
                 .map(Seller::getFollowerCount);
     }
 }
