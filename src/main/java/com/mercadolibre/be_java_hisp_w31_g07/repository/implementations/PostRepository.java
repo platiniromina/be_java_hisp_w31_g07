@@ -53,8 +53,10 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
-    public List<Post> findAll() {
-        return postList;
+    public List<Post> findHasPromo(UUID userId) {
+        return postList.stream()
+                .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
+                .toList();
     }
 
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {

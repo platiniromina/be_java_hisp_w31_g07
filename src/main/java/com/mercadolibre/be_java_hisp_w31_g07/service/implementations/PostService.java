@@ -50,9 +50,7 @@ public class PostService implements IPostService {
 
     @Override
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
-        List<Post> postList = postRepository.findAll().stream()
-                .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
-                .toList();
+        List<Post> postList = postRepository.findHasPromo(userId);
 
         if (postList.isEmpty()) {
             throw new NotFoundException("Posts from: " + userId + " not found");

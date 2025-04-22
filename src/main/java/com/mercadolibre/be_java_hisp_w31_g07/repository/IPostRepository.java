@@ -33,7 +33,7 @@ public interface IPostRepository {
      */
     public Optional<Post> findById(UUID postId);
 
-    public List<Post> findAll();
+    public List<Post> findHasPromo(UUID userId);
 
     /**
      * Retrieves all posts matching the sellers ids within the last two weeks.
