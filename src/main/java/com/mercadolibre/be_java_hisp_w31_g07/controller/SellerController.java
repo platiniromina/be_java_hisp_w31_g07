@@ -70,6 +70,7 @@ public class SellerController {
         return ResponseEntity.ok(sellerService.findFollowersCount(userId));
     }
 
+
     @GetMapping("/{sellerId}/followers")
     public ResponseEntity<SellerDto> getSortedFollowers(
             @PathVariable UUID sellerId,

@@ -141,7 +141,7 @@ public class SellerService implements ISellerService {
                     String userName = userService.findById(buyer.getId()).getUserName(); // Obtener el userName
                     return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return new SellerDto(
                 seller.getId(),

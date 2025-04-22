@@ -5,15 +5,7 @@
     "cuil": "20-12345678-9",
     "followerCount": 0,
     "followers": [
-      {
-        "id": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
-        "followed": []
-      },
-      {
-        "id": "d5e9c14f-3b64-47bb-96ca-6f047477f7f5",
-        "followed": []
-      }
-    ]
+      ]
   },
   {
     "id": "928f7404-bd16-43f5-bb3e-25a8c01b68d4",
