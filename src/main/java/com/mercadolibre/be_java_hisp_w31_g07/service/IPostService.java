@@ -1,10 +1,14 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+
+import java.util.List;
+import java.util.UUID;
+
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
-import java.util.UUID;
 
 public interface IPostService {
     /**
@@ -18,14 +22,21 @@ public interface IPostService {
      */
     public PostResponseDto createPost(PostDto newPost);
 
+    /**
+     * Returns the most recent posts from sellers followed by the given buyer.
+     * Only includes posts from the last two weeks, sorted by newest first.
+     *
+     * @param buyerId the unique identifier of the buyer.
+     *
+     */
+    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
     // ------------------------------ START TESTING ------------------------------
-
     // FOR TESTING PURPOSES ONLY
     // This endpoint is not part of the original requirements
     // and is only used to verify the functionality of the followSeller method.
+
     // It should be removed in the final version of the code.
 
     public PostResponseDto findPost(UUID postId);
-
     // ------------------------------ END TESTING ------------------------------
 }
