@@ -60,4 +60,11 @@ public interface ISellerService {
     public Seller findSellerById(UUID userId);
 
     // ------------------------------ END TESTING ------------------------------
+
+    /**
+     Sorts buyers followers by name, in ascendant adn descendent way
+     Params:
+
+     Returns:sorted List of followers */
+    public SellerDto sortFollowersByName(UUID sellerId, String order);
 }

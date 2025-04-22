@@ -17,5 +17,5 @@ public class SellerResponseDto {
     private UUID id;
     private String userName;
     @JsonIgnore
-    private List<BuyerReponseDto> followers;
+    private List<BuyerResponseDto> followers;
 }

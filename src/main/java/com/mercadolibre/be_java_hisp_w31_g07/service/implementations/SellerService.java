@@ -1,8 +1,12 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import org.springframework.stereotype.Service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
@@ -11,7 +15,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerReponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
@@ -84,9 +88,9 @@ public class SellerService implements ISellerService {
     private SellerDto mapToDto(Seller seller) {
         ObjectMapper mapper = new ObjectMapper();
 
-        List<BuyerReponseDto> followers = seller.getFollowers().stream()
+        List<BuyerResponseDto> followers = seller.getFollowers().stream()
                 .map(buyer -> {
-                    BuyerReponseDto buyerReponseDto = mapper.convertValue(buyer, BuyerReponseDto.class);
+                    BuyerResponseDto buyerReponseDto = mapper.convertValue(buyer, BuyerResponseDto.class);
                     UserDto user = userService.findById(buyer.getId());
                     buyerReponseDto.setUserName(user.getUserName());
                     return buyerReponseDto;
@@ -114,4 +118,32 @@ public class SellerService implements ISellerService {
         return isFollowing && isFollowedBy;
     }
 
+    public SellerDto sortFollowersByName(UUID sellerId, String order) {
+        Seller seller = sellerRepository.findFollowers(sellerId)
+                .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
+
+        List<Buyer> followers = new ArrayList<>(seller.getFollowers());
+
+        Comparator<Buyer> comparator = Comparator.comparing(
+                buyer -> userService.findById(buyer.getId()).getUserName());
+        if ("desc".equalsIgnoreCase(order)) {
+            comparator = comparator.reversed();
+        }
+
+        followers.sort(comparator);
+
+        List<BuyerResponseDto> followersDto = followers.stream()
+                .map(buyer -> {
+                    String userName = userService.findById(buyer.getId()).getUserName(); // Obtener el userName
+                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());
+                })
+                .collect(Collectors.toList());
+
+        return new SellerDto(
+                seller.getId(),
+                userService.findById(seller.getId()).getUserName(),
+                followersDto,
+                seller.getFollowerCount()
+        );
+    }
 }

@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
@@ -63,4 +64,11 @@ public class SellerController {
         return ResponseEntity.ok(seller);
     }
 
+    @GetMapping("/{sellerId}/followers")
+    public ResponseEntity<SellerDto> getSortedFollowers(
+            @PathVariable UUID sellerId,
+            @RequestParam String order) {
+        SellerDto sellerDto = sellerService.sortFollowersByName(sellerId, order);
+        return ResponseEntity.ok(sellerDto);
+    }
 }

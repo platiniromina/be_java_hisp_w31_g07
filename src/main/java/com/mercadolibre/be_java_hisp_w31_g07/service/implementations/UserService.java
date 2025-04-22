@@ -9,6 +9,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,4 +29,5 @@ public class UserService implements IUserService {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(user, UserDto.class);
     }
+
 }
