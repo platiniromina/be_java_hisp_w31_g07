@@ -7,11 +7,12 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 
 public interface IUserRepository {
     /**
-     * Finds a user by their unique identifier (UUID).
+     * Returns a user that match with the param userId.
      *
-     * @param userId the unique identifier of the user to find
-     * @return an {@link Optional} containing the user if found, or an empty
-     *         {@link Optional} otherwise.
+     * @param userId id to find a user.
+     * @return a user with his attributes if the user is found,
+     *         or an empty Optional otherwise.
      */
-    public Optional<User> findUserById(UUID userId);
+    public Optional<User> findById(UUID userId);
+
 }

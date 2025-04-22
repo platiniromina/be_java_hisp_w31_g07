@@ -1,12 +1,20 @@
 package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 public interface IBuyerRepository {
+    /**
+     * Returns a buyer that match with the param userId.
+     *
+     * @param userId id to find a buyer.
+     * @return a buyer with his followed list if the buyer is found,
+     *         or an empty Optional otherwise.
+     */
+    public Optional<Buyer> findFollowed(UUID userId);
+
     /**
      * Retrieves a Buyer from the list based on their unique ID.
      *
@@ -36,4 +44,12 @@ public interface IBuyerRepository {
      *         otherwise.
      */
     public boolean buyerIsFollowingSeller(Seller seller, UUID buyerId);
+
+    /**
+     * Removes the seller from the buyer's followed list.
+     *
+     * @param seller The seller to be removed from the buyer's followed list.
+     * @param buyerId The unique identifier of the buyer.
+     */
+    public void removeSellerFromFollowedList(Seller seller, UUID buyerId);
 }

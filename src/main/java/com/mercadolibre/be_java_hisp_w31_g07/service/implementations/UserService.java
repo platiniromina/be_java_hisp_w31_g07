@@ -4,7 +4,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
@@ -16,16 +18,16 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements IUserService {
     private final IUserRepository userRepository;
 
-    /**
-     * Finds a user by their unique identifier.
-     *
-     * @param userId the unique identifier of the user to be retrieved
-     * @return the User object corresponding to the given userId
-     * @throws BadRequest if no user is found with the specified userId
-     */
     @Override
-    public User findUserById(UUID userId) {
-        return userRepository.findUserById(userId)
-                .orElseThrow(() -> new BadRequest("User with id " + userId + " not found"));
+    public UserDto findById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(
+                        "User not found: " + id));
+        return mapToDto(user);
+    }
+
+    private UserDto mapToDto(User user) {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(user, UserDto.class);
     }
 }

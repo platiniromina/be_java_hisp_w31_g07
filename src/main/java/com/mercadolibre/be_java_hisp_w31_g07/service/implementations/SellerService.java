@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,11 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountRe
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerReponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -20,17 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class SellerService implements ISellerService {
     private final ISellerRepository sellerRepository;
     private final IUserService userService;
-
-    @Override
-    public SellerFollowersCountResponseDto findFollowersCount(UUID sellerId) {
-        Integer count = sellerRepository.findFollowersCount(sellerId)
-                .orElseThrow(() -> new BadRequest("User with id " + sellerId + " not found"));
-
-        String userName = userService.findUserById(sellerId).getUserName();
-
-        return new SellerFollowersCountResponseDto(sellerId, userName, count);
-    }
-
     private final IBuyerService buyerService;
 
     // ------------------------------
@@ -41,9 +36,43 @@ public class SellerService implements ISellerService {
         validateNotSameUser(sellerId, buyerId);
         Seller seller = getSellerById(sellerId);
         Buyer buyer = buyerService.findBuyerById(buyerId);
-        validateNotAlreadyFollowing(buyer, seller);
+
+        if (this.validateMutualFollowing(buyer, seller))
+            throw new BadRequest("Buyer " + buyer.getId() + " already follows seller " + seller.getId());
+
         sellerRepository.addBuyerToFollowersList(buyer, sellerId);
         buyerService.addSellerToFollowedList(seller, buyerId);
+    }
+
+    @Override
+    public SellerDto findFollowers(UUID userId) {
+        Seller seller = sellerRepository.findFollowers(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        "User not found: " + userId));
+        return mapToDto(seller);
+    }
+
+    @Override
+    public void unfollowSeller(UUID sellerId, UUID buyerId) {
+        Seller seller = this.getSellerById(sellerId);
+        Buyer buyer = buyerService.findBuyerById(buyerId);
+
+        if (!this.validateMutualFollowing(buyer, seller))
+            throw new BadRequest("Buyer " + buyer.getId() + " is not following seller " + seller.getId()
+                    + ". Unfollow action cannot be done");
+
+        sellerRepository.removeBuyerFromFollowersList(buyer, sellerId);
+        buyerService.removeSellerFromFollowedList(seller, buyerId);
+    }
+
+    @Override
+    public SellerFollowersCountResponseDto findFollowersCount(UUID sellerId) {
+        Integer count = sellerRepository.findFollowersCount(sellerId)
+                .orElseThrow(() -> new BadRequest("User with id " + sellerId + " not found"));
+
+        String userName = userService.findById(sellerId).getUserName();
+
+        return new SellerFollowersCountResponseDto(sellerId, userName, count);
     }
 
     // FOR TESTING PURPOSES ONLY
@@ -63,6 +92,25 @@ public class SellerService implements ISellerService {
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
     }
 
+    private SellerDto mapToDto(Seller seller) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<BuyerReponseDto> followers = seller.getFollowers().stream()
+                .map(buyer -> {
+                    BuyerReponseDto buyerReponseDto = mapper.convertValue(buyer, BuyerReponseDto.class);
+                    UserDto user = userService.findById(buyer.getId());
+                    buyerReponseDto.setUserName(user.getUserName());
+                    return buyerReponseDto;
+                })
+                .toList();
+
+        return new SellerDto(
+                seller.getId(),
+                userService.findById(seller.getId()).getUserName(),
+                followers,
+                seller.getFollowerCount());
+    }
+
     // ------------------------------
     // Validation methods
     // ------------------------------
@@ -71,10 +119,10 @@ public class SellerService implements ISellerService {
             throw new BadRequest("User cannot follow themselves.");
     }
 
-    private void validateNotAlreadyFollowing(Buyer buyer, Seller seller) {
-        boolean isFollowing = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, buyer.getId());
-        boolean isFollowedBy = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
-        if (isFollowing || isFollowedBy)
-            throw new BadRequest("Buyer " + buyer.getId() + " already follows seller " + seller.getId());
+    private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
+        boolean isFollowedBy = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, seller.getId());
+        boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
+        return isFollowing && isFollowedBy;
     }
+
 }

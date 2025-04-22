@@ -2,16 +2,15 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import java.util.UUID;
 
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.model.User;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 
 public interface IUserService {
     /**
-     * Finds a user by their unique identifier.
+     * Returns a user that match with the param id.
      *
-     * @param userId the unique identifier of the user to be retrieved
-     * @return the User object corresponding to the given userId
-     * @throws BadRequest if no user is found with the specified userId
+     * @param id id to find a user.
+     * @return a user dto if the user is found,
+     *         or an exception.
      */
-    public User findUserById(UUID userId);
+    public UserDto findById(UUID id);
 }
