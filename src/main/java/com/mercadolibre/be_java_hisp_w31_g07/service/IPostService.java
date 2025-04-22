@@ -21,6 +21,13 @@ public interface IPostService {
      */
     public PostResponseDto createPost(PostDto newPost);
 
+    /**
+     * Returns the most recent posts from sellers followed by the given buyer.
+     * Only includes posts from the last two weeks, sorted by newest first.
+     *
+     * @param buyerId the unique identifier of the buyer.
+     *
+     */
     public List<PostResponseDto> getLatestPostsFromSellers(UUID buyerId);
 
     // ------------------------------ START TESTING ------------------------------

@@ -34,5 +34,13 @@ public interface IPostRepository {
      *         {@link Optional} if no post with the specified ID exists.
      */
     public Optional<Post> findById(UUID postId);
-    public List<Post> findRecentPostsBySellerId(UUID sellerId);
+
+    /**
+     * Retrieves all posts matching the sellers ids within the last two weeks.
+     * Sorts by newest posts first.
+     *
+     * @param sellers the unique identifier of the sellers.
+     *
+     */
+    public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
 }

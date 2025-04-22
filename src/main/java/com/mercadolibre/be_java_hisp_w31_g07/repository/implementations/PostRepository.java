@@ -11,10 +11,7 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class PostRepository implements IPostRepository {
@@ -54,12 +51,13 @@ public class PostRepository implements IPostRepository {
                 .findFirst();
     }
 
-    @Override
-    public List<Post> findRecentPostsBySellerId(UUID sellerId) {
+    public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+
         return postList.stream()
-                .filter(post -> post.getSellerId().equals(sellerId)
-                        && post.getDate().isBefore(twoWeeksAgo))
+                .filter(post -> sellers.contains(post.getSellerId())
+                        && post.getDate().isAfter(twoWeeksAgo))
+                .sorted(Comparator.comparing(Post::getDate).reversed())
                 .toList();
     }
 }

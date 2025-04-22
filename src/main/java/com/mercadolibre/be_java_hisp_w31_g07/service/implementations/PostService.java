@@ -76,16 +76,14 @@ public class PostService implements IPostService {
         // Find the sellers that the user is following
         List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
 
-        // if the user is not following anyone, return not found
+        // If the user is not following anyone, return not found
         if (sellers.isEmpty()) {
             throw new NotFoundException("The buyer is not following any sellers");
         }
 
         // Find posts from those sellers
-        List<Post> posts = new ArrayList<>();
-        sellers.forEach(seller ->
-                posts.addAll(postRepository.findRecentPostsBySellerId(seller.getId()))
-        );
+        List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
+        List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
 
         return posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
