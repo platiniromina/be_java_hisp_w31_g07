@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -37,6 +35,13 @@ public class BuyerRepository implements IBuyerRepository {
     }
 
     @Override
+    public Optional<Buyer> findFollowed(UUID userId) {
+        return buyerList.stream()
+                .filter(buyer -> buyer.getId().equals(userId))
+                .findFirst();
+    }
+
+    @Override
     public Optional<Buyer> addSellerToFollowedList(Seller seller, UUID buyerId) {
         return buyerList.stream()
                 .filter(buyer -> buyer.getId().equals(buyerId))
@@ -60,5 +65,13 @@ public class BuyerRepository implements IBuyerRepository {
                 .filter(buyer -> buyer.getId().equals(buyerId))
                 .flatMap(buyer -> buyer.getFollowed().stream())
                 .anyMatch(sellerFollowed -> sellerFollowed.getId().equals(seller.getId()));
+    }
+
+    @Override
+    public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
+        this.findBuyerById(buyerId).map(buyer -> {
+            buyer.removeFollowedSeller(seller);
+            return buyer;
+        });
     }
 }

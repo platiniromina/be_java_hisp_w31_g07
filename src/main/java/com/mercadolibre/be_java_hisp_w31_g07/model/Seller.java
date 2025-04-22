@@ -26,4 +26,12 @@ public class Seller {
     public void incrementFollowerCount() {
         this.followerCount++;
     }
+
+    public void removeFollower(Buyer buyer) {
+        this.followers.remove(buyer);
+    }
+
+    public void decrementFollowerCount() {
+        this.followerCount--;
+    }
 }

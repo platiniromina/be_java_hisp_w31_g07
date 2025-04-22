@@ -5,7 +5,17 @@ import java.util.UUID;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+
 public interface ISellerService {
+    /**
+     * Returns a seller that match with the param userId.
+     *
+     * @param userId id to find the Seller.
+     * @return a seller dto with his followers list.
+     */
+    public SellerDto findFollowers(UUID userId);
+
     /**
      * Allows a buyer to follow a seller by adding the seller to the buyer's
      * followed list
@@ -18,7 +28,20 @@ public interface ISellerService {
      * @throws BadRequest if the seller or buyer cannot be found
      * @throws BadRequest if the buyer is already following the seller
      */
-    public void followSeller(UUID userId, UUID userIdToFollow);
+    public void followSeller(UUID sellerId, UUID buyerId);
+
+    /**
+     * Allows a buyer to unfollow a seller by removing the seller from the buyer's
+     * followed list
+     * and the buyer from the seller's followers list.
+     *
+     * @param sellerId the unique identifier of the seller to be unfollowed
+     * @param buyerId  the unique identifier of the buyer who wants to unfollow the
+     *                 seller
+     * @throws BadRequest if the seller or buyer cannot be found
+     * @throws BadRequest if the buyer is not previously following the seller
+     */
+    public void unfollowSeller(UUID sellerId, UUID buyerId);
 
     /**
      * Retrieves a seller by their unique identifier.

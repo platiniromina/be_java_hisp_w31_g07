@@ -1,28 +1,55 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Seller", description = "Operations related to sellers")
 public class SellerController {
     private final ISellerService sellerService;
 
+    @GetMapping("/users/{userId}/followers/list")
+    public ResponseEntity<SellerDto> getFollowers(@PathVariable UUID userId) {
+        return new ResponseEntity<>(sellerService.findFollowers(userId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Follow a seller", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully followed the seller. Response body is empty."),
+            @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, buyer or seller not found, or already following.")
+    })
     @PostMapping("/users/{userId}/follow/{userIdToFollow}")
     public ResponseEntity<Void> followSeller(
+            @Parameter(description = "ID of the buyer who wants to follow the seller", required = true) @PathVariable UUID userId,
+            @Parameter(description = "ID of the seller to be followed", required = true) @PathVariable UUID userIdToFollow) {
+        sellerService.followSeller(userIdToFollow, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
+    public ResponseEntity<Void> unfollowSeller(
             @PathVariable UUID userId,
-            @PathVariable UUID userIdToFollow) {
-        sellerService.followSeller(userId, userIdToFollow);
+            @PathVariable UUID userIdToUnfollow) {
+        sellerService.unfollowSeller(userIdToUnfollow, userId);
         return ResponseEntity.ok().build();
     }
 

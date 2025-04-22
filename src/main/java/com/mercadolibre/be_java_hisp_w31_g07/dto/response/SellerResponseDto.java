@@ -15,9 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class SellerResponseDto {
     private UUID id;
-    private String billingAddress;
-    private String cuil;
-    private Integer followerCount;
+    private String userName;
     @JsonIgnore
     private List<BuyerReponseDto> followers;
 }

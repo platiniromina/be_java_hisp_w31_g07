@@ -36,6 +36,13 @@ public class SellerRepository implements ISellerRepository {
     }
 
     @Override
+    public Optional<Seller> findFollowers(UUID userId) {
+        return sellerList.stream()
+                .filter(seller -> seller.getId().equals(userId))
+                .findFirst();
+    }
+
+    @Override
     public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
         return sellerList.stream()
                 .filter(seller -> seller.getId().equals(sellerId))
@@ -60,5 +67,14 @@ public class SellerRepository implements ISellerRepository {
                 .filter(seller -> seller.getId().equals(sellerId))
                 .flatMap(seller -> seller.getFollowers().stream())
                 .anyMatch(follower -> follower.getId().equals(buyer.getId()));
+    }
+
+    @Override
+    public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId) {
+        this.findSellerById(sellerId).map(seller -> {
+            seller.removeFollower(buyer);
+            seller.decrementFollowerCount();
+            return seller;
+        });
     }
 }
