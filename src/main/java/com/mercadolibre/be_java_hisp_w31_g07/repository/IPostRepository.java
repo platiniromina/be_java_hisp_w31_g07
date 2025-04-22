@@ -2,8 +2,10 @@ package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
+
+import java.util.Optional;
 
 public interface IPostRepository {
 
@@ -32,4 +34,13 @@ public interface IPostRepository {
      *         {@link Optional} if no post with the specified ID exists.
      */
     public Optional<Post> findById(UUID postId);
+
+    /**
+     * Retrieves all posts matching the sellers ids within the last two weeks.
+     * Sorts by newest posts first.
+     *
+     * @param sellers the unique identifier of the sellers.
+     *
+     */
+    public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
 }
