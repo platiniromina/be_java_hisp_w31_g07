@@ -17,7 +17,8 @@ public interface IProductService {
      * {@link ProductRepository#createProduct(Product)} method to perform the
      * actual creation of the product.
      *
-     * @param product the {@link Product} instance to be created and stored in the repository.
+     * @param product the {@link Product} instance to be created and stored in the
+     *                repository.
      */
     public void createProduct(Product product);
 
@@ -25,8 +26,9 @@ public interface IProductService {
      * Retrieves a seller with a list of post with discount.
      *
      * @param userId the unique identifier of the seller to be retrieved
-     * @return a UserPostReponseObject object containing the seller's information and post.
+     * @return a UserPostReponseObject object containing the seller's information
+     *         and post.
      * @throws BadRequest if the seller cannot be found
      */
-    public UserPostResponseDto getSellerPromProd(UUID userId);
+    public UserPostResponseDto getSellerPromoPosts(UUID userId);
 }

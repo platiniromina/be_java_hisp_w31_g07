@@ -27,7 +27,7 @@ public class ProductController {
 
     @GetMapping("/promo-post/list")
     public ResponseEntity<UserPostResponseDto> getUserPostDisc(@RequestParam UUID userId) {
-        return new ResponseEntity<>(productService.getSellerPromProd(userId), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
 
     private final IPostService postService;

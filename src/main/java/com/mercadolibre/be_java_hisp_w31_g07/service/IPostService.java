@@ -28,7 +28,7 @@ public interface IPostService {
      * @return list of Posts related with a user
      * @throws BadRequest if the seller doesn't have a post with discount
      */
-    public List<PostResponseDto> findUserPostDisc(UUID userId);
+    public List<PostResponseDto> findUserPromoPosts(UUID userId);
 
     /**
      * Returns the most recent posts from sellers followed by the given buyer.

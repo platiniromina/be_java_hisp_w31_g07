@@ -49,7 +49,7 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public List<PostResponseDto> findUserPostDisc(UUID userId) {
+    public List<PostResponseDto> findUserPromoPosts(UUID userId) {
         List<Post> postList = postRepository.findAll().stream()
                 .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
                 .toList();

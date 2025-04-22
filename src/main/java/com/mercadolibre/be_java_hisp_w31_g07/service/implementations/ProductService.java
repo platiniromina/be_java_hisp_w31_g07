@@ -31,8 +31,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public UserPostResponseDto getSellerPromProd(UUID userId) {
-        List<PostResponseDto> postResponseDtos = postService.findUserPostDisc(userId);
+    public UserPostResponseDto getSellerPromoPosts(UUID userId) {
+        List<PostResponseDto> postResponseDtos = postService.findUserPromoPosts(userId);
 
         return new UserPostResponseDto(
                 userService.findById(userId).getId(),
