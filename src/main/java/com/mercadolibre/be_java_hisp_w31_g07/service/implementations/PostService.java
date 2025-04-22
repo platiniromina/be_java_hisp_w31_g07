@@ -16,6 +16,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 import java.util.ArrayList;
@@ -86,4 +87,5 @@ public class PostService implements IPostService {
         List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
+
 }

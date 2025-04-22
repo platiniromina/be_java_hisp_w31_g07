@@ -149,7 +149,6 @@ public class SellerService implements ISellerService {
                 .toList();
 
         String sellerUsername = userNames.get(seller.getId());
-
         return new SellerDto(
                 seller.getId(),
                 sellerUsername,
