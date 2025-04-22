@@ -8,11 +8,10 @@ import lombok.Setter;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class FollowersPostsResponseDto {
-    private UUID id;
-    private List<PostResponseDto> posts;
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
+public class UserPostResponseDto {
+    private UUID userId;
+    private String userName;
+    private List<PostResponseDto> postList;
 }
