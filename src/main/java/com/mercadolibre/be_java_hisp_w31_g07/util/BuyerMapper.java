@@ -53,6 +53,7 @@ public class BuyerMapper {
                 .collect(Collectors.toList());
 
         sellerDto.setFollowers(followerBuyer);
+        sellerDto.setFollowerCount(followerBuyer.size());
 
         return sellerDto;
     }
