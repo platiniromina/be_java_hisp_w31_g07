@@ -3,15 +3,13 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.*;
 import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ public class PostService implements IPostService {
     private final ISellerService sellerService;
     private final IProductService productService;
     private final IBuyerService buyerService;
+    private final IUserService userService;
     private final ObjectMapper mapper;
 
     // ------------------------------
@@ -42,12 +41,13 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public PostResponseDto findPost(UUID postId) {
+    public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
+        Integer promoPostsCount = findHasPromo(sellerId).length;
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
-
-        return mapper.convertValue(post, PostResponseDto.class);
+        return new SellerPromoPostsCountResponseDto(
+                sellerId,
+                userService.findById(sellerId).getUserName(),
+                promoPostsCount);
     }
 
     // ------------------------------
@@ -86,4 +86,21 @@ public class PostService implements IPostService {
         List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
+
+    // ------------------------------ START TESTING ------------------------------
+    // FOR TESTING PURPOSES ONLY
+    // This endpoint is not part of the original requirements
+    // and is only used to verify the functionality of the followSeller method.
+
+    // It should be removed in the final version of the code.
+
+    @Override
+    public PostResponseDto findPost(UUID postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
+
+        return mapper.convertValue(post, PostResponseDto.class);
+    }
+    // ------------------------------ END TESTING ------------------------------
 }

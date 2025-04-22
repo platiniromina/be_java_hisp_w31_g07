@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
 
@@ -30,6 +31,9 @@ public interface IPostService {
      *
      */
     public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
+
+    public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
+
     // ------------------------------ START TESTING ------------------------------
     // FOR TESTING PURPOSES ONLY
     // This endpoint is not part of the original requirements

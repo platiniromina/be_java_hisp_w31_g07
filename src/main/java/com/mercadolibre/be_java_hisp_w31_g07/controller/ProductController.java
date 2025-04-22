@@ -3,6 +3,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,13 @@ public class ProductController {
         return new ResponseEntity<>(promoPost, HttpStatus.OK);
     }
 
+    @GetMapping("/promo-post/count")
+    public ResponseEntity<SellerPromoPostsCountResponseDto> getPromoPostCount(
+            @RequestParam UUID sellerId) {
+
+        SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(sellerId);
+        return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
+    }
     // ------------------------------ START TESTING ------------------------------
 
     // FOR TESTING PURPOSES ONLY
