@@ -33,10 +33,6 @@ public class SellerService implements ISellerService {
     private final IUserService userService;
     private final IBuyerService buyerService;
 
-    @Autowired
-    @Lazy
-    private IPostService postService;
-
     // ------------------------------
     // Public methods
     // ------------------------------
@@ -84,17 +80,6 @@ public class SellerService implements ISellerService {
     @Override
     public Seller findSellerById(UUID sellerId) {
         return getSellerById(sellerId);
-    }
-
-    @Override
-    public UserPostResponseDto getSellerPromProd(UUID userId){
-        Seller seller = getSellerById(userId);
-        List<PostResponseDto> postResponseDtos = postService.findUserPostDisc(userId);
-
-        return new UserPostResponseDto(
-                userService.findById(seller.getId()).getId(),
-                userService.findById(seller.getId()).getUserName(),
-                postResponseDtos);
     }
 
     // ------------------------------

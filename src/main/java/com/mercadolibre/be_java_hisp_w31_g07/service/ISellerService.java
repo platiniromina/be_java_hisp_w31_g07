@@ -65,12 +65,4 @@ public interface ISellerService {
      */
     public Seller findSellerById(UUID userId);
 
-    /**
-     * Retrieves a seller by their unique identifier.
-     *
-     * @param userId the unique identifier of the seller to be retrieved
-     * @return a user object containing the seller's post list with discounts.
-     * @throws BadRequest if the seller cannot be found
-     */
-    public UserPostResponseDto getSellerPromProd(UUID userId);
 }
