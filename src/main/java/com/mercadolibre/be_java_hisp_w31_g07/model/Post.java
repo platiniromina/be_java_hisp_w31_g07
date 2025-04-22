@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Post {
     private UUID id;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private Product product;
     private String category;
@@ -23,4 +23,9 @@ public class Post {
     private UUID sellerId;
     private Boolean hasPromo;
     private Integer discount;
+
+    public void setGeneratedId(UUID id) {
+        this.id = id;
+        product.setId(id);
+    }
 }

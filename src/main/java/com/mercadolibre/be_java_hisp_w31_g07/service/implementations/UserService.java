@@ -1,15 +1,17 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

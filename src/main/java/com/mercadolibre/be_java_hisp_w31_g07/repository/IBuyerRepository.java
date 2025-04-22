@@ -1,8 +1,9 @@
 package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 public interface IBuyerRepository {
@@ -39,7 +40,7 @@ public interface IBuyerRepository {
     /**
      * Removes the seller from the buyer's followed list.
      *
-     * @param seller The seller to be removed from the buyer's followed list.
+     * @param seller  The seller to be removed from the buyer's followed list.
      * @param buyerId The unique identifier of the buyer.
      */
     public void removeSellerFromFollowedList(Seller seller, UUID buyerId);

@@ -1,9 +1,9 @@
 package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
-import com.mercadolibre.be_java_hisp_w31_g07.model.User;
-
 import java.util.Optional;
 import java.util.UUID;
+
+import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 
 public interface IUserRepository {
     /**
@@ -14,4 +14,5 @@ public interface IUserRepository {
      *         or an empty Optional otherwise.
      */
     public Optional<User> findById(UUID userId);
+
 }

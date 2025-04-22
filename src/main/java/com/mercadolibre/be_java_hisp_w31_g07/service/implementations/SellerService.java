@@ -3,11 +3,12 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.stereotype.Service;
-
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
@@ -59,6 +60,14 @@ public class SellerService implements ISellerService {
 
         sellerRepository.removeBuyerFromFollowersList(buyer, sellerId);
         buyerService.removeSellerFromFollowedList(seller, buyerId);
+    }
+
+    @Override
+    public SellerFollowersCountResponseDto findFollowersCount(UUID sellerId) {
+        Seller seller = this.getSellerById(sellerId);
+        Integer count = seller.getFollowerCount();
+        String userName = userService.findById(sellerId).getUserName();
+        return new SellerFollowersCountResponseDto(sellerId, userName, count);
     }
 
     // FOR TESTING PURPOSES ONLY

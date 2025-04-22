@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PostResponseDto {
     private UUID id;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private ProductResponseDto product;
     private String category;

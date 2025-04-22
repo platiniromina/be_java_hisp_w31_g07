@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 @Repository
 public class PostRepository implements IPostRepository {
@@ -33,6 +34,24 @@ public class PostRepository implements IPostRepository {
         posts= objectMapper.readValue(file,new TypeReference<List<Post>>(){});
 
         postList = posts;
+    }
+
+    @Override
+    public void createPost(Post post) {
+        if (post.getHasPromo() == null) {
+            post.setHasPromo(false);
+        }
+        if (post.getDiscount() == null) {
+            post.setDiscount(0);
+        }
+        postList.add(post);
+    }
+
+    @Override
+    public Optional<Post> findById(UUID postId) {
+        return postList.stream()
+                .filter(post -> post.getId().equals(postId))
+                .findFirst();
     }
 
     @Override

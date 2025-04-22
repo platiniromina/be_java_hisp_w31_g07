@@ -12,7 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDto {
-    private UUID id;
     private String productName;
     private String type;
     private String brand;

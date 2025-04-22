@@ -3,15 +3,19 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
+
 import java.util.UUID;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
+
 import lombok.RequiredArgsConstructor;
-import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
