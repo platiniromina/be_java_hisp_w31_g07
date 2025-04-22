@@ -10,8 +10,10 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class PostRepository implements IPostRepository {
@@ -31,5 +33,14 @@ public class PostRepository implements IPostRepository {
         posts= objectMapper.readValue(file,new TypeReference<List<Post>>(){});
 
         postList = posts;
+    }
+
+    @Override
+    public List<Post> findRecentPostsBySellerId(UUID sellerId) {
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+        return postList.stream()
+                .filter(post -> post.getSellerId().equals(sellerId)
+                        && post.getDate().isBefore(twoWeeksAgo))
+                .toList();
     }
 }

@@ -2,7 +2,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

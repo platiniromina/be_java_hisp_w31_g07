@@ -1,14 +1,11 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
