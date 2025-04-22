@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,8 +47,11 @@ public class SellerService implements ISellerService {
 
     @Override
     public SellerDto findFollowers(UUID sellerId) {
-        Seller seller = this.getSellerById(sellerId);
-        return mapToDto(seller);
+        Seller seller = sellerRepository.findSellerById(sellerId)
+                .orElseThrow(() -> new NotFoundException("Buyer: " + sellerId + " not found"));
+
+        String buyerUserName = userService.findById(seller.getId()).getUserName();
+        return BuyerMapper.toSellerDto(seller, buyerUserName);
     }
 
     @Override
