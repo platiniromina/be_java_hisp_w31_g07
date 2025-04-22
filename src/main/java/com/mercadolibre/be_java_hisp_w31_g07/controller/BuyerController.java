@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +34,8 @@ public class BuyerController {
             @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @GetMapping("/users/{userId}/followed/list")
-    public ResponseEntity<BuyerDto> getFollowed(@PathVariable UUID userId) {
+    public ResponseEntity<BuyerDto> getFollowed(
+            @Parameter(description = "Buyer id", required = true) @PathVariable UUID userId) {
         return new ResponseEntity<>(buyerService.findFollowed(userId), HttpStatus.OK);
     }
 

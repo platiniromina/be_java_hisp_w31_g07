@@ -37,7 +37,8 @@ public class SellerController {
             @ApiResponse(responseCode = "400", description = "Bad Request: seller not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @GetMapping("/users/{userId}/followers/list")
-    public ResponseEntity<SellerDto> getFollowers(@PathVariable UUID userId) {
+    public ResponseEntity<SellerDto> getFollowers(
+            @Parameter(description = "Seller id", required = true) @PathVariable UUID userId) {
         return new ResponseEntity<>(sellerService.findFollowers(userId), HttpStatus.OK);
     }
 
@@ -48,8 +49,8 @@ public class SellerController {
     })
     @PostMapping("/users/{userId}/follow/{userIdToFollow}")
     public ResponseEntity<Void> followSeller(
-            @Parameter(description = "ID of the buyer who wants to follow the seller", required = true) @PathVariable UUID userId,
-            @Parameter(description = "ID of the seller to be followed", required = true) @PathVariable UUID userIdToFollow) {
+            @Parameter(description = "Buyer id", required = true) @PathVariable UUID userId,
+            @Parameter(description = "Seller id", required = true) @PathVariable UUID userIdToFollow) {
         sellerService.followSeller(userIdToFollow, userId);
         return ResponseEntity.ok().build();
     }
@@ -61,8 +62,8 @@ public class SellerController {
     })
     @PutMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<Void> unfollowSeller(
-            @PathVariable UUID userId,
-            @PathVariable UUID userIdToUnfollow) {
+            @Parameter(description = "Buyer id", required = true) @PathVariable UUID userId,
+            @Parameter(description = "Seller id", required = true) @PathVariable UUID userIdToUnfollow) {
         sellerService.unfollowSeller(userIdToUnfollow, userId);
         return ResponseEntity.ok().build();
     }
@@ -83,7 +84,8 @@ public class SellerController {
             @ApiResponse(responseCode = "400", description = "Bad Request: seller not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @GetMapping("/users/{userId}/followers/count")
-    public ResponseEntity<SellerFollowersCountResponseDto> getFollowersCount(@PathVariable UUID userId) {
+    public ResponseEntity<SellerFollowersCountResponseDto> getFollowersCount(
+            @Parameter(description = "Seller id", required = true) @PathVariable UUID userId) {
         return ResponseEntity.ok(sellerService.findFollowersCount(userId));
     }
 }
