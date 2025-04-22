@@ -31,4 +31,9 @@ public class ProductRepository implements IProductRepository {
 
         productList = products;
     }
+
+    @Override
+    public void createProduct(Product product) {
+        productList.add(product);
+    }
 }
