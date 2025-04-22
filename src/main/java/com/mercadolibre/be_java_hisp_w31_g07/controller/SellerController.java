@@ -51,10 +51,10 @@ public class SellerController {
         return ResponseEntity.ok().build();
     }
 
-    /*@GetMapping("/users/products/promo-post/list")
+    @GetMapping("/users/products/promo-post/list")
     public ResponseEntity<UserPostResponseDto> getSellerPromProd(@RequestParam UUID userId){
         return new ResponseEntity<>(sellerService.getSellerPromProd(userId), HttpStatus.OK);
-    }*/
+    }
 
     // FOR TESTING PURPOSES ONLY
     // This endpoint is not part of the original requirements
