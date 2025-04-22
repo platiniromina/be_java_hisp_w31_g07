@@ -24,8 +24,6 @@ public class ProductController {
 
     @GetMapping("/followed/{userId}/list")
     public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(@PathVariable UUID userId) {
-        List<PostResponseDto> posts = postService.getLatestPostsFromSellers(userId);
-        FollowersPostsResponseDto response = new FollowersPostsResponseDto(userId, posts);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);
     }
 }

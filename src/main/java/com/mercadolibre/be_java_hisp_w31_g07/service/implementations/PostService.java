@@ -1,6 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
@@ -72,19 +73,17 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public List<PostResponseDto> getLatestPostsFromSellers(UUID buyerId) {
-        // Find the sellers that the user is following
+    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId) {
         List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
 
-        // If the user is not following anyone, return not found
         if (sellers.isEmpty()) {
             throw new NotFoundException("The buyer is not following any sellers");
         }
 
-        // Find posts from those sellers
         List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
         List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
 
-        return posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+        return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
 }

@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 
 import java.util.List;
@@ -28,8 +29,7 @@ public interface IPostService {
      * @param buyerId the unique identifier of the buyer.
      *
      */
-    public List<PostResponseDto> getLatestPostsFromSellers(UUID buyerId);
-
+    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
     // ------------------------------ START TESTING ------------------------------
     // FOR TESTING PURPOSES ONLY
     // This endpoint is not part of the original requirements
