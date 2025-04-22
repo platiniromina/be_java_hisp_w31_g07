@@ -1,7 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,10 +14,10 @@ public interface IPostRepository {
      * in the repository. The post is added to an internal list of posts,
      * making it accessible for future retrievals.
      *
-     * @param post the {@link Post} instance to be created and stored in the repository.
+     * @param post the {@link Post} instance to be created and stored in the
+     *             repository.
      */
     public void createPost(Post post);
-
 
     /**
      * Retrieves a post by its unique identifier.
@@ -35,4 +34,13 @@ public interface IPostRepository {
     public Optional<Post> findById(UUID postId);
 
     public List<Post> findAll();
+
+    /**
+     * Retrieves all posts matching the sellers ids within the last two weeks.
+     * Sorts by newest posts first.
+     *
+     * @param sellers the unique identifier of the sellers.
+     *
+     */
+    public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
 }

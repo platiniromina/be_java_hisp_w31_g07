@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
@@ -14,7 +13,7 @@ public interface ISellerService {
      * DTO.
      *
      * @param userId the unique identifier of the seller whose followers count is
-     *                 to be retrieved
+     *               to be retrieved
      * @return a SellerFollowersCountResponseDto containing the seller's ID,
      *         username, and followers count
      * @throws BadRequest if the seller with the given ID is not found
@@ -35,7 +34,7 @@ public interface ISellerService {
      * and the buyer to the seller's followers list.
      *
      * @param sellerId the unique identifier of the seller to be followed
-     * @param buyerId the unique identifier of the buyer who wants to follow the
+     * @param buyerId  the unique identifier of the buyer who wants to follow the
      *                 seller
      * @throws BadRequest if the sellerId and buyerId are the same
      * @throws BadRequest if the seller or buyer cannot be found

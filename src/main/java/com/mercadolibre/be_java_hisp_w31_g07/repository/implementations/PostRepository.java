@@ -10,10 +10,8 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 @Repository
 public class PostRepository implements IPostRepository {
@@ -29,8 +27,9 @@ public class PostRepository implements IPostRepository {
         objectMapper.registerModule(new JavaTimeModule());
         List<Post> posts;
 
-        file= ResourceUtils.getFile("classpath:post.json");
-        posts= objectMapper.readValue(file,new TypeReference<List<Post>>(){});
+        file = ResourceUtils.getFile("classpath:post.json");
+        posts = objectMapper.readValue(file, new TypeReference<List<Post>>() {
+        });
 
         postList = posts;
     }
@@ -54,7 +53,17 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
-    public List<Post> findAll(){
+    public List<Post> findAll() {
         return postList;
+    }
+
+    public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+
+        return postList.stream()
+                .filter(post -> sellers.contains(post.getSellerId())
+                        && post.getDate().isAfter(twoWeeksAgo))
+                .sorted(Comparator.comparing(Post::getDate).reversed())
+                .toList();
     }
 }

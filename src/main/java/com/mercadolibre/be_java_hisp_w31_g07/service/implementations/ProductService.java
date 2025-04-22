@@ -3,8 +3,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IProductRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
@@ -33,7 +31,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public UserPostResponseDto getSellerPromProd(UUID userId){
+    public UserPostResponseDto getSellerPromProd(UUID userId) {
         List<PostResponseDto> postResponseDtos = postService.findUserPostDisc(userId);
 
         return new UserPostResponseDto(
