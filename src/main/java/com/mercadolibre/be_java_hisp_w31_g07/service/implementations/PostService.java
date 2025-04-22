@@ -24,28 +24,15 @@ public class PostService implements IPostService {
 
     private final ObjectMapper mapper;
 
+    // ------------------------------
+    // Public methods
+    // ------------------------------
+
     @Override
     public PostResponseDto createPost(PostDto newPost) {
-
-        // to convert PostDto from request to Post
-        Post post = mapper.convertValue(newPost, Post.class);
-
-        // validate that seller exists
-        validateExistingSeller(newPost.getSellerId());
-
-        // generate UUID for the new post
-        UUID newPostId = Utils.generateId();
-        post.setGeneratedId(newPostId);
-
-        // create post and product in their repositories
-        productService.createProduct(post.getProduct());
-        postRepository.createPost(post);
-
+        Post post = buildPostFromDto(newPost);
+        savePostAndProduct(post);
         return mapper.convertValue(post, PostResponseDto.class);
-    }
-
-    private void validateExistingSeller(UUID sellerId) {
-        sellerService.findSellerById(sellerId);
     }
 
     @Override
@@ -55,6 +42,28 @@ public class PostService implements IPostService {
                 .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
 
         return mapper.convertValue(post, PostResponseDto.class);
+    }
+
+    // ------------------------------
+    // Private methods
+    // ------------------------------
+
+    private void validateExistingSeller(UUID sellerId) {
+        sellerService.findSellerById(sellerId);
+    }
+
+    private Post buildPostFromDto(PostDto dto) {
+        validateExistingSeller(dto.getSellerId());
+
+        Post post = mapper.convertValue(dto, Post.class);
+        post.setGeneratedId(Utils.generateId());
+
+        return post;
+    }
+
+    private void savePostAndProduct(Post post) {
+        productService.createProduct(post.getProduct());
+        postRepository.createPost(post);
     }
 
 }
