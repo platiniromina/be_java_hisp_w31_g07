@@ -41,7 +41,7 @@ public class PostRepository implements IPostRepository {
             post.setHasPromo(false);
         }
         if (post.getDiscount() == null) {
-            post.setDiscount(0);
+            post.setDiscount(0.0);
         }
         postList.add(post);
     }
