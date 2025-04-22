@@ -2,6 +2,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class BuyerController {
     private final IBuyerService buyerService;
 
+    @Operation(summary = "Get followings - [REQ - 4]", description = "Returns a list of the sellers that the given buyer is following.")
     @GetMapping("/users/{userId}/followed/list")
     public ResponseEntity<BuyerDto> getFollowed(@PathVariable UUID userId) {
         return new ResponseEntity<>(buyerService.findFollowed(userId), HttpStatus.OK);

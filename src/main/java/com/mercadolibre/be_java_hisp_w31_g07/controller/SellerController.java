@@ -28,12 +28,13 @@ import lombok.RequiredArgsConstructor;
 public class SellerController {
     private final ISellerService sellerService;
 
+    @Operation(summary = "Get followers - [REQ - 3]", description = "Returns a list of the buyers that follow the given seller.")
     @GetMapping("/users/{userId}/followers/list")
     public ResponseEntity<SellerDto> getFollowers(@PathVariable UUID userId) {
         return new ResponseEntity<>(sellerService.findFollowers(userId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Follow a seller", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
+    @Operation(summary = "Follow a seller - [REQ - 1]", description = "Allows a buyer to follow another user who is registered as a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully followed the seller. Response body is empty."),
             @ApiResponse(responseCode = "400", description = "Bad Request: IDs are the same, buyer or seller not found, or already following.")
@@ -46,6 +47,7 @@ public class SellerController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Unfollow a seller - [REQ - 7]", description = "Allows a buyer to unfollow a seller. This operation updates the buyer's followed sellers list and the seller's followers list.")
     @PutMapping("/users/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<Void> unfollowSeller(
             @PathVariable UUID userId,
@@ -64,6 +66,7 @@ public class SellerController {
         return ResponseEntity.ok(seller);
     }
 
+    @Operation(summary = "Get followers count - [REQ - 2]", description = "Returns the number of buyers that follow the given seller.")
     @GetMapping("/users/{userId}/followers/count")
     public ResponseEntity<SellerFollowersCountResponseDto> getFollowersCount(@PathVariable UUID userId) {
         return ResponseEntity.ok(sellerService.findFollowersCount(userId));
