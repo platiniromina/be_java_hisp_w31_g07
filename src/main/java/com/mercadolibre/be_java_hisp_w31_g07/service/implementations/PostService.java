@@ -1,26 +1,22 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
-import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
+import com.mercadolibre.be_java_hisp_w31_g07.service.*;
+import com.mercadolibre.be_java_hisp_w31_g07.util.IdUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
-import java.util.UUID;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +25,7 @@ public class PostService implements IPostService {
     private final ISellerService sellerService;
     private final IProductService productService;
     private final IBuyerService buyerService;
+    private final IUserService userService;
     private final ObjectMapper mapper;
 
     // ------------------------------
@@ -46,9 +43,38 @@ public class PostService implements IPostService {
     public PostResponseDto findPost(UUID postId) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
+                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
 
         return mapper.convertValue(post, PostResponseDto.class);
+    }
+
+    @Override
+    public List<PostResponseDto> findUserPromoPosts(UUID userId) {
+        validateExistingSeller(userId);
+        List<Post> postList = postRepository.findHasPromo(userId);
+
+        if (postList.isEmpty()) {
+            throw new BadRequest("Posts from: " + userId + " not found");
+        }
+        return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+    }
+
+    @Override
+    public Double findAveragePrice(UUID userId) {
+        return postRepository.findPricePerPosts(userId).stream()
+                .mapToDouble(Post::getPrice)
+                .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
+    }
+
+    @Override
+    public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
+        validateExistingSeller(sellerId);
+        Integer promoPostsCount = postRepository.findHasPromo(sellerId).size();
+
+        return new SellerPromoPostsCountResponseDto(
+                sellerId,
+                userService.findById(sellerId).getUserName(),
+                promoPostsCount);
     }
 
     // ------------------------------
@@ -63,7 +89,7 @@ public class PostService implements IPostService {
         validateExistingSeller(dto.getSellerId());
 
         Post post = mapper.convertValue(dto, Post.class);
-        post.setGeneratedId(Utils.generateId());
+        post.setGeneratedId(IdUtils.generateId());
 
         return post;
     }
@@ -78,14 +104,37 @@ public class PostService implements IPostService {
         List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
 
         if (sellers.isEmpty()) {
-            throw new NotFoundException("The buyer is not following any sellers");
+            throw new BadRequest("The buyer is not following any sellers");
         }
 
         List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
         List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
 
-        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
+                .toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
 
+    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
+        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
+        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
+        return new FollowersPostsResponseDto(buyerId, sortedPosts);
+    }
+
+    private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
+        List<PostResponseDto> sortedPosts;
+
+        if ("date_desc".equalsIgnoreCase(order)) {
+            sortedPosts = posts.stream()
+                    .sorted(Comparator.comparing(PostResponseDto::getDate).reversed())
+                    .toList();
+        } else if ("date_asc".equalsIgnoreCase(order)) {
+            sortedPosts = posts.stream()
+                    .sorted(Comparator.comparing(PostResponseDto::getDate))
+                    .toList();
+        } else {
+            throw new IllegalArgumentException("Invalid order: " + order);
+        }
+        return sortedPosts;
+    }
 }

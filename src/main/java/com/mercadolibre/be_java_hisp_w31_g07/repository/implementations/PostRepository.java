@@ -27,8 +27,9 @@ public class PostRepository implements IPostRepository {
         objectMapper.registerModule(new JavaTimeModule());
         List<Post> posts;
 
-        file= ResourceUtils.getFile("classpath:post.json");
-        posts= objectMapper.readValue(file,new TypeReference<List<Post>>(){});
+        file = ResourceUtils.getFile("classpath:post.json");
+        posts = objectMapper.readValue(file, new TypeReference<List<Post>>() {
+        });
 
         postList = posts;
     }
@@ -51,6 +52,13 @@ public class PostRepository implements IPostRepository {
                 .findFirst();
     }
 
+    @Override
+    public List<Post> findHasPromo(UUID userId) {
+        return postList.stream()
+                .filter(post -> post.getHasPromo().equals(true) && post.getSellerId().equals(userId))
+                .toList();
+    }
+
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
 
@@ -59,5 +67,19 @@ public class PostRepository implements IPostRepository {
                         && post.getDate().isAfter(twoWeeksAgo))
                 .sorted(Comparator.comparing(Post::getDate).reversed())
                 .toList();
+    }
+
+    @Override
+    public List<Post> findPricePerPosts(UUID userId) {
+        return postList.stream()
+                .filter(post -> post.getSellerId().equals(userId))
+                .map(post -> {
+                    double finalPrice = post.getPrice();
+                    if (Boolean.TRUE.equals(post.getHasPromo())) {
+                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+                    }
+                    return post;
+
+                }).toList();
     }
 }

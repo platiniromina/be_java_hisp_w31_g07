@@ -18,7 +18,7 @@ public class Post {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private Product product;
-    private String category;
+    private Integer category;
     private Double price;
     private UUID sellerId;
     private Boolean hasPromo;

@@ -10,9 +10,9 @@
       "color": "Black",
       "note": "Noise cancelling over-ear"
     },
-    "category": "Electronics",
+    "category": 100,
     "price": 499.99,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "sellerId": "87a3d636-2adf-4640-9872-83e1050427e7",
     "hasPromo": true,
     "discount": 10
   },
@@ -27,7 +27,7 @@
       "color": "White",
       "note": "20th Anniversary Edition"
     },
-    "category": "Books",
+    "category": 7,
     "price": 24.99,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
     "hasPromo": false,
@@ -44,7 +44,7 @@
       "color": "Silver",
       "note": "Includes travel cups"
     },
-    "category": "Home & Kitchen",
+    "category": 13,
     "price": 149.90,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
     "hasPromo": true,
@@ -61,7 +61,7 @@
       "color": "Multicolor",
       "note": "Includes 5 characters"
     },
-    "category": "Toys",
+    "category": 52,
     "price": 39.50,
     "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
     "hasPromo": false,
@@ -78,9 +78,9 @@
       "color": "Brown",
       "note": "Slim fit"
     },
-    "category": "Fashion",
+    "category": 2,
     "price": 89.90,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "sellerId": "87a3d636-2adf-4640-9872-83e1050427e7",
     "hasPromo": true,
     "discount": 25
   }

@@ -5,14 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FollowersPostsResponseDto {
-    private UUID id;
-    private List<PostResponseDto> posts;
+@Getter
+@Setter
+public class SellerAveragePrice {
+    private UUID idSeller;
+    private String userName;
+    private Double averagePrice;
 }
