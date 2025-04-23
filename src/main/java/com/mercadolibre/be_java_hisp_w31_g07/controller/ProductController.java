@@ -40,9 +40,9 @@ public class ProductController {
 
     @GetMapping("/promo-post/count")
     public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(
-            @RequestParam UUID sellerId) {
+            @RequestParam(name = "user_id") UUID userId) {
 
-        SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(sellerId);
+        SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(userId);
         return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
     }
     // ------------------------------ START TESTING ------------------------------
