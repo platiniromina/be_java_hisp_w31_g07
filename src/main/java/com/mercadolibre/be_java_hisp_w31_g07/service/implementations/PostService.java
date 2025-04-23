@@ -5,13 +5,12 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponse
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.*;
-import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
+import com.mercadolibre.be_java_hisp_w31_g07.util.IdUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +74,7 @@ public class PostService implements IPostService {
         validateExistingSeller(dto.getSellerId());
 
         Post post = mapper.convertValue(dto, Post.class);
-        post.setGeneratedId(Utils.generateId());
+        post.setGeneratedId(IdUtils.generateId());
 
         return post;
     }
