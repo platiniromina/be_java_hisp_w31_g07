@@ -5,7 +5,6 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponse
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
 import lombok.RequiredArgsConstructor;

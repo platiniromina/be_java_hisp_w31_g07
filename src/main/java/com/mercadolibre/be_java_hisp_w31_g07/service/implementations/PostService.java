@@ -82,7 +82,7 @@ public class PostService implements IPostService {
         List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
 
         if (sellers.isEmpty()) {
-            throw new NotFoundException("The buyer is not following any sellers");
+            throw new BadRequest("The buyer is not following any sellers");
         }
 
         List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
@@ -126,28 +126,6 @@ public class PostService implements IPostService {
     private void savePostAndProduct(Post post) {
         productService.createProduct(post.getProduct());
         postRepository.createPost(post);
-    }
-
-    @Override
-    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId) {
-        List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
-
-        if (sellers.isEmpty()) {
-            throw new BadRequest("The buyer is not following any sellers");
-        }
-
-        List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
-        List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
-
-        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
-                .toList();
-        return new FollowersPostsResponseDto(buyerId, postsDtos);
-    }
-
-    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
-        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
-        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
-        return new FollowersPostsResponseDto(buyerId, sortedPosts);
     }
 
     private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {

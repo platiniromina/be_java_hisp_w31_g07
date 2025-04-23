@@ -2,7 +2,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import java.util.*;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
@@ -14,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
@@ -88,13 +85,12 @@ public class SellerService implements ISellerService {
     }
 
     @Override
-    public SellerAveragePrice findPricePerPosts(UUID userId){
-        Double averagePrice =  postService.findAveragePrice(userId);
+    public SellerAveragePrice findPricePerPosts(UUID userId) {
+        Double averagePrice = postService.findAveragePrice(userId);
         return new SellerAveragePrice(
                 userId,
                 userService.findById(userId).getUserName(),
-                averagePrice
-        );
+                averagePrice);
     }
 
     // ------------------------------
@@ -103,25 +99,6 @@ public class SellerService implements ISellerService {
     private Seller getSellerById(UUID id) {
         return sellerRepository.findSellerById(id)
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
-    }
-
-    private SellerDto mapToDto(Seller seller) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<BuyerResponseDto> followers = seller.getFollowers().stream()
-                .map(buyer -> {
-                    BuyerResponseDto buyerReponseDto = mapper.convertValue(buyer, BuyerResponseDto.class);
-                    UserDto user = userService.findById(buyer.getId());
-                    buyerReponseDto.setUserName(user.getUserName());
-                    return buyerReponseDto;
-                })
-                .toList();
-
-        return new SellerDto(
-                seller.getId(),
-                userService.findById(seller.getId()).getUserName(),
-                followers,
-                seller.getFollowerCount());
     }
 
     // ------------------------------
@@ -175,7 +152,6 @@ public class SellerService implements ISellerService {
                 followers,
                 seller.getFollowerCount());
     }
-
 
     private Comparator<Buyer> getComparatorForOrder(String order) {
         Comparator<Buyer> comparator = Comparator.comparing(
