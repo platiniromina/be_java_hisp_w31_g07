@@ -140,7 +140,8 @@ public class PostService implements IPostService {
                     .sorted(Comparator.comparing(PostResponseDto::getDate))
                     .toList();
         } else {
-            throw new IllegalArgumentException("Invalid order: " + order);
+            throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (date_asc or date_desc)");
+
         }
         return sortedPosts;
     }

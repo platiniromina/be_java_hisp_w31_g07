@@ -59,7 +59,8 @@ public class PostRepository implements IPostRepository {
                 .filter(post -> post.getHasPromo().equals(true) && post.getSellerId().equals(userId))
                 .toList();
     }
-
+    
+    @Override
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
 
