@@ -25,13 +25,12 @@ import java.util.UUID;
 @RequestMapping("/products")
 public class ProductController {
     private final IProductService productService;
+    private final IPostService postService;
 
     @GetMapping("/promo-post/list")
     public ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam UUID userId) {
         return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
-
-    private final IPostService postService;
 
     @PostMapping("/post")
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostDto newPost) {
