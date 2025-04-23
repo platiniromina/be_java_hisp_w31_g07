@@ -17,7 +17,6 @@ import java.util.UUID;
 public class BuyerPurchasesResponseDto {
     private UUID buyerId;
     private String userName;
-    private List<PostDto> purchases = new ArrayList<>();
-    private Integer purchasesPerDay = 0;
+    private PostDto purchases;
 
 }

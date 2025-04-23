@@ -69,8 +69,8 @@ public class BuyerService implements IBuyerService {
         return new BuyerPurchasesResponseDto(
                 buyer.getId(),
                 userService.findById(buyer.getId()).getUserName(),
-
-        )
+                postDtos
+        );
     }
 
 }
