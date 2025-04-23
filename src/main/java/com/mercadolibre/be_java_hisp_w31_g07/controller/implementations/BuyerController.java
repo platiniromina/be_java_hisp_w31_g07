@@ -1,8 +1,8 @@
-package com.mercadolibre.be_java_hisp_w31_g07.controller;
+package com.mercadolibre.be_java_hisp_w31_g07.controller.implementations;
 
-import java.util.UUID;
-
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,16 +10,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
-
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
