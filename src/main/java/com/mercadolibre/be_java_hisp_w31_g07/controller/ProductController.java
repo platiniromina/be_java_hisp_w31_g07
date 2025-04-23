@@ -89,19 +89,6 @@ public class ProductController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found or the buyer is not following any sellers.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    @GetMapping("/followed/{userId}/list")
-    public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(
-            @Parameter(description = "Buyer id", required = true) @PathVariable UUID userId) {
-        return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);
-    }
-
-    @GetMapping("/followed/{userId}/sorted")
-    public ResponseEntity<FollowersPostsResponseDto> getSortedPostsByDate(
-            @PathVariable UUID userId,
-            @RequestParam(name = "order", required = false, defaultValue = "date_desc") String order) {
-        FollowersPostsResponseDto response = postService.sortPostsByDate(userId, order);
-        return ResponseEntity.ok(response);
-    }
 
     @GetMapping("/promo-post/count")
     public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(
