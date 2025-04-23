@@ -2,13 +2,11 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import java.util.UUID;
 
-import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import org.springframework.stereotype.Service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
@@ -43,7 +41,7 @@ public class BuyerService implements IBuyerService {
         @Override
         public BuyerDto findFollowed(UUID userId) {
                 Buyer buyer = buyerRepository.findBuyerById(userId)
-                                .orElseThrow(() -> new NotFoundException("Buyer: " + userId + " not found"));
+                                .orElseThrow(() -> new BadRequest("Buyer: " + userId + " not found"));
 
                 String buyerUserName = userService.findById(buyer.getId()).getUserName();
                 return BuyerMapper.toBuyerDto(buyer, buyerUserName);

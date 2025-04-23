@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 public interface ISellerService {

@@ -5,7 +5,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
@@ -44,7 +44,7 @@ public class PostService implements IPostService {
     public PostResponseDto findPost(UUID postId) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
+                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
 
         return mapper.convertValue(post, PostResponseDto.class);
     }
@@ -54,7 +54,7 @@ public class PostService implements IPostService {
         List<Post> postList = postRepository.findHasPromo(userId);
 
         if (postList.isEmpty()) {
-            throw new NotFoundException("Posts from: " + userId + " not found");
+            throw new BadRequest("Posts from: " + userId + " not found");
         }
         return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
@@ -86,7 +86,7 @@ public class PostService implements IPostService {
         List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
 
         if (sellers.isEmpty()) {
-            throw new NotFoundException("The buyer is not following any sellers");
+            throw new BadRequest("The buyer is not following any sellers");
         }
 
         List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
