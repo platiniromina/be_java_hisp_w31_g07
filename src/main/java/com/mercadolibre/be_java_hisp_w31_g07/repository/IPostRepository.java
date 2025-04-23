@@ -43,4 +43,13 @@ public interface IPostRepository {
      *
      */
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
+
+    /**
+     * Retrieves all posts matching the sellers ids.
+     * And calculates the discount.
+     *
+     * @param userId the unique identifier of the sellers.
+     *
+     */
+    public List<Post> findPricePerPosts(UUID userId);
 }

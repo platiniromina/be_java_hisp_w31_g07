@@ -3,6 +3,8 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 
 import java.util.UUID;
+
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,5 +78,10 @@ public class SellerController {
             @RequestParam String order) {
         SellerDto sellerDto = sellerService.sortFollowersByName(sellerId, order);
         return ResponseEntity.ok(sellerDto);
+    }
+
+    @GetMapping("/users/{userId}/average-price")
+    public ResponseEntity<SellerAveragePrice> getAveragePrice(@PathVariable UUID userId){
+        return new ResponseEntity<>(sellerService.findPricePerPosts(userId), HttpStatus.OK);
     }
 }

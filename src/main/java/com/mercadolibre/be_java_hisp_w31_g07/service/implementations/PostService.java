@@ -59,6 +59,13 @@ public class PostService implements IPostService {
         return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
 
+    @Override
+    public Double findAveragePrice(UUID userId) {
+        return  postRepository.findPricePerPosts(userId).stream()
+                .mapToDouble(Post::getPrice)
+                .average().orElseThrow(() -> new NotFoundException("User " + userId + " has no posts."));
+    }
+
     // ------------------------------
     // Private methods
     // ------------------------------
