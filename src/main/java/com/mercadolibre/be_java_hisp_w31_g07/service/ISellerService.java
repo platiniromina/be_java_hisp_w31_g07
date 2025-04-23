@@ -12,8 +12,8 @@ public interface ISellerService {
      * Retrieves the count of followers for a given seller and constructs a response
      * DTO.
      *
-     * @param sellerId the unique identifier of the seller whose followers count is
-     *                 to be retrieved
+     * @param userId the unique identifier of the seller whose followers count is
+     *               to be retrieved
      * @return a SellerFollowersCountResponseDto containing the seller's ID,
      *         username, and followers count
      * @throws BadRequest if the seller with the given ID is not found
@@ -34,7 +34,7 @@ public interface ISellerService {
      * and the buyer to the seller's followers list.
      *
      * @param sellerId the unique identifier of the seller to be followed
-     * @param buyerId the unique identifier of the buyer who wants to follow the
+     * @param buyerId  the unique identifier of the buyer who wants to follow the
      *                 seller
      * @throws BadRequest if the sellerId and buyerId are the same
      * @throws BadRequest if the seller or buyer cannot be found
@@ -63,4 +63,5 @@ public interface ISellerService {
      * @throws BadRequest if the seller cannot be found
      */
     public Seller findSellerById(UUID userId);
+
 }

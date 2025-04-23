@@ -27,8 +27,9 @@ public class PostRepository implements IPostRepository {
         objectMapper.registerModule(new JavaTimeModule());
         List<Post> posts;
 
-        file= ResourceUtils.getFile("classpath:post.json");
-        posts= objectMapper.readValue(file,new TypeReference<List<Post>>(){});
+        file = ResourceUtils.getFile("classpath:post.json");
+        posts = objectMapper.readValue(file, new TypeReference<List<Post>>() {
+        });
 
         postList = posts;
     }
@@ -49,6 +50,13 @@ public class PostRepository implements IPostRepository {
         return postList.stream()
                 .filter(post -> post.getId().equals(postId))
                 .findFirst();
+    }
+
+    @Override
+    public List<Post> findHasPromo(UUID userId) {
+        return postList.stream()
+                .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
+                .toList();
     }
 
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {

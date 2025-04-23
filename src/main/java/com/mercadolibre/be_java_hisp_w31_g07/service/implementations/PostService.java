@@ -58,6 +58,16 @@ public class PostService implements IPostService {
                 promoPostsCount);
     }
 
+    @Override
+    public List<PostResponseDto> findUserPromoPosts(UUID userId) {
+        List<Post> postList = postRepository.findHasPromo(userId);
+
+        if (postList.isEmpty()) {
+            throw new NotFoundException("Posts from: " + userId + " not found");
+        }
+        return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+    }
+
     // ------------------------------
     // Private methods
     // ------------------------------
@@ -91,7 +101,8 @@ public class PostService implements IPostService {
         List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
         List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
 
-        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
+                .toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
 
