@@ -1,14 +1,14 @@
 [
   {
-    "id": "0f91d65b-3c7f-4876-8de9-c056b8bba1d5",
+    "user_id": "0f91d65b-3c7f-4876-8de9-c056b8bba1d5",
     "followed": []
   },
   {
-    "id": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
+    "user_id": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
     "followed": []
   },
   {
-    "id": "d5e9c14f-3b64-47bb-96ca-6f047477f7f5",
+    "user_id": "d5e9c14f-3b64-47bb-96ca-6f047477f7f5",
     "followed": []
   }
 ]
