@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
-import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
+import com.mercadolibre.be_java_hisp_w31_g07.service.*;
+import com.mercadolibre.be_java_hisp_w31_g07.util.IdUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +25,7 @@ public class PostService implements IPostService {
     private final ISellerService sellerService;
     private final IProductService productService;
     private final IBuyerService buyerService;
+    private final IUserService userService;
     private final ObjectMapper mapper;
 
     // ------------------------------
@@ -51,12 +50,25 @@ public class PostService implements IPostService {
 
     @Override
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
+        validateExistingSeller(userId);
         List<Post> postList = postRepository.findHasPromo(userId);
 
         if (postList.isEmpty()) {
             throw new NotFoundException("Posts from: " + userId + " not found");
         }
         return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+    }
+
+    @Override
+    public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
+        validateExistingSeller(sellerId);
+        Integer promoPostsCount = postRepository.findHasPromo(sellerId).size();
+
+        return new SellerPromoPostsCountResponseDto(
+                sellerId,
+                userService.findById(sellerId).getUserName(),
+                promoPostsCount
+        );
     }
 
     // ------------------------------
@@ -71,7 +83,7 @@ public class PostService implements IPostService {
         validateExistingSeller(dto.getSellerId());
 
         Post post = mapper.convertValue(dto, Post.class);
-        post.setGeneratedId(Utils.generateId());
+        post.setGeneratedId(IdUtils.generateId());
 
         return post;
     }
