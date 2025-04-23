@@ -1,13 +1,13 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface IPostService {
     /**
@@ -53,7 +53,7 @@ public interface IPostService {
      * @param sellerId the unique identifier of the seller whose promotional
      *                 posts count is to be retrieved.
      * @return a {@link SellerPromoPostsCountResponseDto} containing the seller's
-     *         ID, username, and the count of promotional posts for the seller.
+     * ID, username, and the count of promotional posts for the seller.
      * @throws BadRequest if the seller cannot be found.
      */
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
@@ -79,11 +79,9 @@ public interface IPostService {
      *                ascending order
      *                or "date_desc" for descending order. Defaults to "date_desc"
      *                if not provided.
-     *
      * @return a {@link FollowersPostsResponseDto} containing the sorted list of
-     *         posts from the sellers
-     *         followed by the buyer.
-     *
+     * posts from the sellers
+     * followed by the buyer.
      * @throws IllegalArgumentException if the provided order is invalid.
      */
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);

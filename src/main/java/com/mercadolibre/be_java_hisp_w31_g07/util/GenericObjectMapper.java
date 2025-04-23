@@ -1,12 +1,10 @@
 package com.mercadolibre.be_java_hisp_w31_g07.util;
 
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor

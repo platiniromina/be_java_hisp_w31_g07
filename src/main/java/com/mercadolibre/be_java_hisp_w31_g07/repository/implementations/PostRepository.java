@@ -36,12 +36,8 @@ public class PostRepository implements IPostRepository {
 
     @Override
     public void createPost(Post post) {
-        if (post.getHasPromo() == null) {
-            post.setHasPromo(false);
-        }
-        if (post.getDiscount() == null) {
-            post.setDiscount(0.0);
-        }
+        post.setHasPromo(post.getHasPromo() != null && post.getHasPromo());
+        post.setDiscount(post.getDiscount() == null ? 0.0 : post.getDiscount());
         postList.add(post);
     }
 
@@ -58,7 +54,7 @@ public class PostRepository implements IPostRepository {
                 .filter(post -> post.getHasPromo().equals(true) && post.getSellerId().equals(userId))
                 .toList();
     }
-    
+
     @Override
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
@@ -76,11 +72,12 @@ public class PostRepository implements IPostRepository {
                 .filter(post -> post.getSellerId().equals(userId))
                 .map(post -> {
                     double finalPrice = post.getPrice();
-                    if (Boolean.TRUE.equals(post.getHasPromo())) {
+
+                    if (post.getHasPromo()) {
                         post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
                     }
-                    return post;
 
+                    return post;
                 }).toList();
     }
 }

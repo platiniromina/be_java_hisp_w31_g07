@@ -6,7 +6,7 @@ public interface IProductRepository {
 
     /**
      * Adds a new product to the internal repository.
-     *
+     * <p>
      * This method is responsible for storing the given {@link Product}
      * instance in an internal list of products. By calling this method,
      * the provided product will be added to the collection, making it

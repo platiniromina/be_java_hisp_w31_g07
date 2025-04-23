@@ -157,14 +157,14 @@ public class SellerService implements ISellerService {
     private Comparator<Buyer> getComparatorForOrder(String order) {
         Comparator<Buyer> comparator = Comparator.comparing(
                 buyer -> userService.findById(buyer.getId()).getUserName());
+        
+        return switch (order.toLowerCase()) {
+            case "name_desc" -> comparator.reversed();
+            case "name_asc" -> comparator;
+            default ->
+                    throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
+        };
 
-        if ("name_desc".equalsIgnoreCase(order)) {
-            return comparator.reversed();
-        } else if ("name_asc".equalsIgnoreCase(order)) {
-            return comparator;
-        } else {
-            throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
-        }
     }
 
 }
