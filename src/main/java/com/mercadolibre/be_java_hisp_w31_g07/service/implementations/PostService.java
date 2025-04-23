@@ -5,6 +5,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponse
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
@@ -15,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,6 +39,15 @@ public class PostService implements IPostService {
         return mapper.convertValue(post, PostResponseDto.class);
     }
 
+    /**
+     * Retrieves the count of promotional posts for a given seller.
+     *
+     * @param sellerId the unique identifier of the seller whose promotional
+     *                 posts count is to be retrieved.
+     * @return a {@link SellerPromoPostsCountResponseDto} containing the seller's
+     *         ID, username, and the count of promotional posts for the seller.
+     * @throws BadRequest if the seller cannot be found.
+     */
     @Override
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
         Integer promoPostsCount = findHasPromo(sellerId).length;
