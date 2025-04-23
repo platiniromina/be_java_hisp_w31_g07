@@ -3,7 +3,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.repository.implementations;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import org.springframework.stereotype.Repository;
@@ -71,24 +70,16 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
-    public List<Post> findPricePerPosts(UUID userId){
+    public List<Post> findPricePerPosts(UUID userId) {
         return postList.stream()
                 .filter(post -> post.getSellerId().equals(userId))
                 .map(post -> {
                     double finalPrice = post.getPrice();
                     if (Boolean.TRUE.equals(post.getHasPromo())) {
-                        finalPrice = finalPrice * (1 - post.getDiscount() / 100.0);
+                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
                     }
-                    return new Post(
-                            post.getId(),
-                            post.getDate(),
-                            post.getProduct(),
-                            post.getCategory(),
-                            post.getPrice(),
-                            post.getSellerId(),
-                            post.getHasPromo(),
-                            post.getDiscount()
-                    );
+                    return post;
+
                 }).toList();
     }
 }

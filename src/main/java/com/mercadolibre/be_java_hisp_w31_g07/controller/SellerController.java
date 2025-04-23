@@ -80,8 +80,8 @@ public class SellerController {
         return ResponseEntity.ok(sellerDto);
     }
 
-    @GetMapping("/users/{userId}/average-price")
-    public ResponseEntity<SellerAveragePrice> getAveragePrice(@PathVariable UUID userId){
+    @GetMapping("/users/{userId}/post/average-price")
+    public ResponseEntity<SellerAveragePrice> getAveragePrice(@PathVariable UUID userId) {
         return new ResponseEntity<>(sellerService.findPricePerPosts(userId), HttpStatus.OK);
     }
 }
