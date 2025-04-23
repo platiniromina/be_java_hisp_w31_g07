@@ -6,7 +6,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponse
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.*;
@@ -43,7 +43,7 @@ public class PostService implements IPostService {
     public PostResponseDto findPost(UUID postId) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
+                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
 
         return mapper.convertValue(post, PostResponseDto.class);
     }
@@ -54,7 +54,7 @@ public class PostService implements IPostService {
         List<Post> postList = postRepository.findHasPromo(userId);
 
         if (postList.isEmpty()) {
-            throw new NotFoundException("Posts from: " + userId + " not found");
+            throw new BadRequest("Posts from: " + userId + " not found");
         }
         return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
@@ -63,7 +63,7 @@ public class PostService implements IPostService {
     public Double findAveragePrice(UUID userId) {
         return postRepository.findPricePerPosts(userId).stream()
                 .mapToDouble(Post::getPrice)
-                .average().orElseThrow(() -> new NotFoundException("User " + userId + " has no posts."));
+                .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
     }
 
     @Override
@@ -128,6 +128,27 @@ public class PostService implements IPostService {
         postRepository.createPost(post);
     }
 
+    @Override
+    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId) {
+        List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
+
+        if (sellers.isEmpty()) {
+            throw new BadRequest("The buyer is not following any sellers");
+        }
+
+        List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
+        List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
+
+        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
+                .toList();
+        return new FollowersPostsResponseDto(buyerId, postsDtos);
+    }
+
+    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
+        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
+        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
+        return new FollowersPostsResponseDto(buyerId, sortedPosts);
+    }
 
     private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
         List<PostResponseDto> sortedPosts;

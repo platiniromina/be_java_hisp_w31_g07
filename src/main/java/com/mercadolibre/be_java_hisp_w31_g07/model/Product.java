@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
+    @JsonProperty("product_id")
     private UUID id;
+    @JsonProperty("product_name")
     private String productName;
     private String type;
     private String brand;

@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +28,8 @@ public class BuyerController {
     }
 
     @GetMapping("/users/{userId}/buyer-purchases")
-    public ResponseEntity<BuyerPurchasesResponseDto> getBuyerPurchases(@PathVariable UUID userId, @RequestParam String product) {
+    public ResponseEntity<BuyerPurchasesResponseDto> getBuyerPurchases(@PathVariable UUID userId,
+            @RequestParam String product) {
         return new ResponseEntity<>(buyerService.findBuyerPurchase(userId, product), HttpStatus.OK);
     }
 

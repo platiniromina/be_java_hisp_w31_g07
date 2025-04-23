@@ -1,17 +1,17 @@
 [
   {
-    "id": "87a3d636-2adf-4640-9872-83e1050427e7",
-    "followerCount": 0,
+    "user_id": "87a3d636-2adf-4640-9872-83e1050427e7",
+    "follower_count": 0,
     "followers": []
   },
   {
-    "id": "928f7404-bd16-43f5-bb3e-25a8c01b68d4",
-    "followerCount": 0,
+    "user_id": "928f7404-bd16-43f5-bb3e-25a8c01b68d4",
+    "follower_count": 0,
     "followers": []
   },
   {
-    "id": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
-    "followerCount": 0,
+    "user_id": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "follower_count": 0,
     "followers": []
   }
 ]
