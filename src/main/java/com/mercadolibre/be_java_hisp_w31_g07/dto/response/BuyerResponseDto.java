@@ -13,7 +13,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BuyerReponseDto {
+public class BuyerResponseDto {
     private UUID id;
     private String userName;
     @JsonIgnore
