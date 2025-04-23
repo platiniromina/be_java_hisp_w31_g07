@@ -1,13 +1,11 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
@@ -20,11 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -62,7 +55,7 @@ public class SellerService implements ISellerService {
     @Override
     public SellerDto findFollowers(UUID sellerId) {
         Seller seller = sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("Buyer: " + sellerId + " not found"));
+                .orElseThrow(() -> new BadRequest("Buyer: " + sellerId + " not found"));
 
         String buyerUserName = userService.findById(seller.getId()).getUserName();
         return BuyerMapper.toSellerDto(seller, buyerUserName);
@@ -160,7 +153,7 @@ public class SellerService implements ISellerService {
 
     private Seller getExistingSeller(UUID sellerId) {
         return sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
+                .orElseThrow(() -> new BadRequest("No seller found for " + sellerId));
     }
 
     private SellerDto mapToSellerDto(Seller seller) {

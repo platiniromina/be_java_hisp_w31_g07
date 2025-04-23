@@ -16,12 +16,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> notFound(NotFoundException e) {
-        GlobalExceptioHandlerDto exceptionDto = new GlobalExceptioHandlerDto(e.getMessage());
-        return new ResponseEntity<>(exceptionDto, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> typeMismatch(MethodArgumentTypeMismatchException e) {
         String param = e.getName();
