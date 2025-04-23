@@ -3,8 +3,8 @@
     "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
     "date": "10-04-2025",
     "product": {
-      "id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
-      "productName": "Wireless Headphones",
+      "product_id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+      "product_name": "Wireless Headphones",
       "type": "Audio",
       "brand": "Sony",
       "color": "Black",
@@ -12,16 +12,16 @@
     },
     "category": 100,
     "price": 499.99,
-    "sellerId": "87a3d636-2adf-4640-9872-83e1050427e7",
-    "hasPromo": true,
+    "user_id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "has_promo": true,
     "discount": 10
   },
   {
     "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
     "date": "12-04-2025",
     "product": {
-      "id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
-      "productName": "The Pragmatic Programmer",
+      "product_id": "bf3b89cc-f09f-4f6e-8a62-7b93fd2a3bb5",
+      "product_name": "The Pragmatic Programmer",
       "type": "Book",
       "brand": "Addison-Wesley",
       "color": "White",
@@ -29,16 +29,16 @@
     },
     "category": 7,
     "price": 24.99,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
-    "hasPromo": false,
+    "user_id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "has_promo": false,
     "discount": 0
   },
   {
     "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
     "date": "08-04-2025",
     "product": {
-      "id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
-      "productName": "Blender Pro 900",
+      "product_id": "d62db151-2dd8-42f2-80c7-dc6dcb0eaa86",
+      "product_name": "Blender Pro 900",
       "type": "Kitchen Appliance",
       "brand": "NutriBullet",
       "color": "Silver",
@@ -46,16 +46,16 @@
     },
     "category": 13,
     "price": 149.90,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
-    "hasPromo": true,
+    "user_id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "has_promo": true,
     "discount": 20
   },
   {
     "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
     "date": "30-03-2025",
     "product": {
-      "id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
-      "productName": "Lego Star Wars Set",
+      "product_id": "1d08a3df-3cc7-4e9e-9a8e-94c720eec9f4",
+      "product_name": "Lego Star Wars Set",
       "type": "Toy",
       "brand": "LEGO",
       "color": "Multicolor",
@@ -63,16 +63,16 @@
     },
     "category": 52,
     "price": 39.50,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
-    "hasPromo": false,
+    "user_id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "has_promo": false,
     "discount": 0
   },
   {
     "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
     "date": "14-04-2025",
     "product": {
-      "id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
-      "productName": "Leather Jacket",
+      "product_id": "e462fa88-81a0-4c16-bfbd-f3c6a53fd181",
+      "product_name": "Leather Jacket",
       "type": "Clothing",
       "brand": "Zara",
       "color": "Brown",
@@ -80,8 +80,8 @@
     },
     "category": 2,
     "price": 89.90,
-    "sellerId": "87a3d636-2adf-4640-9872-83e1050427e7",
-    "hasPromo": true,
+    "user_id": "a1f6dffc-3480-4e43-9620-df54d4a30e9a",
+    "has_promo": true,
     "discount": 25
   }
 ]
