@@ -45,19 +45,11 @@ public class ProductController {
         SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(userId);
         return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
     }
-    // ------------------------------ START TESTING ------------------------------
-
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
-        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.FOUND);
+        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
     }
-
-    // ------------------------------ END TESTING ------------------------------
 
     @GetMapping("/followed/{userId}/list")
     public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(@PathVariable UUID userId) {
@@ -71,6 +63,5 @@ public class ProductController {
         FollowersPostsResponseDto response = postService.sortPostsByDate(userId, order);
         return ResponseEntity.ok(response);
     }
-
 
 }
