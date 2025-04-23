@@ -1,14 +1,13 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
 import java.util.List;
 import java.util.UUID;
-
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
 public interface IPostService {
     /**
@@ -45,7 +44,6 @@ public interface IPostService {
      * Only includes posts from the last two weeks, sorted by newest first.
      *
      * @param buyerId the unique identifier of the buyer.
-     *
      */
     public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
 
@@ -55,7 +53,7 @@ public interface IPostService {
      * @param sellerId the unique identifier of the seller whose promotional
      *                 posts count is to be retrieved.
      * @return a {@link SellerPromoPostsCountResponseDto} containing the seller's
-     *         ID, username, and the count of promotional posts for the seller.
+     * ID, username, and the count of promotional posts for the seller.
      * @throws BadRequest if the seller cannot be found.
      */
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
@@ -76,13 +74,20 @@ public interface IPostService {
      * The posts can be sorted either by date in ascending or descending order.
      *
      * @param buyerId the unique identifier of the buyer.
-     * @param order the sorting order for the posts. It can be "date_asc" for ascending order
-     *              or "date_desc" for descending order. Defaults to "date_desc" if not provided.
-     *
+     * @param order   the sorting order for the posts. It can be "date_asc" for ascending order
+     *                or "date_desc" for descending order. Defaults to "date_desc" if not provided.
      * @return a {@link FollowersPostsResponseDto} containing the sorted list of posts from the sellers
-     *         followed by the buyer.
-     *
+     * followed by the buyer.
      * @throws IllegalArgumentException if the provided order is invalid.
      */
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
+
+    /**
+     * Retrieves all posts matching the sellers ids.
+     * And calculates the discount.
+     *
+     * @param userId  the unique identifier of the sellers.
+     * @param product product name.
+     */
+    public PostDto findProductByPurchase(String product);
 }
