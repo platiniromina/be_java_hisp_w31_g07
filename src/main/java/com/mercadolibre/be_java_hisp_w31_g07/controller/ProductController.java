@@ -27,7 +27,7 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping("/promo-post/list")
-    public ResponseEntity<UserPostResponseDto> getUserPostDisc(@RequestParam UUID userId) {
+    public ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam UUID userId) {
         return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
 
@@ -46,7 +46,7 @@ public class ProductController {
     }
 
     @GetMapping("/promo-post/count")
-    public ResponseEntity<SellerPromoPostsCountResponseDto> getPromoPostCount(
+    public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(
             @RequestParam UUID sellerId) {
 
         SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(sellerId);
