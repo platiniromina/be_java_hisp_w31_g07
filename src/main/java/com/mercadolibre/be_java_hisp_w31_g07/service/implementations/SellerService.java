@@ -1,16 +1,5 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
@@ -24,8 +13,11 @@ import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
-
+import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +26,6 @@ public class SellerService implements ISellerService {
     private final IUserService userService;
     private final IBuyerService buyerService;
 
-    // ------------------------------
-    // Public methods
-    // ------------------------------
     @Override
     public void followSeller(UUID sellerId, UUID buyerId) {
         validateNotSameUser(sellerId, buyerId);
@@ -85,9 +74,7 @@ public class SellerService implements ISellerService {
         return getSellerById(sellerId);
     }
 
-    // ------------------------------
-    // Private methods
-    // ------------------------------
+
     private Seller getSellerById(UUID id) {
         return sellerRepository.findSellerById(id)
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
@@ -112,9 +99,6 @@ public class SellerService implements ISellerService {
                 seller.getFollowerCount());
     }
 
-    // ------------------------------
-    // Validation methods
-    // ------------------------------
     private void validateNotSameUser(UUID sellerId, UUID buyerId) {
         if (sellerId.equals(buyerId))
             throw new BadRequest("User cannot follow themselves.");

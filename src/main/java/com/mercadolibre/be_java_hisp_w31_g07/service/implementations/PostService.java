@@ -29,9 +29,6 @@ public class PostService implements IPostService {
     private final IBuyerService buyerService;
     private final ObjectMapper mapper;
 
-    // ------------------------------
-    // Public methods
-    // ------------------------------
 
     @Override
     public PostResponseDto createPost(PostDto newPost) {
@@ -58,10 +55,6 @@ public class PostService implements IPostService {
         }
         return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
-
-    // ------------------------------
-    // Private methods
-    // ------------------------------
 
     private void validateExistingSeller(UUID sellerId) {
         sellerService.findSellerById(sellerId);
