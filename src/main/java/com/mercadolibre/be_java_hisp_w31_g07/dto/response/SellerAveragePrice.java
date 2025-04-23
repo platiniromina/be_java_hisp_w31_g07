@@ -1,4 +1,4 @@
-package com.mercadolibre.be_java_hisp_w31_g07.model;
+package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,18 +8,15 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@Getter
+@Setter
+public class SellerAveragePrice {
     @JsonProperty("user_id")
-    private UUID id;
+    private UUID idSeller;
     @JsonProperty("user_name")
     private String userName;
-    @JsonProperty("first_name")
-    private String firstName;
-    @JsonProperty("last_name")
-    private String lastName;
-    private String email;
+    @JsonProperty("average_price")
+    private Double averagePrice;
 }

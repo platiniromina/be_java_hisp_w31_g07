@@ -1,4 +1,4 @@
-package com.mercadolibre.be_java_hisp_w31_g07.model;
+package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public class ProductResponseDto {
     @JsonProperty("product_id")
     private UUID id;
     @JsonProperty("product_name")

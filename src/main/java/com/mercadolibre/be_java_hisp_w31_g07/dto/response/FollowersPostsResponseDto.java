@@ -1,5 +1,6 @@
-package com.mercadolibre.be_java_hisp_w31_g07.dto;
+package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +13,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SellerDto {
+public class FollowersPostsResponseDto {
+    @JsonProperty("user_id")
     private UUID id;
-    private String userName;
-    private List<BuyerDto> followers;
+    private List<PostResponseDto> posts;
 }

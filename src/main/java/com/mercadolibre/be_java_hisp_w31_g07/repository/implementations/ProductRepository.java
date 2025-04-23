@@ -2,7 +2,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.repository.implementations;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IProductRepository;
 import org.springframework.stereotype.Repository;
@@ -26,9 +25,15 @@ public class ProductRepository implements IProductRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Product> products;
 
-        file= ResourceUtils.getFile("classpath:product.json");
-        products= objectMapper.readValue(file,new TypeReference<List<Product>>(){});
+        file = ResourceUtils.getFile("classpath:product.json");
+        products = objectMapper.readValue(file, new TypeReference<List<Product>>() {
+        });
 
         productList = products;
+    }
+
+    @Override
+    public void createProduct(Product product) {
+        productList.add(product);
     }
 }

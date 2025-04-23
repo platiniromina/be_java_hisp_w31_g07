@@ -1,4 +1,4 @@
-package com.mercadolibre.be_java_hisp_w31_g07.model;
+package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,11 +14,11 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class PostResponseDto {
     private UUID id;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
-    private Product product;
+    private ProductResponseDto product;
     private Integer category;
     private Double price;
     @JsonProperty("user_id")
@@ -26,9 +26,4 @@ public class Post {
     @JsonProperty("has_promo")
     private Boolean hasPromo;
     private Double discount;
-
-    public void setGeneratedId(UUID id) {
-        this.id = id;
-        product.setId(id);
-    }
 }
