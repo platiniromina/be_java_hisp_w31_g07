@@ -40,6 +40,15 @@ public interface IPostService {
      */
     public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
 
+    /**
+     * Retrieves the count of promotional posts for a given seller.
+     *
+     * @param sellerId the unique identifier of the seller whose promotional
+     *                 posts count is to be retrieved.
+     * @return a {@link SellerPromoPostsCountResponseDto} containing the seller's
+     *         ID, username, and the count of promotional posts for the seller.
+     * @throws BadRequest if the seller cannot be found.
+     */
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
 
     // ------------------------------ START TESTING ------------------------------
