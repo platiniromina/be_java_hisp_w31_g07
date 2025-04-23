@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,16 +69,6 @@ public class SellerController {
         return ResponseEntity.ok().build();
     }
 
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
-    @GetMapping("/users/test/{userId}/seller")
-    public ResponseEntity<Seller> getSeller(@PathVariable UUID userId) {
-        Seller seller = sellerService.findSellerById(userId);
-        return ResponseEntity.ok(seller);
-    }
-
     @Operation(summary = "Get followers count - [REQ - 2]", description = "Returns the number of buyers that follow the given seller.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -97,4 +87,10 @@ public class SellerController {
         SellerDto sellerDto = sellerService.sortFollowersByName(sellerId, order);
         return ResponseEntity.ok(sellerDto);
     }
+
+    @GetMapping("/users/{userId}/average-post-price")
+    public ResponseEntity<SellerAveragePrice> getAveragePrice(@PathVariable UUID userId) {
+        return new ResponseEntity<>(sellerService.findPricePerPosts(userId), HttpStatus.OK);
+    }
+
 }

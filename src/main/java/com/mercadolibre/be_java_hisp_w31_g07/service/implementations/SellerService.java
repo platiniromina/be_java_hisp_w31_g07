@@ -1,25 +1,23 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
@@ -33,6 +31,10 @@ public class SellerService implements ISellerService {
     private final ISellerRepository sellerRepository;
     private final IUserService userService;
     private final IBuyerService buyerService;
+
+    @Autowired
+    @Lazy
+    private IPostService postService;
 
     // ------------------------------
     // Public methods
@@ -53,7 +55,7 @@ public class SellerService implements ISellerService {
     @Override
     public SellerDto findFollowers(UUID sellerId) {
         Seller seller = sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("Buyer: " + sellerId + " not found"));
+                .orElseThrow(() -> new BadRequest("Buyer: " + sellerId + " not found"));
 
         String buyerUserName = userService.findById(seller.getId()).getUserName();
         return BuyerMapper.toSellerDto(seller, buyerUserName);
@@ -83,6 +85,16 @@ public class SellerService implements ISellerService {
     @Override
     public Seller findSellerById(UUID sellerId) {
         return getSellerById(sellerId);
+    }
+
+    @Override
+    public SellerAveragePrice findPricePerPosts(UUID userId){
+        Double averagePrice =  postService.findAveragePrice(userId);
+        return new SellerAveragePrice(
+                userId,
+                userService.findById(userId).getUserName(),
+                averagePrice
+        );
     }
 
     // ------------------------------
@@ -141,7 +153,7 @@ public class SellerService implements ISellerService {
 
     private Seller getExistingSeller(UUID sellerId) {
         return sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
+                .orElseThrow(() -> new BadRequest("No seller found for " + sellerId));
     }
 
     private SellerDto mapToSellerDto(Seller seller) {

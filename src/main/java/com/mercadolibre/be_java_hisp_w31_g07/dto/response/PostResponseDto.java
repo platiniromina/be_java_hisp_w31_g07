@@ -18,7 +18,7 @@ public class PostResponseDto {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private ProductResponseDto product;
-    private String category;
+    private Integer category;
     private Double price;
     private UUID sellerId;
     private Boolean hasPromo;

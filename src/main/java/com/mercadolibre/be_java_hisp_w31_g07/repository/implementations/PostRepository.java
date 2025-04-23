@@ -55,7 +55,7 @@ public class PostRepository implements IPostRepository {
     @Override
     public List<Post> findHasPromo(UUID userId) {
         return postList.stream()
-                .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
+                .filter(post -> post.getHasPromo().equals(true) && post.getSellerId().equals(userId))
                 .toList();
     }
 
@@ -67,5 +67,19 @@ public class PostRepository implements IPostRepository {
                         && post.getDate().isAfter(twoWeeksAgo))
                 .sorted(Comparator.comparing(Post::getDate).reversed())
                 .toList();
+    }
+
+    @Override
+    public List<Post> findPricePerPosts(UUID userId) {
+        return postList.stream()
+                .filter(post -> post.getSellerId().equals(userId))
+                .map(post -> {
+                    double finalPrice = post.getPrice();
+                    if (Boolean.TRUE.equals(post.getHasPromo())) {
+                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+                    }
+                    return post;
+
+                }).toList();
     }
 }

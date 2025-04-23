@@ -16,6 +16,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
@@ -35,13 +36,12 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Product", description = "Operations related to products and posts")
 public class ProductController {
     private final IProductService productService;
+    private final IPostService postService;
 
     @GetMapping("/promo-post/list")
-    public ResponseEntity<UserPostResponseDto> getUserPostDisc(@RequestParam UUID userId) {
+    public ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam UUID userId) {
         return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
-
-    private final IPostService postService;
 
     @Operation(summary = "Create a new post - [REQ - 5]", description = "Creates a new post with a product associated.")
     @ApiResponses(value = {
@@ -84,18 +84,17 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    // ------------------------------ START TESTING ------------------------------
+    @GetMapping("/promo-post/count")
+    public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(
+            @RequestParam(name = "user_id") UUID userId) {
 
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-    // It should be removed in the final version of the code.
+        SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(userId);
+        return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
+    }
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
-        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.FOUND);
+        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
     }
-
-    // ------------------------------ END TESTING ------------------------------
 
 }
