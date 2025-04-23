@@ -6,5 +6,6 @@
   },
   "[xml]": {
     "editor.defaultFormatter": "Oracle.oracle-java"
-  }
+  },
+  "java.compile.nullAnalysis.mode": "automatic"
 }

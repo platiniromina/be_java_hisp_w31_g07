@@ -12,7 +12,7 @@
     },
     "category": "Electronics",
     "price": 499.99,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "sellerId": "87a3d636-2adf-4640-9872-83e1050427e7",
     "hasPromo": true,
     "discount": 10
   },
@@ -80,7 +80,7 @@
     },
     "category": "Fashion",
     "price": 89.90,
-    "sellerId": "c16c73b4-dcf7-4b8f-9dfb-c421ab3858a4",
+    "sellerId": "87a3d636-2adf-4640-9872-83e1050427e7",
     "hasPromo": true,
     "discount": 25
   }

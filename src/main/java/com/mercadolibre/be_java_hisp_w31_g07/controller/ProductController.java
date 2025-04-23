@@ -62,4 +62,14 @@ public class ProductController {
     public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(@PathVariable UUID userId) {
         return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);
     }
+
+    @GetMapping("/followed/{userId}/sorted")
+    public ResponseEntity<FollowersPostsResponseDto> getSortedPostsByDate(
+            @PathVariable UUID userId,
+            @RequestParam(name = "order", required = false, defaultValue = "date_desc") String order) {
+        FollowersPostsResponseDto response = postService.sortPostsByDate(userId, order);
+        return ResponseEntity.ok(response);
+    }
+
+
 }

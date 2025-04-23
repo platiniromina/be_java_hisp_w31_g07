@@ -1,12 +1,12 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
@@ -16,6 +16,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -94,5 +95,28 @@ public class PostService implements IPostService {
         List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
                 .toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
+    }
+
+    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
+        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
+        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
+        return new FollowersPostsResponseDto(buyerId, sortedPosts);
+    }
+
+    private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
+        List<PostResponseDto> sortedPosts;
+
+        if ("date_desc".equalsIgnoreCase(order)) {
+            sortedPosts = posts.stream()
+                    .sorted(Comparator.comparing(PostResponseDto::getDate).reversed())
+                    .toList();
+        } else if ("date_asc".equalsIgnoreCase(order)) {
+            sortedPosts = posts.stream()
+                    .sorted(Comparator.comparing(PostResponseDto::getDate))
+                    .toList();
+        } else {
+            throw new IllegalArgumentException("Invalid order: " + order);
+        }
+        return sortedPosts;
     }
 }

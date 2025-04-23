@@ -1,15 +1,14 @@
 package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,5 +20,5 @@ public class SellerResponseDto {
     @JsonIgnore
     private Integer followerCount;
     @JsonBackReference
-    private List<BuyerReponseDto> followers;
+    private List<BuyerResponseDto> followers;
 }
