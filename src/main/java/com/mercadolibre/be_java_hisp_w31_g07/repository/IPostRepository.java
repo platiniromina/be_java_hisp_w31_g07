@@ -33,6 +33,19 @@ public interface IPostRepository {
      */
     public Optional<Post> findById(UUID postId);
 
+    /**
+     * Retrieves a list of posts that have promotional content for a specified user.
+     *
+     * This method filters the internal list of posts to find all posts that
+     * have promotions enabled ({@code hasPromo} set to {@code true}) and are
+     * associated with the provided seller identified by the given UUID.
+     * It returns a list containing only the posts that match these criteria.
+     *
+     * @param userId the unique identifier of the seller whose posts with promotions
+     *                are to be retrieved.
+     * @return a {@link List} of {@link Post} objects that have promotions and belong
+     *         to the specified seller; may be empty if no such posts exist.
+     */
     public List<Post> findHasPromo(UUID userId);
 
     /**
@@ -43,4 +56,13 @@ public interface IPostRepository {
      *
      */
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
+
+    /**
+     * Retrieves all posts matching the sellers ids.
+     * And calculates the discount.
+     *
+     * @param userId the unique identifier of the sellers.
+     *
+     */
+    public List<Post> findPricePerPosts(UUID userId);
 }
