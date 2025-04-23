@@ -4,6 +4,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,12 @@ import java.util.UUID;
 @RequestMapping("/products")
 public class ProductController {
     private final IProductService productService;
+    private final IPostService postService;
 
     @GetMapping("/promo-post/list")
-    public ResponseEntity<UserPostResponseDto> getUserPostDisc(@RequestParam UUID userId) {
+    public ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam UUID userId) {
         return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
-
-    private final IPostService postService;
 
     @PostMapping("/post")
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostDto newPost) {
@@ -38,6 +38,13 @@ public class ProductController {
         return new ResponseEntity<>(promoPost, HttpStatus.OK);
     }
 
+    @GetMapping("/promo-post/count")
+    public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(
+            @RequestParam(name = "user_id") UUID userId) {
+
+        SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(userId);
+        return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
+    }
     // ------------------------------ START TESTING ------------------------------
 
     // FOR TESTING PURPOSES ONLY
