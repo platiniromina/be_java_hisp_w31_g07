@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public class PostDto {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private ProductDto product;
-    private String category;
+    private Integer category;
     private Double price;
     private UUID sellerId;
     private Boolean hasPromo;
