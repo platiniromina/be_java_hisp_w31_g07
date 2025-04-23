@@ -55,7 +55,7 @@ public class PostRepository implements IPostRepository {
     @Override
     public List<Post> findHasPromo(UUID userId) {
         return postList.stream()
-                .filter(post1 -> post1.getHasPromo().equals(true) && post1.getSellerId().equals(userId))
+                .filter(post -> post.getHasPromo().equals(true) && post.getSellerId().equals(userId))
                 .toList();
     }
 
