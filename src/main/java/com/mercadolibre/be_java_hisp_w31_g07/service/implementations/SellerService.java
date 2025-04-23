@@ -1,29 +1,26 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import java.util.*;
-
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
-
-import lombok.RequiredArgsConstructor;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -184,7 +181,7 @@ public class SellerService implements ISellerService {
         } else if ("name_asc".equalsIgnoreCase(order)) {
             return comparator;
         } else {
-            throw new IllegalArgumentException("Invalid order: " + order);
+            throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
         }
     }
 
