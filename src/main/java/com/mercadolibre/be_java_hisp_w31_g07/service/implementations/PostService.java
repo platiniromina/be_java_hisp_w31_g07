@@ -1,18 +1,16 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
-import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
+import com.mercadolibre.be_java_hisp_w31_g07.service.*;
+import com.mercadolibre.be_java_hisp_w31_g07.util.IdUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +40,26 @@ public class PostService implements IPostService {
     }
 
     @Override
+    public PostResponseDto findPost(UUID postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
+
+        return mapper.convertValue(post, PostResponseDto.class);
+    }
+
+    @Override
+    public List<PostResponseDto> findUserPromoPosts(UUID userId) {
+        validateExistingSeller(userId);
+        List<Post> postList = postRepository.findHasPromo(userId);
+
+        if (postList.isEmpty()) {
+            throw new NotFoundException("Posts from: " + userId + " not found");
+        }
+        return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+    }
+
+    @Override
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
         validateExistingSeller(sellerId);
         Integer promoPostsCount = postRepository.findHasPromo(sellerId).size();
@@ -51,18 +69,6 @@ public class PostService implements IPostService {
                 userService.findById(sellerId).getUserName(),
                 promoPostsCount
         );
-    }
-
-    @Override
-    public List<PostResponseDto> findUserPromoPosts(UUID userId) {
-        validateExistingSeller(userId);
-        List<Post> postList = postRepository.findHasPromo(userId);
-
-        if (postList.isEmpty()) {
-            throw new NotFoundException("No promotional posts from user: " + userId + " were found");
-        }
-        return postList.stream()
-                .map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
 
     // ------------------------------
@@ -102,24 +108,6 @@ public class PostService implements IPostService {
                 .toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
-
-    // ------------------------------ START TESTING ------------------------------
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-
-    // It should be removed in the final version of the code.
-
-    @Override
-    public PostResponseDto findPost(UUID postId) {
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
-
-        return mapper.convertValue(post, PostResponseDto.class);
-    }
-    // ------------------------------ END TESTING ------------------------------
-}
 
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
         FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
