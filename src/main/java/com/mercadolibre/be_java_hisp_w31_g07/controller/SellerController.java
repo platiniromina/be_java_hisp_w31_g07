@@ -1,26 +1,26 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-
 import java.util.UUID;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -88,5 +88,13 @@ public class SellerController {
     public ResponseEntity<SellerFollowersCountResponseDto> getFollowersCount(
             @Parameter(description = "Seller id", required = true) @PathVariable UUID userId) {
         return ResponseEntity.ok(sellerService.findFollowersCount(userId));
+    }
+
+    @GetMapping("/{sellerId}/followers")
+    public ResponseEntity<SellerDto> getSortedFollowers(
+            @PathVariable UUID sellerId,
+            @RequestParam String order) {
+        SellerDto sellerDto = sellerService.sortFollowersByName(sellerId, order);
+        return ResponseEntity.ok(sellerDto);
     }
 }

@@ -1,11 +1,25 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ErrorResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,11 +28,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +35,12 @@ import java.util.UUID;
 @Tag(name = "Product", description = "Operations related to products and posts")
 public class ProductController {
     private final IProductService productService;
+
+    @GetMapping("/promo-post/list")
+    public ResponseEntity<UserPostResponseDto> getUserPostDisc(@RequestParam UUID userId) {
+        return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
+    }
+
     private final IPostService postService;
 
     @Operation(summary = "Create a new post - [REQ - 5]", description = "Creates a new post with a product associated.")
@@ -61,6 +76,14 @@ public class ProductController {
         return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);
     }
 
+    @GetMapping("/followed/{userId}/sorted")
+    public ResponseEntity<FollowersPostsResponseDto> getSortedPostsByDate(
+            @PathVariable UUID userId,
+            @RequestParam(name = "order", required = false, defaultValue = "date_desc") String order) {
+        FollowersPostsResponseDto response = postService.sortPostsByDate(userId, order);
+        return ResponseEntity.ok(response);
+    }
+
     // ------------------------------ START TESTING ------------------------------
 
     // FOR TESTING PURPOSES ONLY
@@ -74,6 +97,5 @@ public class ProductController {
     }
 
     // ------------------------------ END TESTING ------------------------------
+
 }
-
-

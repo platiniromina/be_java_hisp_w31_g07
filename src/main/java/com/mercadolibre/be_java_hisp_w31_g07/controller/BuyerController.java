@@ -48,4 +48,6 @@ public class BuyerController {
         Buyer buyer = buyerService.findBuyerById(userId);
         return ResponseEntity.ok(buyer);
     }
+
+
 }
