@@ -39,33 +39,28 @@ public class PostService implements IPostService {
         return mapper.convertValue(post, PostResponseDto.class);
     }
 
-    /**
-     * Retrieves the count of promotional posts for a given seller.
-     *
-     * @param sellerId the unique identifier of the seller whose promotional
-     *                 posts count is to be retrieved.
-     * @return a {@link SellerPromoPostsCountResponseDto} containing the seller's
-     *         ID, username, and the count of promotional posts for the seller.
-     * @throws BadRequest if the seller cannot be found.
-     */
     @Override
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
-        Integer promoPostsCount = findHasPromo(sellerId).length;
+        validateExistingSeller(sellerId);
+        Integer promoPostsCount = postRepository.findHasPromo(sellerId).size();
 
         return new SellerPromoPostsCountResponseDto(
                 sellerId,
                 userService.findById(sellerId).getUserName(),
-                promoPostsCount);
+                promoPostsCount
+        );
     }
 
     @Override
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
+        validateExistingSeller(userId);
         List<Post> postList = postRepository.findHasPromo(userId);
 
         if (postList.isEmpty()) {
-            throw new NotFoundException("Posts from: " + userId + " not found");
+            throw new NotFoundException("No promotional posts from user: " + userId + " were found");
         }
-        return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+        return postList.stream()
+                .map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
 
     // ------------------------------
