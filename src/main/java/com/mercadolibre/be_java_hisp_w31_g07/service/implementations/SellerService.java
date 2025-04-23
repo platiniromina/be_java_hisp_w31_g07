@@ -91,6 +91,20 @@ public class SellerService implements ISellerService {
                 averagePrice);
     }
 
+    @Override
+    public SellerDto sortFollowersByName(UUID sellerId, String order) {
+        Seller seller = getExistingSeller(sellerId);
+
+        List<Buyer> followers = new ArrayList<>(seller.getFollowers());
+
+        Comparator<Buyer> comparator = getComparatorForOrder(order);
+        followers.sort(comparator);
+
+        seller.setFollowers(followers);
+
+        return mapToSellerDto(seller);
+    }
+
     // ------------------------------
     // Private methods
     // ------------------------------
@@ -99,7 +113,7 @@ public class SellerService implements ISellerService {
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
     }
 
-    
+
     // ------------------------------
     // Validation methods
     // ------------------------------
@@ -114,18 +128,6 @@ public class SellerService implements ISellerService {
         return isFollowing && isFollowedBy;
     }
 
-    public SellerDto sortFollowersByName(UUID sellerId, String order) {
-        Seller seller = getExistingSeller(sellerId);
-
-        List<Buyer> followers = new ArrayList<>(seller.getFollowers());
-
-        Comparator<Buyer> comparator = getComparatorForOrder(order);
-        followers.sort(comparator);
-
-        seller.setFollowers(followers);
-
-        return mapToSellerDto(seller);
-    }
 
     private Seller getExistingSeller(UUID sellerId) {
         return sellerRepository.findSellerById(sellerId)
