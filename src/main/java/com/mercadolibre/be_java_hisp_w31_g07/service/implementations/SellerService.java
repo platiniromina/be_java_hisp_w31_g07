@@ -1,8 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
@@ -101,25 +99,7 @@ public class SellerService implements ISellerService {
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
     }
 
-    private SellerDto mapToDto(Seller seller) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<BuyerResponseDto> followers = seller.getFollowers().stream()
-                .map(buyer -> {
-                    BuyerResponseDto buyerReponseDto = mapper.convertValue(buyer, BuyerResponseDto.class);
-                    UserDto user = userService.findById(buyer.getId());
-                    buyerReponseDto.setUserName(user.getUserName());
-                    return buyerReponseDto;
-                })
-                .toList();
-
-        return new SellerDto(
-                seller.getId(),
-                userService.findById(seller.getId()).getUserName(),
-                followers,
-                seller.getFollowerCount());
-    }
-
+    
     // ------------------------------
     // Validation methods
     // ------------------------------
