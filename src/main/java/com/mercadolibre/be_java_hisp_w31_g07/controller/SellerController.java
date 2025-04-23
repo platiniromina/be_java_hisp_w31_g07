@@ -3,7 +3,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 
 import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,7 +69,6 @@ public class SellerController {
     public ResponseEntity<SellerFollowersCountResponseDto> getFollowersCount(@PathVariable UUID userId) {
         return ResponseEntity.ok(sellerService.findFollowersCount(userId));
     }
-
 
     @GetMapping("/{sellerId}/followers")
     public ResponseEntity<SellerDto> getSortedFollowers(

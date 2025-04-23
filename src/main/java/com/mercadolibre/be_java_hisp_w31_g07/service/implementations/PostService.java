@@ -1,12 +1,12 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
@@ -16,13 +16,9 @@ import com.mercadolibre.be_java_hisp_w31_g07.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.UUID;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +47,16 @@ public class PostService implements IPostService {
                 .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
 
         return mapper.convertValue(post, PostResponseDto.class);
+    }
+
+    @Override
+    public List<PostResponseDto> findUserPromoPosts(UUID userId) {
+        List<Post> postList = postRepository.findHasPromo(userId);
+
+        if (postList.isEmpty()) {
+            throw new NotFoundException("Posts from: " + userId + " not found");
+        }
+        return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
     }
 
     // ------------------------------
@@ -86,7 +92,8 @@ public class PostService implements IPostService {
         List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
         List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
 
-        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
+                .toList();
         return new FollowersPostsResponseDto(buyerId, postsDtos);
     }
 

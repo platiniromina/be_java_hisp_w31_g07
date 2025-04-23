@@ -3,7 +3,12 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,10 +51,12 @@ public class SellerService implements ISellerService {
     }
 
     @Override
-    public SellerDto findFollowers(UUID userId) {
-        Seller seller = sellerRepository.findSellerById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found: " + userId));
-        return mapToDto(seller);
+    public SellerDto findFollowers(UUID sellerId) {
+        Seller seller = sellerRepository.findSellerById(sellerId)
+                .orElseThrow(() -> new NotFoundException("Buyer: " + sellerId + " not found"));
+
+        String buyerUserName = userService.findById(seller.getId()).getUserName();
+        return BuyerMapper.toSellerDto(seller, buyerUserName);
     }
 
     @Override
@@ -143,7 +150,8 @@ public class SellerService implements ISellerService {
                 .map(buyer -> {
                     userNames.computeIfAbsent(buyer.getId(), id -> userService.findById(id).getUserName());
                     String userName = userNames.get(buyer.getId());
-                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());})
+                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());
+                })
                 .toList();
 
         String sellerUsername = userNames.get(seller.getId());
@@ -157,8 +165,7 @@ public class SellerService implements ISellerService {
 
     private Comparator<Buyer> getComparatorForOrder(String order) {
         Comparator<Buyer> comparator = Comparator.comparing(
-                buyer -> userService.findById(buyer.getId()).getUserName()
-        );
+                buyer -> userService.findById(buyer.getId()).getUserName());
 
         if ("name_desc".equalsIgnoreCase(order)) {
             return comparator.reversed();

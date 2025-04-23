@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,5 +18,7 @@ public class SellerResponseDto {
     private UUID id;
     private String userName;
     @JsonIgnore
+    private Integer followerCount;
+    @JsonBackReference
     private List<BuyerResponseDto> followers;
 }

@@ -14,8 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Seller {
     private UUID id;
-    private String billingAddress;
-    private String cuil;
     private Integer followerCount;
     private List<Buyer> followers;
 
