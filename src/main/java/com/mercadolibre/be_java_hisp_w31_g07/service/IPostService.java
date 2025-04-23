@@ -32,6 +32,15 @@ public interface IPostService {
     public List<PostResponseDto> findUserPromoPosts(UUID userId);
 
     /**
+     * Find the user's posts
+     *
+     * @param userId contains the user id to link with a Post.
+     * @return average price related with a user.
+     * @throws Not Found Exception if the seller doesn't have a post.
+     */
+    public Double findAveragePrice(UUID userId);
+
+    /**
      * Returns the most recent posts from sellers followed by the given buyer.
      * Only includes posts from the last two weeks, sorted by newest first.
      *

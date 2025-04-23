@@ -68,4 +68,18 @@ public class PostRepository implements IPostRepository {
                 .sorted(Comparator.comparing(Post::getDate).reversed())
                 .toList();
     }
+
+    @Override
+    public List<Post> findPricePerPosts(UUID userId) {
+        return postList.stream()
+                .filter(post -> post.getSellerId().equals(userId))
+                .map(post -> {
+                    double finalPrice = post.getPrice();
+                    if (Boolean.TRUE.equals(post.getHasPromo())) {
+                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+                    }
+                    return post;
+
+                }).toList();
+    }
 }

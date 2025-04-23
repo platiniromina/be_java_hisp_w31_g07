@@ -60,6 +60,13 @@ public class PostService implements IPostService {
     }
 
     @Override
+    public Double findAveragePrice(UUID userId) {
+        return postRepository.findPricePerPosts(userId).stream()
+                .mapToDouble(Post::getPrice)
+                .average().orElseThrow(() -> new NotFoundException("User " + userId + " has no posts."));
+    }
+
+    @Override
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
         validateExistingSeller(sellerId);
         Integer promoPostsCount = postRepository.findHasPromo(sellerId).size();
@@ -67,8 +74,7 @@ public class PostService implements IPostService {
         return new SellerPromoPostsCountResponseDto(
                 sellerId,
                 userService.findById(sellerId).getUserName(),
-                promoPostsCount
-        );
+                promoPostsCount);
     }
 
     // ------------------------------
