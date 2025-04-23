@@ -1,12 +1,11 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-
 import java.util.List;
 import java.util.UUID;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
@@ -45,7 +44,6 @@ public interface IPostService {
      * Only includes posts from the last two weeks, sorted by newest first.
      *
      * @param buyerId the unique identifier of the buyer.
-     *
      */
     public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
 
@@ -72,14 +70,18 @@ public interface IPostService {
     // ------------------------------ END TESTING ------------------------------
 
     /**
-     * Returns the posts from sellers followed by the given buyer, sorted by the specified order.
+     * Returns the posts from sellers followed by the given buyer, sorted by the
+     * specified order.
      * The posts can be sorted either by date in ascending or descending order.
      *
      * @param buyerId the unique identifier of the buyer.
-     * @param order the sorting order for the posts. It can be "date_asc" for ascending order
-     *              or "date_desc" for descending order. Defaults to "date_desc" if not provided.
+     * @param order   the sorting order for the posts. It can be "date_asc" for
+     *                ascending order
+     *                or "date_desc" for descending order. Defaults to "date_desc"
+     *                if not provided.
      *
-     * @return a {@link FollowersPostsResponseDto} containing the sorted list of posts from the sellers
+     * @return a {@link FollowersPostsResponseDto} containing the sorted list of
+     *         posts from the sellers
      *         followed by the buyer.
      *
      * @throws IllegalArgumentException if the provided order is invalid.
