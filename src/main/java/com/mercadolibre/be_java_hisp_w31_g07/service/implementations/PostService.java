@@ -53,12 +53,12 @@ public class PostService implements IPostService {
     @Override
     public Double findAveragePrice(UUID userId) {
         return postRepository.findPricePerPosts(userId).stream().map(post -> {
-            double finalPrice = post.getPrice();
-            if ((post.getHasPromo())) {
-                post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
-            }
-            return post;
-        })
+                    double finalPrice = post.getPrice();
+                    if ((post.getHasPromo())) {
+                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+                    }
+                    return post;
+                })
                 .mapToDouble(Post::getPrice)
                 .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
     }
@@ -134,21 +134,15 @@ public class PostService implements IPostService {
     }
 
     private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
-        List<PostResponseDto> sortedPosts;
-
-        if ("date_desc".equalsIgnoreCase(order)) {
-            sortedPosts = posts.stream()
-                    .sorted(Comparator.comparing(PostResponseDto::getDate).reversed())
-                    .toList();
-        } else if ("date_asc".equalsIgnoreCase(order)) {
-            sortedPosts = posts.stream()
-                    .sorted(Comparator.comparing(PostResponseDto::getDate))
-                    .toList();
-        } else {
-            throw new BadRequest("Invalid sorting parameter: " + order
+        Comparator<PostResponseDto> comparator = switch (order.toLowerCase()) {
+            case "date_asc" -> Comparator.comparing(PostResponseDto::getDate);
+            case "date_desc" -> Comparator.comparing(PostResponseDto::getDate).reversed();
+            default -> throw new BadRequest("Invalid sorting parameter: " + order
                     + ", please try again with a valid one (date_asc or date_desc)");
+        };
 
-        }
-        return sortedPosts;
+        return posts.stream()
+                .sorted(comparator)
+                .toList();
     }
 }

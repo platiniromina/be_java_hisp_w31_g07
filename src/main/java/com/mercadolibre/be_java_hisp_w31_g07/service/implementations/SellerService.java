@@ -1,7 +1,5 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
-import java.util.*;
-
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
@@ -19,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -155,15 +155,11 @@ public class SellerService implements ISellerService {
     private Comparator<Buyer> getComparatorForOrder(String order) {
         Comparator<Buyer> comparator = Comparator.comparing(
                 buyer -> userService.findById(buyer.getId()).getUserName());
-
-        if ("name_desc".equalsIgnoreCase(order)) {
-            return comparator.reversed();
-        } else if ("name_asc".equalsIgnoreCase(order)) {
-            return comparator;
-        } else {
-            throw new BadRequest("Invalid sorting parameter: " + order
+        return switch (order.toLowerCase()) {
+            case "name_asc" -> comparator;
+            case "name_desc" -> comparator.reversed();
+            default -> throw new BadRequest("Invalid sorting parameter: " + order
                     + ", please try again with a valid one (name_asc or name_desc)");
-        }
+        };
     }
-
 }
