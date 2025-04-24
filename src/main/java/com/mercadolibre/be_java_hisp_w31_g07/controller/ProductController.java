@@ -45,11 +45,6 @@ public class ProductController {
         return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
     }
 
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
-        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
-    }
-
     @GetMapping("/followed/{userId}/list")
     public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(@PathVariable UUID userId) {
         return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);

@@ -40,15 +40,6 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public PostResponseDto findPost(UUID postId) {
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
-
-        return mapper.convertValue(post, PostResponseDto.class);
-    }
-
-    @Override
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
         validateExistingSeller(userId);
         List<Post> postList = postRepository.findHasPromo(userId);
@@ -61,7 +52,13 @@ public class PostService implements IPostService {
 
     @Override
     public Double findAveragePrice(UUID userId) {
-        return postRepository.findPricePerPosts(userId).stream()
+        return postRepository.findPricePerPosts(userId).stream().map(post -> {
+            double finalPrice = post.getPrice();
+            if ((post.getHasPromo())) {
+                post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+            }
+            return post;
+        })
                 .mapToDouble(Post::getPrice)
                 .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
     }
@@ -103,7 +100,6 @@ public class PostService implements IPostService {
     @Override
     public PostDto findProductByPurchase(String product) {
         return mapper.convertValue(postRepository.findProductByPurchase(product), PostDto.class);
-
     }
 
     // ------------------------------
@@ -140,7 +136,8 @@ public class PostService implements IPostService {
                     .sorted(Comparator.comparing(PostResponseDto::getDate))
                     .toList();
         } else {
-            throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (date_asc or date_desc)");
+            throw new BadRequest("Invalid sorting parameter: " + order
+                    + ", please try again with a valid one (date_asc or date_desc)");
 
         }
         return sortedPosts;

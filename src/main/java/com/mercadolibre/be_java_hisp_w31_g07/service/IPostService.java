@@ -22,7 +22,7 @@ public interface IPostService {
      public PostResponseDto createPost(PostDto newPost);
 
      /**
-      * Find the user's posts
+      * Find the user's promo posts
       *
       * @param userId contains the user id to link with a Post
       * @return list of Posts related with a user
@@ -31,7 +31,7 @@ public interface IPostService {
      public List<PostResponseDto> findUserPromoPosts(UUID userId);
 
      /**
-      * Find the user's posts
+      * Find average price of a user's post
       *
       * @param userId contains the user id to link with a Post.
       * @return average price related with a user.
@@ -58,17 +58,6 @@ public interface IPostService {
       */
      public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
 
-     // ------------------------------ START TESTING ------------------------------
-     // FOR TESTING PURPOSES ONLY
-     // This endpoint is not part of the original requirements
-     // and is only used to verify the functionality of the followSeller method.
-
-     // It should be removed in the final version of the code.
-
-     public PostResponseDto findPost(UUID postId);
-
-     // ------------------------------ END TESTING ------------------------------
-
      /**
       * Returns the posts from sellers followed by the given buyer, sorted by the
       * specified order.
@@ -82,25 +71,15 @@ public interface IPostService {
       * @return a {@link FollowersPostsResponseDto} containing the sorted list of
       *         posts from the sellers
       *         followed by the buyer.
-      * @param order the sorting order for the posts. It can be "date_asc" for
-      *              ascending order
-      *              or "date_desc" for descending order. Defaults to "date_desc"
-      *              if not provided.
-      *
-      * @return a {@link FollowersPostsResponseDto} containing the sorted list of
-      *         posts from the sellers
-      *         followed by the buyer.
-      *
       * @throws IllegalArgumentException if the provided order is invalid.
       */
      public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
 
      /**
-      * Retrieves all posts matching the sellers ids.
-      * And calculates the discount.
+      * Retrieves purchase matching the products.
       *
-      * @param userId  the unique identifier of the sellers.
-      * @param product product name.
+      * @param product product name that matches with a userProduct in a post.
+      * @return a PostDto.
       */
      public PostDto findProductByPurchase(String product);
 }
