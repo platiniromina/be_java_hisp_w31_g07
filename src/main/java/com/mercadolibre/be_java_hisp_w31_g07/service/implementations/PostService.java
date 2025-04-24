@@ -102,6 +102,15 @@ public class PostService implements IPostService {
         return mapper.convertValue(postRepository.findProductByPurchase(product), PostDto.class);
     }
 
+    @Override
+    public PostResponseDto findPost(UUID postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
+
+        return mapper.convertValue(post, PostResponseDto.class);
+    }
+
     // ------------------------------
     // Private methods
     // ------------------------------

@@ -58,4 +58,9 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
+        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
+    }
+
 }

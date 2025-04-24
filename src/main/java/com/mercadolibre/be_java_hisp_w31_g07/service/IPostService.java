@@ -82,4 +82,13 @@ public interface IPostService {
       * @return a PostDto.
       */
      public PostDto findProductByPurchase(String product);
+
+     /**
+      * Retrieves a post by its unique identifier and maps it to a PostResponseDto.
+      *
+      * @param postId the UUID of the post to be retrieved
+      * @return a {@link PostResponseDto} representing the post
+      * @throws BadRequest if no post is found with the provided ID
+      */
+     public PostResponseDto findPost(UUID postId);
 }
