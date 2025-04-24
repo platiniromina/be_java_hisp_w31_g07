@@ -1,7 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
@@ -16,7 +15,9 @@ import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -90,11 +91,15 @@ public class SellerService implements ISellerService {
     @Override
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
         Seller seller = getSellerById(sellerId);
-        List<Buyer> followers = new ArrayList<>(seller.getFollowers());
-        Comparator<Buyer> comparator = getComparatorForOrder(order);
-        followers.sort(comparator);
-        seller.setFollowers(followers);
-        return mapToSellerDto(seller);
+        String sellerUsername = userService.findById(sellerId).getUserName();
+
+        List<Buyer> sortedFollowers = seller.getFollowers().stream()
+                .sorted(getComparatorForOrder(order))
+                .toList();
+
+        seller.setFollowers(sortedFollowers);
+
+        return BuyerMapper.toSellerDto(seller, sellerUsername);
     }
 
     // ------------------------------
@@ -120,30 +125,6 @@ public class SellerService implements ISellerService {
     private Seller getSellerById(UUID id) {
         return sellerRepository.findSellerById(id)
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
-    }
-
-    // ------------------------------
-    // Data Transformation Methods
-    // ------------------------------
-
-    private SellerDto mapToSellerDto(Seller seller) {
-        Map<UUID, String> userNames = new HashMap<>();
-        userNames.computeIfAbsent(seller.getId(), id -> userService.findById(id).getUserName());
-        String sellerUsername = userNames.get(seller.getId());
-
-        List<BuyerResponseDto> followers = seller.getFollowers().stream()
-                .map(buyer -> {
-                    userNames.computeIfAbsent(buyer.getId(), id -> userService.findById(id).getUserName());
-                    String userName = userNames.get(buyer.getId());
-                    return new BuyerResponseDto(buyer.getId(), userName, new ArrayList<>());
-                })
-                .toList();
-
-        return new SellerDto(
-                seller.getId(),
-                sellerUsername,
-                followers,
-                seller.getFollowerCount());
     }
 
     // ------------------------------
