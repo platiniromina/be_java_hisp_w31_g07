@@ -6,6 +6,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponse
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
@@ -111,19 +112,15 @@ public class PostService implements IPostService {
     }
 
     private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
-        List<PostResponseDto> sortedPosts;
+        Comparator<PostResponseDto> comparator = switch (order.toLowerCase()) {
+            case "date_asc" -> Comparator.comparing(PostResponseDto::getDate);
+            case "date_desc" -> Comparator.comparing(PostResponseDto::getDate).reversed();
+            default -> throw new BadRequest("Invalid sorting parameter: " + order
+                    + ", please try again with a valid one (date_asc or date_desc)");
+        };
 
-        if ("date_desc".equalsIgnoreCase(order)) {
-            sortedPosts = posts.stream()
-                    .sorted(Comparator.comparing(PostResponseDto::getDate).reversed())
-                    .toList();
-        } else if ("date_asc".equalsIgnoreCase(order)) {
-            sortedPosts = posts.stream()
-                    .sorted(Comparator.comparing(PostResponseDto::getDate))
-                    .toList();
-        } else {
-            throw new IllegalArgumentException("Invalid order: " + order);
-        }
-        return sortedPosts;
+        return posts.stream()
+                .sorted(comparator)
+                .toList();
     }
 }
