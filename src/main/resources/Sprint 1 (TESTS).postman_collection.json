@@ -1,0 +1,1402 @@
+{
+	"info": {
+		"_postman_id": "8a1be7c2-6c38-4569-8811-93b386a50cc0",
+		"name": "Sprint 1 (TESTS)",
+		"description": "> Prototyping your API in Postman streamlines the development process by enabling you to design and test front- and back-end API-driven functionalities within a shared workspace. \n  \n\n## **🪐 Get started**\n\nThis collection serves as a place for teams from the Intergalactic Bank to collaborate on the design of the soon-to-be-developed Intergalactic Bank API. This prototype collection outlines how the service's requests and responses should function. Stakeholders should provide their thoughts and suggestions before we begin development.\n\n## **🧑‍💻 Setting up a mock server**\n\n<img src=\"https://lh7-us.googleusercontent.com/eNxPYjGNGALmKSzZvdhlMuy_XK3C_iQ3rK7tCDiPvr6nePMyggp9NTIAjcZYs7oIy8PU_NCGFKtcBPRZrfplfPyrKsO5SCMRX6OuBpzsL_HuOHxW2DwA3FH2-o0uFJgAZOr7JaQTiIvkayUSrPdsxQQ\">\n\nThis collection is meant to be used alongside a [<b>Postman Mock Server</b>](https://learning.postman.com/docs/designing-and-developing-your-api/mocking-data/setting-up-mock/)**.** Since we are still in the planning phase of the API, we have included several example responses for each request, laying out how we think each possible response will look. Including these example responses also has the added benefit of powering a mock server. By following the instructions, you can set up your own mock server and simulate the behavior of this API by returning the predefined data.\n\n**To set up a mock server:**\n\n1. Select **Mock collection** from the collection's actions menu.\n2. On the **Create a mock server** page, add a name for your mock server, and select to **Save the mock server URL as a new environment variable.** This will create a new environment with the mock’s URL pre-populated.\n3. Select the **New Environment** from the **Environment** dropdown list.\n4. Complete the process by clicking **Create Mock Server**.\n5. Send the request! You should now see that the `{{url}}` variable is using the mock server you set up previously.\n6. Try editing fields in the mocked responses to see your changes reflected in the mock server.\n    \n\n## **🤔Why include tests?**\n\nEach request in the collection includes tests to check the response structure. These tests check that all of the properties that other systems rely on are present and of the expected data type. Once you have the fully built-out service in place, you can swap the mock server URL for the live URL and test that your implementation follows the same guidelines as your prototype. This gives you confidence that you can start integrating this service into your systems.\n\nIf you are adding a new proposed endpoint for this request, try asking Postbot to generate tests for it.\n\n## **🤝Collaborate with us!**\n\nThe Bank Services team wants your team’s input on our API design. Add an [inline comment](https://learning.postman.com/docs/collaborating-in-postman/working-with-your-team/discussing-your-work/) to this collection with your ideas, questions, and suggestions, or reach out to us on our internal Slack by tagging `@bank-services`.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "44366723"
+	},
+	"item": [
+		{
+			"name": "US01 - Follow Seller Action",
+			"item": [
+				{
+					"name": "400 Buyer intenta seguirse a sí mismo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error cuando Buyer1 intenta seguir a Buyer1\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{host}}/users/{{buyer1}}/follow/{{buyer1}}"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error si el Seller no existe\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{host}}/users/{{buyer1}}/follow/{{non_existent_user}}"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Buyer no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error si el Buyer no existe\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{host}}/users/{{non_existent_user}}/follow/{{seller1}}"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Buyer1 sigue a Seller1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Buyer1 sigue a Seller1\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/users/{{buyer1}}/follow/{{seller1}}"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Buyer1 sigue a Seller2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Buyer1 sigue a Seller1\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/users/{{buyer1}}/follow/{{seller2}}"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Buyer3 sigue a Seller2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Buyer3 sigue a Seller2\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/users/{{buyer3}}/follow/{{seller2}}"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/8cacea09-86cd-43b1-9e9b-329a44ce8313/aW1hZ2UucG5n\" alt=\"\" height=\"455\" width=\"689\">"
+		},
+		{
+			"name": "US02 - Get seller followers count",
+			"item": [
+				{
+					"name": "200 Seller1 tiene 1 seguidor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El count del Seller1 es 1 seguidor\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.followers_count).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{seller1}}/followers/count"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Seller2 tiene 2 seguidores",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El count del Seller1 es 2 seguidores\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.followers_count).to.eql(2);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{seller2}}/followers/count"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error si el Seller no existe\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{non_existent_user}}/followers/count"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/959860d8-cc87-4957-a82c-a0c31301f630/aW1hZ2UucG5n\" alt=\"\" height=\"465\" width=\"682\">"
+		},
+		{
+			"name": "US03 - Get Followers List",
+			"item": [
+				{
+					"name": "200 El Seller1 es seguido solamente por el Buyer1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - El Seller1 es seguido solamente por el Buyer1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.followers).to.have.length(1);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{seller1}}/followers/list"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error si el Seller no existe\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{non_existent_user}}/followers/list"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/5a53ec1e-4ddf-446c-8317-ae76961b2640/aW1hZ2UucG5n\" alt=\"\" height=\"718\" width=\"678\">"
+		},
+		{
+			"name": "US04 - Get Followed List",
+			"item": [
+				{
+					"name": "200 Get followed list exitoso",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - El Buyer1 sigue al Seller1 y Seller2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.followed).to.have.length(2);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{buyer1}}/followed/list"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Buyer no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error si el Buyer no existe\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{non_existent_user}}/followed/list"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/31ef20f0-b920-4ce9-a1ea-835fc83fc637/aW1hZ2UucG5n\" alt=\"\" height=\"728\" width=\"677\">"
+		},
+		{
+			"name": "US05 - Create post",
+			"item": [
+				{
+					"name": "200 Seller1 crea Post Silla Gamer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Se crea post silla gamer\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.collectionVariables.set(\"postSillaGamer\", pm.response.json().id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{seller1}}\",\n    \"date\": \"20-04-2025\",\n    \"product\": {\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red & Black\",\n        \"note\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/products/post"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Seller1 crea Post Remera Nike",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Se crea post remera nike\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{seller1}}\",\n    \"date\": \"20-04-2024\",\n    \"product\": {\n        \"product_name\": \"Remera Nike Air\",\n        \"type\": \"Clothing\",\n        \"brand\": \"Nike\",\n        \"color\": \"White\",\n        \"note\": \"Air Line\"\n    },\n    \"category\": 82,\n    \"price\": 150.75\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/products/post"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Error si el Seller no existe\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{non_existent_user}}\",\n    \"date\": \"20-04-2025\",\n    \"product\": {\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red & Black\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/products/post"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/10ae3799-c120-487b-b591-b35e63879bc6/aW1hZ2UucG5n\" width=\"670\" height=\"506\">\n\n<img src=\"https://content.pstmn.io/b5a4f576-d634-47d2-bd73-189a10c753df/aW1hZ2UucG5n\" alt=\"\" height=\"607\" width=\"672\">"
+		},
+		{
+			"name": "US06 - Get Posts From Last 2 Weeks",
+			"item": [
+				{
+					"name": "400 Buyer2 is not following anyone",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status debe ser 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/products/followed/{{buyer2}}/list"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Buyer3 is following Seller2 with no posts []",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El array de posts debe estar vacío\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.posts).to.be.an('array').that.is.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/products/followed/{{buyer3}}/list"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Buyer1 ve posts de Seller1 y Seller2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El array de posts debe tener al menos un ítem\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.posts).to.be.an('array').that.is.not.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/products/followed/{{buyer1}}/list"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/b778c742-aa99-4cea-816d-c384b900c4b8/aW1hZ2UucG5n\" alt=\"\" height=\"88\" width=\"642\">\n\n<img src=\"https://content.pstmn.io/b7df3b42-4182-4d94-8c9f-8011b86f28ce/aW1hZ2UucG5n\" alt=\"\" height=\"683\" width=\"512\">\n\n<img src=\"https://content.pstmn.io/59cd6b9b-452f-47da-85f9-a4fe9364660c/aW1hZ2UucG5n\" alt=\"\" height=\"90\" width=\"506\">"
+		},
+		{
+			"name": "US07 - Unfollow Seller Action",
+			"item": [
+				{
+					"name": "200 Buyer1 deja de seguir a Seller1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Debe responder con 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"url": "{{host}}/users/{{buyer1}}/unfollow/{{seller1}}"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Buyer1 intenta dejar de seguir a Seller1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Debe responder con 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"url": "{{host}}/users/{{buyer3}}/unfollow/{{seller1}}"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Debe responder con 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{host}}/users/{{buyer1}}/unfollow/{{non_existent_user}}"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Buyer no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Debe responder con 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{host}}/users/{{non_existent_user}}/unfollow/{{seller1}}"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/bb84c80c-c730-4c40-b041-70415b6e4102/aW1hZ2UucG5n\" alt=\"\" height=\"313\" width=\"494\">"
+		},
+		{
+			"name": "US08 - Get Followers Sorted By Name (Asc/Desc)",
+			"item": [
+				{
+					"name": "200 Al Seller2 lo siguen Buyer1 y Buyer3 Ordenados Por Nombre Desc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"La lista de seguidores debe tener 2 elementos\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.followers).to.have.lengthOf(2);",
+									"});",
+									"",
+									"pm.test(\"Los userName deben estar ordenados en orden descendente\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var followers = jsonData.followers;",
+									"",
+									"    // Comprobar que el orden es descendente",
+									"    pm.expect(followers[0].user_name.localeCompare(followers[1].user_name)).to.be.greaterThan(0);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{seller2}}/followers?order=name_desc",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{seller2}}",
+								"followers"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "name_desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 Al Seller2 lo siguen Buyer1 y Buyer3 Ordenados Por Nombre Asc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"La lista de seguidores debe tener 2 elementos\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.followers).to.have.lengthOf(2);",
+									"});",
+									"",
+									"pm.test(\"Los userName deben estar ordenados en orden ascendente\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var followers = jsonData.followers;",
+									"",
+									"    // Comprobar que el orden es ascendente",
+									"    pm.expect(followers[0].user_name.localeCompare(followers[1].user_name)).to.be.lessThan(0);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{seller2}}/followers?order=name_asc",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{seller2}}",
+								"followers"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "name_asc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/7cfc224c-89d3-4661-a673-10757df572fe/aW1hZ2UucG5n\" alt=\"\" height=\"345\" width=\"502\">"
+		},
+		{
+			"name": "US09 - Get Sorted Posts By Date",
+			"item": [
+				{
+					"name": "200 Buyer1 sigue a Seller1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Buyer1 sigue a Seller1\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/users/{{buyer1}}/follow/{{seller1}}"
+					},
+					"response": []
+				},
+				{
+					"name": "200 Get sorted posts by date Asc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Los posts deben estar ordenados por fecha ascendente\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    const posts = jsonData.posts;",
+									"",
+									"    // Convertir las fechas al formato YYYY-MM-DD para poder ordenarlas",
+									"    const parseDate = (d) => {",
+									"        const [day, month, year] = d.split(\"-\");",
+									"        return new Date(`${year}-${month}-${day}`);",
+									"    };",
+									"",
+									"    let sorted = true;",
+									"    for (let i = 0; i < posts.length - 1; i++) {",
+									"        if (parseDate(posts[i].date) > parseDate(posts[i + 1].date)) {",
+									"            sorted = false;",
+									"            break;",
+									"        }",
+									"    }",
+									"",
+									"    pm.expect(sorted).to.be.true;",
+									"});",
+									"pm.test(\"El array de posts debe tener al menos un ítem\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.posts).to.be.an('array').that.is.not.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/followed/{{buyer1}}/sorted?order=date_asc",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"followed",
+								"{{buyer1}}",
+								"sorted"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "date_asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 Get sorted posts by date Desc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Los posts deben estar ordenados por fecha descendente\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    const posts = jsonData.posts;",
+									"",
+									"    // Convertir las fechas al formato YYYY-MM-DD para poder ordenarlas",
+									"    const parseDate = (d) => {",
+									"        const [day, month, year] = d.split(\"-\");",
+									"        return new Date(`${year}-${month}-${day}`);",
+									"    };",
+									"",
+									"    let sorted = true;",
+									"    for (let i = 0; i < posts.length - 1; i++) {",
+									"        if (parseDate(posts[i].date) < parseDate(posts[i + 1].date)) {",
+									"            sorted = false;",
+									"            break;",
+									"        }",
+									"    }",
+									"",
+									"    pm.expect(sorted).to.be.true;",
+									"});",
+									"pm.test(\"El array de posts debe tener al menos un ítem\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.posts).to.be.an('array').that.is.not.empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/followed/{{buyer1}}/sorted?order=date_desc",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"followed",
+								"{{buyer1}}",
+								"sorted"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "date_desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/7dd9a2d2-3545-4d86-94b0-1ea2f1638bec/aW1hZ2UucG5n\" alt=\"\" height=\"321\" width=\"497\">"
+		},
+		{
+			"name": "US10 - Create promo post",
+			"item": [
+				{
+					"name": "200 Seller1 crea Promo Post Silla Gamer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Debe responder con status 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{seller1}}\",\n    \"date\": \"29-04-2021\",\n    \"product\": {\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red & Black\",\n        \"note\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50,\n    \"has_promo\": true,\n    \"discount\": 0.25\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/products/promo-post"
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/5d77c9a0-6039-491b-99d1-f37a6398f117/aW1hZ2UucG5n\" width=\"506\" height=\"458\">\n\n<img src=\"https://content.pstmn.io/7a97d669-8682-4d41-9e2a-214018ddb87a/aW1hZ2UucG5n\" alt=\"\" height=\"485\" width=\"503\">"
+		},
+		{
+			"name": "US11 - Get promo posts count from Seller",
+			"item": [
+				{
+					"name": "200 Seller2 tiene 0 posts en promo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Seller2 tiene 0 posts en promo\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.promo_products_count).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/promo-post/count?user_id={{seller2}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"promo-post",
+								"count"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{seller2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 Seller1 tiene 1 post en promo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Seller 1 tiene 1 post en promo\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.promo_products_count).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/promo-post/count?user_id={{seller1}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"promo-post",
+								"count"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{seller1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Seller not found\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/promo-post/list?user_id={{non_existent_user}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"promo-post",
+								"list"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{non_existent_user}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/de6326ce-e00f-4c40-a917-8edba64d0ad3/aW1hZ2UucG5n\" alt=\"\" height=\"403\" width=\"503\">"
+		},
+		{
+			"name": "US12 - Get promo posts from Seller",
+			"item": [
+				{
+					"name": "200 Get promo posts success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Promo posts Seller1\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/promo-post/list?user_id={{seller1}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"promo-post",
+								"list"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{seller1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Seller not found\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/promo-post/list?user_id={{non_existent_user}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"promo-post",
+								"list"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{non_existent_user}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/60a5cf4d-42b3-463e-9ffe-3dd1c25f4450/aW1hZ2UucG5n\" alt=\"\" height=\"542\" width=\"516\">\n\n<img src=\"https://content.pstmn.io/1848be22-34b4-472c-8123-e1278cc50134/aW1hZ2UucG5n\" alt=\"\" height=\"601\" width=\"503\">"
+		},
+		{
+			"name": "US13 - Get average price *BONUS*",
+			"item": [
+				{
+					"name": "200 Get average post price by seller",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Average post price from Seller1\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/users/{{seller1}}/average-post-price"
+					},
+					"response": []
+				},
+				{
+					"name": "400 Seller no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 - Seller not found\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/products/promo-post/list?user_id={{non_existent_user}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"products",
+								"promo-post",
+								"list"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{non_existent_user}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US14 - Get Post *BONUS*",
+			"item": [
+				{
+					"name": "200 Get post Silla Gamer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Post Silla Gamer\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/products/post/{{postSillaGamer}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US15 - Get Buyer Purchase *BONUS*",
+			"item": [
+				{
+					"name": "200 Get purchase Silla Gamer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 - Post Silla Gamer\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users/{{buyer1}}/buyer-purchases?product=silla gamer",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"{{buyer1}}",
+								"buyer-purchases"
+							],
+							"query": [
+								{
+									"key": "product",
+									"value": "silla gamer"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "seller1",
+			"value": "87a3d636-2adf-4640-9872-83e1050427e7",
+			"type": "string"
+		},
+		{
+			"key": "buyer1",
+			"value": "0f91d65b-3c7f-4876-8de9-c056b8bba1d5",
+			"type": "string"
+		},
+		{
+			"key": "seller2",
+			"value": "928f7404-bd16-43f5-bb3e-25a8c01b68d4",
+			"type": "string"
+		},
+		{
+			"key": "buyer2",
+			"value": "d179b6ff-0c74-4020-b5f3-e9742445d00f",
+			"type": "string"
+		},
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "non_existent_user",
+			"value": "928f7404-bd16-43f5-bb3e-25a8c01b68d7",
+			"type": "string"
+		},
+		{
+			"key": "buyer3",
+			"value": "d5e9c14f-3b64-47bb-96ca-6f047477f7f5",
+			"type": "string"
+		},
+		{
+			"key": "postSillaGamer",
+			"value": ""
+		}
+	]
+}
