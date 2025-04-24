@@ -130,17 +130,7 @@ public class SellerService implements ISellerService {
     private Seller getExistingSeller(UUID sellerId) {
         return sellerRepository.findSellerById(sellerId)
                 .orElseThrow(() -> new BadRequest("No seller found for " + sellerId));
-    }
 
-    private Comparator<Buyer> getComparatorForOrder(String order) {
-        Comparator<Buyer> comparator = Comparator.comparing(
-                buyer -> userService.findById(buyer.getId()).getUserName());
-        return switch (order.toLowerCase()) {
-            case "name_asc" -> comparator;
-            case "name_desc" -> comparator.reversed();
-            default -> throw new BadRequest("Invalid sorting parameter: " + order
-                    + ", please try again with a valid one (name_asc or name_desc)");
-        };
     }
 
     private SellerDto mapToSellerDto(Seller seller) {
