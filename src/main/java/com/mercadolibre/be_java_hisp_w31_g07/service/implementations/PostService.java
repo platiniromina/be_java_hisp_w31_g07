@@ -25,7 +25,7 @@ public class PostService implements IPostService {
     private final IPostRepository postRepository;
     private final ObjectProvider<ISellerService> sellerServiceProvider;
     private final ObjectProvider<IProductService> productServiceProvider;
-    private final IBuyerService buyerService;
+    private final ObjectProvider<IBuyerService> buyerServiceProvider;
     private final IUserService userService;
     private final GenericObjectMapper mapper;
 
@@ -137,7 +137,7 @@ public class PostService implements IPostService {
     // ------------------------------
 
     private List<UUID> getFollowedSellerIdsOrThrow(UUID buyerId) {
-        List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
+        List<SellerResponseDto> sellers = buyerServiceProvider.getObject().findFollowed(buyerId).getFollowed();
 
         if (sellers.isEmpty()) {
             throw new BadRequest("The buyer is not following any sellers");
