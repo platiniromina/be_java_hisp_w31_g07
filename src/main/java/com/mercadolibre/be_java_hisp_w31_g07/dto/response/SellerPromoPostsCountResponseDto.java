@@ -1,7 +1,5 @@
 package com.mercadolibre.be_java_hisp_w31_g07.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,10 +13,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellerPromoPostsCountResponseDto {
-    @JsonAlias("user_id")
+    @JsonProperty("user_id")
     private UUID userId;
-    @JsonAlias("user_name")
+    @JsonProperty("user_name")
     private String userName;
-    @JsonAlias("promo_products_count")
+    @JsonProperty("promo_products_count")
     private Integer promoPostsCount;
 }

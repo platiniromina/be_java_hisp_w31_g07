@@ -37,23 +37,27 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public PostResponseDto findPost(UUID postId) {
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Post " + postId + " not found"));
-
-        return mapper.convertValue(post, PostResponseDto.class);
-    }
-
-    @Override
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
         validateExistingSeller(userId);
         List<Post> postList = postRepository.findHasPromo(userId);
 
         if (postList.isEmpty()) {
-            throw new NotFoundException("Posts from: " + userId + " not found");
+            throw new BadRequest("Posts from: " + userId + " not found");
         }
         return postList.stream().map(post -> mapper.convertValue(post, PostResponseDto.class)).toList();
+    }
+
+    @Override
+    public Double findAveragePrice(UUID userId) {
+        return postRepository.findPricePerPosts(userId).stream().map(post -> {
+            double finalPrice = post.getPrice();
+            if ((post.getHasPromo())) {
+                post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+            }
+            return post;
+        })
+                .mapToDouble(Post::getPrice)
+                .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
     }
 
     @Override
@@ -65,6 +69,43 @@ public class PostService implements IPostService {
                 sellerId,
                 userService.findById(sellerId).getUserName(),
                 promoPostsCount);
+    }
+
+    @Override
+    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId) {
+        List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
+
+        if (sellers.isEmpty()) {
+            throw new BadRequest("The buyer is not following any sellers");
+        }
+
+        List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
+        List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
+
+        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
+                .toList();
+        return new FollowersPostsResponseDto(buyerId, postsDtos);
+    }
+
+    @Override
+    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
+        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
+        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
+        return new FollowersPostsResponseDto(buyerId, sortedPosts);
+    }
+
+    @Override
+    public PostDto findProductByPurchase(String product) {
+        return mapper.convertValue(postRepository.findProductByPurchase(product), PostDto.class);
+    }
+
+    @Override
+    public PostResponseDto findPost(UUID postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
+
+        return mapper.convertValue(post, PostResponseDto.class);
     }
 
     // ------------------------------
@@ -89,28 +130,6 @@ public class PostService implements IPostService {
         postRepository.createPost(post);
     }
 
-    @Override
-    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId) {
-        List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
-
-        if (sellers.isEmpty()) {
-            throw new NotFoundException("The buyer is not following any sellers");
-        }
-
-        List<UUID> sellerIds = sellers.stream().map(SellerResponseDto::getId).toList();
-        List<Post> posts = postRepository.findLatestPostsFromSellers(sellerIds);
-
-        List<PostResponseDto> postsDtos = posts.stream().map(post -> mapper.convertValue(post, PostResponseDto.class))
-                .toList();
-        return new FollowersPostsResponseDto(buyerId, postsDtos);
-    }
-
-    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
-        FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
-        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
-        return new FollowersPostsResponseDto(buyerId, sortedPosts);
-    }
-
     private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
         Comparator<PostResponseDto> comparator = switch (order.toLowerCase()) {
             case "date_asc" -> Comparator.comparing(PostResponseDto::getDate);
@@ -122,5 +141,6 @@ public class PostService implements IPostService {
         return posts.stream()
                 .sorted(comparator)
                 .toList();
+
     }
 }

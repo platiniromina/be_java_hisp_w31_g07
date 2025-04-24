@@ -1,16 +1,19 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.*;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.NotFoundException;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
@@ -18,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,13 @@ public class SellerService implements ISellerService {
     private final IUserService userService;
     private final IBuyerService buyerService;
 
+    @Autowired
+    @Lazy
+    private IPostService postService;
+
+    // ------------------------------
+    // Public methods
+    // ------------------------------
     @Override
     public void followSeller(UUID sellerId, UUID buyerId) {
         validateNotSameUser(sellerId, buyerId);
@@ -42,7 +55,7 @@ public class SellerService implements ISellerService {
     @Override
     public SellerDto findFollowers(UUID sellerId) {
         Seller seller = sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("Buyer: " + sellerId + " not found"));
+                .orElseThrow(() -> new BadRequest("Buyer: " + sellerId + " not found"));
 
         String buyerUserName = userService.findById(seller.getId()).getUserName();
         return BuyerMapper.toSellerDto(seller, buyerUserName);
@@ -74,42 +87,16 @@ public class SellerService implements ISellerService {
         return getSellerById(sellerId);
     }
 
-
-    private Seller getSellerById(UUID id) {
-        return sellerRepository.findSellerById(id)
-                .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
+    @Override
+    public SellerAveragePrice findPricePerPosts(UUID userId) {
+        Double averagePrice = postService.findAveragePrice(userId);
+        return new SellerAveragePrice(
+                userId,
+                userService.findById(userId).getUserName(),
+                averagePrice);
     }
 
-    private SellerDto mapToDto(Seller seller) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<BuyerResponseDto> followers = seller.getFollowers().stream()
-                .map(buyer -> {
-                    BuyerResponseDto buyerReponseDto = mapper.convertValue(buyer, BuyerResponseDto.class);
-                    UserDto user = userService.findById(buyer.getId());
-                    buyerReponseDto.setUserName(user.getUserName());
-                    return buyerReponseDto;
-                })
-                .toList();
-
-        return new SellerDto(
-                seller.getId(),
-                userService.findById(seller.getId()).getUserName(),
-                followers,
-                seller.getFollowerCount());
-    }
-
-    private void validateNotSameUser(UUID sellerId, UUID buyerId) {
-        if (sellerId.equals(buyerId))
-            throw new BadRequest("User cannot follow themselves.");
-    }
-
-    private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
-        boolean isFollowedBy = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, seller.getId());
-        boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
-        return isFollowing && isFollowedBy;
-    }
-
+    @Override
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
         Seller seller = getExistingSeller(sellerId);
 
@@ -123,9 +110,33 @@ public class SellerService implements ISellerService {
         return mapToSellerDto(seller);
     }
 
+    // ------------------------------
+    // Private methods
+    // ------------------------------
+    private Seller getSellerById(UUID id) {
+        return sellerRepository.findSellerById(id)
+                .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
+    }
+
+
+    // ------------------------------
+    // Validation methods
+    // ------------------------------
+
+    private void validateNotSameUser(UUID sellerId, UUID buyerId) {
+        if (sellerId.equals(buyerId))
+            throw new BadRequest("User cannot follow themselves.");
+    }
+
+    private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
+        boolean isFollowedBy = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, seller.getId());
+        boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
+        return isFollowing && isFollowedBy;
+    }
+
     private Seller getExistingSeller(UUID sellerId) {
         return sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new NotFoundException("No seller found for " + sellerId));
+                .orElseThrow(() -> new BadRequest("No seller found for " + sellerId));
     }
 
     private SellerDto mapToSellerDto(Seller seller) {
@@ -148,7 +159,6 @@ public class SellerService implements ISellerService {
                 seller.getFollowerCount());
     }
 
-
     private Comparator<Buyer> getComparatorForOrder(String order) {
         Comparator<Buyer> comparator = Comparator.comparing(
                 buyer -> userService.findById(buyer.getId()).getUserName());
@@ -158,7 +168,8 @@ public class SellerService implements ISellerService {
         } else if ("name_asc".equalsIgnoreCase(order)) {
             return comparator;
         } else {
-            throw new IllegalArgumentException("Invalid order: " + order);
+            throw new BadRequest("Invalid sorting parameter: " + order
+                    + ", please try again with a valid one (name_asc or name_desc)");
         }
     }
 

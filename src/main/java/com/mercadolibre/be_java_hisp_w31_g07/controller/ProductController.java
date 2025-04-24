@@ -23,7 +23,7 @@ public class ProductController {
     private final IPostService postService;
 
     @GetMapping("/promo-post/list")
-    public ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam UUID userId) {
+    public ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam(name = "user_id") UUID userId) {
         return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
 
@@ -42,7 +42,6 @@ public class ProductController {
     @GetMapping("/promo-post/count")
     public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(
             @RequestParam(name = "user_id") UUID userId) {
-
         SellerPromoPostsCountResponseDto promoPostsCount = postService.getPromoPostsCount(userId);
         return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
     }
@@ -64,5 +63,11 @@ public class ProductController {
         FollowersPostsResponseDto response = postService.sortPostsByDate(userId, order);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
+        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
+    }
+
 
 }
