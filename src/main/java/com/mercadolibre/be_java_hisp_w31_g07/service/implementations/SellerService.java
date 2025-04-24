@@ -159,7 +159,7 @@ public class SellerService implements ISellerService {
             case "name_asc" -> comparator;
             case "name_desc" -> comparator.reversed();
             default -> throw new BadRequest("Invalid sorting parameter: " + order
-                    + ", please try again with a valid one (name_asc or name_desc)");
+                    + ", please try again with a valid one (name_asc or name_desc) ");
         };
     }
 }
