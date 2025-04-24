@@ -35,7 +35,7 @@ public interface IPostService {
      *
      * @param userId contains the user id to link with a Post.
      * @return average price related with a user.
-     * @throws Not Found Exception if the seller doesn't have a post.
+     * @throws BadRequest if the seller doesn't have a post.
      */
     public Double findAveragePrice(UUID userId);
 
@@ -58,16 +58,14 @@ public interface IPostService {
      */
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
 
-    // ------------------------------ START TESTING ------------------------------
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-
-    // It should be removed in the final version of the code.
-
+    /**
+     * Retrieves a post by its unique identifier.
+     *
+     * @param postId the unique identifier of the post to be retrieved.
+     * @return a {@link PostResponseDto} containing the post's details.
+     * @throws BadRequest if the post with the given ID cannot be found.
+     */
     public PostResponseDto findPost(UUID postId);
-
-    // ------------------------------ END TESTING ------------------------------
 
     /**
      * Returns the posts from sellers followed by the given buyer, sorted by the
@@ -82,7 +80,7 @@ public interface IPostService {
      * @return a {@link FollowersPostsResponseDto} containing the sorted list of
      * posts from the sellers
      * followed by the buyer.
-     * @throws IllegalArgumentException if the provided order is invalid.
+     * @throws BadRequest if the provided order is invalid.
      */
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
 }

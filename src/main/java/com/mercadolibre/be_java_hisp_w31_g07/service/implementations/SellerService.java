@@ -14,8 +14,6 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,14 +24,12 @@ public class SellerService implements ISellerService {
     private final ISellerRepository sellerRepository;
     private final IUserService userService;
     private final IBuyerService buyerService;
-
-    @Autowired
-    @Lazy
-    private IPostService postService;
+    private final IPostService postService;
 
     // ------------------------------
     // Public methods
     // ------------------------------
+
     @Override
     public void followSeller(UUID sellerId, UUID buyerId) {
         validateNotSameUser(sellerId, buyerId);
@@ -93,46 +89,42 @@ public class SellerService implements ISellerService {
 
     @Override
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
-        Seller seller = getExistingSeller(sellerId);
-
+        Seller seller = getSellerById(sellerId);
         List<Buyer> followers = new ArrayList<>(seller.getFollowers());
-
         Comparator<Buyer> comparator = getComparatorForOrder(order);
         followers.sort(comparator);
-
         seller.setFollowers(followers);
-
         return mapToSellerDto(seller);
     }
 
     // ------------------------------
     // Private methods
     // ------------------------------
+
+    private Comparator<Buyer> getComparatorForOrder(String order) {
+        Comparator<Buyer> comparator = Comparator.comparing(
+                buyer -> userService.findById(buyer.getId()).getUserName());
+
+        return switch (order.toLowerCase()) {
+            case "name_desc" -> comparator.reversed();
+            case "name_asc" -> comparator;
+            default ->
+                    throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
+        };
+    }
+
+    // ------------------------------
+    // Data Fetching Methods
+    // ------------------------------
+
     private Seller getSellerById(UUID id) {
         return sellerRepository.findSellerById(id)
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
     }
 
-
     // ------------------------------
-    // Validation methods
+    // Data Transformation Methods
     // ------------------------------
-    private void validateNotSameUser(UUID sellerId, UUID buyerId) {
-        if (sellerId.equals(buyerId))
-            throw new BadRequest("User cannot follow themselves.");
-    }
-
-    private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
-        boolean isFollowedBy = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, seller.getId());
-        boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
-        return isFollowing && isFollowedBy;
-    }
-
-
-    private Seller getExistingSeller(UUID sellerId) {
-        return sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new BadRequest("No seller found for " + sellerId));
-    }
 
     private SellerDto mapToSellerDto(Seller seller) {
         Map<UUID, String> userNames = new HashMap<>();
@@ -154,17 +146,18 @@ public class SellerService implements ISellerService {
                 seller.getFollowerCount());
     }
 
-    private Comparator<Buyer> getComparatorForOrder(String order) {
-        Comparator<Buyer> comparator = Comparator.comparing(
-                buyer -> userService.findById(buyer.getId()).getUserName());
-        
-        return switch (order.toLowerCase()) {
-            case "name_desc" -> comparator.reversed();
-            case "name_asc" -> comparator;
-            default ->
-                    throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
-        };
+    // ------------------------------
+    // Validation methods
+    // ------------------------------
 
+    private void validateNotSameUser(UUID sellerId, UUID buyerId) {
+        if (sellerId.equals(buyerId))
+            throw new BadRequest("User cannot follow themselves.");
     }
 
+    private boolean validateMutualFollowing(Buyer buyer, Seller seller) {
+        boolean isFollowedBy = sellerRepository.sellerIsBeingFollowedByBuyer(buyer, seller.getId());
+        boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
+        return isFollowing && isFollowedBy;
+    }
 }

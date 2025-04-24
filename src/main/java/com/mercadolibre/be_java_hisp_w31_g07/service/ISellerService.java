@@ -36,7 +36,6 @@ public interface ISellerService {
      *
      * @param sellerId the unique identifier of the seller to be followed
      * @param buyerId  the unique identifier of the buyer who wants to follow the
-     * @param buyerId  the unique identifier of the buyer who wants to follow the
      *                 seller
      * @throws BadRequest if the sellerId and buyerId are the same
      * @throws BadRequest if the seller or buyer cannot be found
@@ -89,8 +88,7 @@ public interface ISellerService {
      * list of followers
      * @throws IllegalArgumentException if the provided order is invalid (not
      *                                  "name_asc" or "name_desc")
-     * @throws NotFoundException        if the seller with the specified ID is not
-     *                                  found
+     * @throws BadRequest               if the seller with the specified ID is not found
      */
     public SellerDto sortFollowersByName(UUID sellerId, String order);
 }
