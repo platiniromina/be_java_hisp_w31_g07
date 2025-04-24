@@ -15,9 +15,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +48,7 @@ public class SellerService implements ISellerService {
                 .orElseThrow(() -> new BadRequest("Buyer: " + sellerId + " not found"));
 
         String buyerUserName = userService.findById(seller.getId()).getUserName();
-        return BuyerMapper.toSellerDto(seller, buyerUserName);
+        return BuyerMapper.toSellerDto(seller, buyerUserName, buildUsernamesMap(seller));
     }
 
     @Override
@@ -90,16 +88,19 @@ public class SellerService implements ISellerService {
 
     @Override
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
-        Seller seller = getSellerById(sellerId);
         String sellerUsername = userService.findById(sellerId).getUserName();
 
-        List<Buyer> sortedFollowers = seller.getFollowers().stream()
-                .sorted(getComparatorForOrder(order))
-                .toList();
+        Seller seller = getSellerById(sellerId);
 
-        seller.setFollowers(sortedFollowers);
+        List<Buyer> followers = new ArrayList<>(seller.getFollowers());
 
-        return BuyerMapper.toSellerDto(seller, sellerUsername);
+        Comparator<Buyer> comparator = getComparatorForOrder(order);
+
+        followers.sort(comparator);
+
+        seller.setFollowers(followers);
+
+        return BuyerMapper.toSellerDto(seller, sellerUsername, buildUsernamesMap(seller));
     }
 
     // ------------------------------
@@ -116,6 +117,21 @@ public class SellerService implements ISellerService {
             default -> throw new BadRequest("Invalid sorting parameter: " + order
                     + ", please try again with a valid one (name_asc or name_desc)");
         };
+    }
+
+    private Map<UUID, String> buildUsernamesMap(Seller seller) {
+        Map<UUID, String> userNames = new HashMap<>();
+
+        userNames.put(seller.getId(), userService.findById(seller.getId()).getUserName());
+
+        seller.getFollowers().forEach(buyer ->
+                userNames.computeIfAbsent(
+                        buyer.getId(),
+                        id -> userService.findById(id).getUserName()
+                )
+        );
+
+        return userNames;
     }
 
     // ------------------------------
