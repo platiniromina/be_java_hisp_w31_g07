@@ -1,11 +1,12 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import java.util.UUID;
+
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerPurchasesResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-
-import java.util.UUID;
 
 public interface IBuyerService {
     /**
@@ -13,7 +14,8 @@ public interface IBuyerService {
      *
      * @param userId id to find a buyer.
      * @return a buyer with his followed list if the buyer is found,
-     * or an Exception.
+     *         or an Exception.
+     *         or an Exception.
      */
     public BuyerDto findFollowed(UUID userId);
 
@@ -32,7 +34,8 @@ public interface IBuyerService {
      * @param seller  The seller to check if the buyer is following.
      * @param buyerId The unique identifier of the buyer.
      * @return {@code true} if the buyer is following the seller, {@code false}
-     * otherwise.
+     *         otherwise.
+     *         otherwise.
      */
     public boolean buyerIsFollowingSeller(Seller seller, UUID buyerId);
 
@@ -49,8 +52,10 @@ public interface IBuyerService {
      * Removes the seller from the buyer's followed list
      *
      * @param seller  The seller to be removed from the buyer's followed list
+     * @param seller  The seller to be removed from the buyer's followed list
      * @param buyerId The unique identifier of the buyer.
      */
     public void removeSellerFromFollowedList(Seller seller, UUID buyerId);
 
+    BuyerPurchasesResponseDto findBuyerPurchase(UUID userId, String product);
 }

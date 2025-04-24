@@ -44,7 +44,8 @@ public interface IPostRepository {
      *
      * @param userId the unique identifier of the seller whose posts with promotions
      *               are to be retrieved.
-     * @return a {@link List} of {@link Post} objects that have promotions and belong
+     * @return a {@link List} of {@link Post} objects that have promotions and
+     * belong
      * to the specified seller; may be empty if no such posts exist.
      */
     public List<Post> findHasPromo(UUID userId);
@@ -58,10 +59,19 @@ public interface IPostRepository {
     public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
 
     /**
-     * Retrieves all posts matching the sellers ids.
-     * And calculates the discount.
+     * Retrieves a list of posts associated with a specific seller ID.
      *
-     * @param userId the unique identifier of the sellers.
+     * @param userId the UUID of the seller whose posts are to be retrieved
+     * @return a list of {@link Post} objects that belong to the specified seller
      */
-    public List<Post> findPricePerPosts(UUID userId);
+    public List<Post> findPostsBySellerId(UUID userId);
+
+    /**
+     * Finds a post containing a product by its name.
+     *
+     * @param product the name of the product to search for (case-insensitive).
+     * @return an {@link Optional} containing the {@link Post} if a match is found,
+     * or an empty {@link Optional} if no match is found.
+     */
+    public Optional<Post> findProductByPurchase(String product);
 }

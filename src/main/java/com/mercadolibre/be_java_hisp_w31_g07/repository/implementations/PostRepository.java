@@ -67,17 +67,15 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
-    public List<Post> findPricePerPosts(UUID userId) {
+    public List<Post> findPostsBySellerId(UUID userId) {
         return postList.stream()
                 .filter(post -> post.getSellerId().equals(userId))
-                .map(post -> {
-                    double finalPrice = post.getPrice();
+                .toList();
+    }
 
-                    if (post.getHasPromo()) {
-                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
-                    }
-
-                    return post;
-                }).toList();
+    @Override
+    public Optional<Post> findProductByPurchase(String product) {
+        return postList.stream().filter(post -> post.getProduct().getProductName().equalsIgnoreCase(product))
+                .findFirst();
     }
 }

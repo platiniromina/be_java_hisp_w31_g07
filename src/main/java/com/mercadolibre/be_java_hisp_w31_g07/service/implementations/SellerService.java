@@ -108,8 +108,8 @@ public class SellerService implements ISellerService {
         return switch (order.toLowerCase()) {
             case "name_desc" -> comparator.reversed();
             case "name_asc" -> comparator;
-            default ->
-                    throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
+            default -> throw new BadRequest("Invalid sorting parameter: " + order
+                    + ", please try again with a valid one (name_asc or name_desc)");
         };
     }
 

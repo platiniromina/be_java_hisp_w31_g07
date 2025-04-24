@@ -22,7 +22,7 @@ public interface IPostService {
     public PostResponseDto createPost(PostDto newPost);
 
     /**
-     * Find the user's posts
+     * Find the user's promo posts
      *
      * @param userId contains the user id to link with a Post
      * @return list of Posts related with a user
@@ -31,7 +31,7 @@ public interface IPostService {
     public List<PostResponseDto> findUserPromoPosts(UUID userId);
 
     /**
-     * Find the user's posts
+     * Find average price of a user's post
      *
      * @param userId contains the user id to link with a Post.
      * @return average price related with a user.
@@ -80,7 +80,15 @@ public interface IPostService {
      * @return a {@link FollowersPostsResponseDto} containing the sorted list of
      * posts from the sellers
      * followed by the buyer.
-     * @throws BadRequest if the provided order is invalid.
+     * @throws IllegalArgumentException if the provided order is invalid.
      */
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
+
+    /**
+     * Retrieves purchase matching the products.
+     *
+     * @param product product name that matches with a userProduct in a post.
+     * @return a PostDto.
+     */
+    public PostDto findProductByPurchase(String product);
 }

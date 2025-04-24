@@ -57,7 +57,13 @@ public class PostService implements IPostService {
 
     @Override
     public Double findAveragePrice(UUID userId) {
-        return postRepository.findPricePerPosts(userId).stream()
+        return postRepository.findPostsBySellerId(userId).stream().map(post -> {
+                    double finalPrice = post.getPrice();
+                    if ((post.getHasPromo())) {
+                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
+                    }
+                    return post;
+                })
                 .mapToDouble(Post::getPrice)
                 .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
     }
@@ -87,6 +93,13 @@ public class PostService implements IPostService {
         FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
         List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
         return new FollowersPostsResponseDto(buyerId, sortedPosts);
+    }
+
+    @Override
+    public PostDto findProductByPurchase(String product) {
+        Post post = postRepository.findProductByPurchase(product)
+                .orElseThrow(() -> new BadRequest("No purchase found for product: " + product));
+        return mapper.map(post, PostDto.class);
     }
 
     // ------------------------------

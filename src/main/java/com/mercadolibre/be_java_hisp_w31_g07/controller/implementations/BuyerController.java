@@ -1,8 +1,8 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller.implementations;
 
-
 import com.mercadolibre.be_java_hisp_w31_g07.controller.IBuyerController;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerPurchasesResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,4 +21,10 @@ public class BuyerController implements IBuyerController {
     public ResponseEntity<BuyerDto> getFollowed(UUID userId) {
         return new ResponseEntity<>(buyerService.findFollowed(userId), HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<BuyerPurchasesResponseDto> getBuyerPurchases(UUID userId, String product) {
+        return new ResponseEntity<>(buyerService.findBuyerPurchase(userId, product), HttpStatus.OK);
+    }
+
 }
