@@ -45,11 +45,6 @@ public class ProductController {
         return new ResponseEntity<>(promoPostsCount, HttpStatus.OK);
     }
 
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
-        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
-    }
-
     @GetMapping("/followed/{userId}/list")
     public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(@PathVariable UUID userId) {
         return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);
@@ -61,6 +56,11 @@ public class ProductController {
             @RequestParam(name = "order", required = false, defaultValue = "date_desc") String order) {
         FollowersPostsResponseDto response = postService.sortPostsByDate(userId, order);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId) {
+        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
     }
 
 }

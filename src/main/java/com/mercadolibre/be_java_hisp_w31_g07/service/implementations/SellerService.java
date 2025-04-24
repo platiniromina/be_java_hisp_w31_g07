@@ -1,5 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
+import java.util.*;
+
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
@@ -17,8 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -113,7 +113,6 @@ public class SellerService implements ISellerService {
                 .orElseThrow(() -> new BadRequest("Seller " + id + " not found"));
     }
 
-
     // ------------------------------
     // Validation methods
     // ------------------------------
@@ -127,7 +126,6 @@ public class SellerService implements ISellerService {
         boolean isFollowing = buyerService.buyerIsFollowingSeller(seller, buyer.getId());
         return isFollowing && isFollowedBy;
     }
-
 
     private Seller getExistingSeller(UUID sellerId) {
         return sellerRepository.findSellerById(sellerId)
@@ -163,7 +161,8 @@ public class SellerService implements ISellerService {
         } else if ("name_asc".equalsIgnoreCase(order)) {
             return comparator;
         } else {
-            throw new BadRequest("Invalid sorting parameter: " + order + ", please try again with a valid one (name_asc or name_desc)");
+            throw new BadRequest("Invalid sorting parameter: " + order
+                    + ", please try again with a valid one (name_asc or name_desc)");
         }
     }
 
