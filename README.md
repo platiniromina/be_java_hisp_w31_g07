@@ -12,6 +12,9 @@ SocialMeli is a beta feature for Mercado Libre that enables buyers to follow the
 ## Documentation :open_book:
 * [Technical requirements](https://docs.google.com/document/d/1GxOIhMl8WKETjMy8SpJtW5eWHGQ7wlv5/edit?usp=sharing&ouid=102049442333992462076&rtpof=true&sd=true)
 
+## Entity-relation diagram 🔗
+![Entity relation diagram](src/main/resources/er_diagram.png)
+
 ## Developers :bust_in_silhouette:
 * **Carolina Beatríz Seoane** - [CarolinaSeoane](https://github.com/CarolinaSeoane)
 * **Delfina Tognolini** - [Delfina444](https://github.com/Delfina444)
