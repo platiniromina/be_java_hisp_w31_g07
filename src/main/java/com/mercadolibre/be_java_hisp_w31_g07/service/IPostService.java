@@ -1,13 +1,13 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface IPostService {
     /**
@@ -22,7 +22,7 @@ public interface IPostService {
     public PostResponseDto createPost(PostDto newPost);
 
     /**
-     * Find the user's posts
+     * Find the user's promo posts
      *
      * @param userId contains the user id to link with a Post
      * @return list of Posts related with a user
@@ -31,11 +31,11 @@ public interface IPostService {
     public List<PostResponseDto> findUserPromoPosts(UUID userId);
 
     /**
-     * Find the user's posts
+     * Find average price of a user's post
      *
      * @param userId contains the user id to link with a Post.
      * @return average price related with a user.
-     * @throws Not Found Exception if the seller doesn't have a post.
+     * @throws BadRequest if the seller doesn't have a post.
      */
     public Double findAveragePrice(UUID userId);
 
@@ -53,21 +53,19 @@ public interface IPostService {
      * @param sellerId the unique identifier of the seller whose promotional
      *                 posts count is to be retrieved.
      * @return a {@link SellerPromoPostsCountResponseDto} containing the seller's
-     *         ID, username, and the count of promotional posts for the seller.
+     * ID, username, and the count of promotional posts for the seller.
      * @throws BadRequest if the seller cannot be found.
      */
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
 
-    // ------------------------------ START TESTING ------------------------------
-    // FOR TESTING PURPOSES ONLY
-    // This endpoint is not part of the original requirements
-    // and is only used to verify the functionality of the followSeller method.
-
-    // It should be removed in the final version of the code.
-
+    /**
+     * Retrieves a post by its unique identifier.
+     *
+     * @param postId the unique identifier of the post to be retrieved.
+     * @return a {@link PostResponseDto} containing the post's details.
+     * @throws BadRequest if the post with the given ID cannot be found.
+     */
     public PostResponseDto findPost(UUID postId);
-
-    // ------------------------------ END TESTING ------------------------------
 
     /**
      * Returns the posts from sellers followed by the given buyer, sorted by the
@@ -79,12 +77,18 @@ public interface IPostService {
      *                ascending order
      *                or "date_desc" for descending order. Defaults to "date_desc"
      *                if not provided.
-     *
      * @return a {@link FollowersPostsResponseDto} containing the sorted list of
-     *         posts from the sellers
-     *         followed by the buyer.
-     *
+     * posts from the sellers
+     * followed by the buyer.
      * @throws IllegalArgumentException if the provided order is invalid.
      */
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
+
+    /**
+     * Retrieves purchase matching the products.
+     *
+     * @param product product name that matches with a userProduct in a post.
+     * @return a PostDto.
+     */
+    public PostDto findProductByPurchase(String product);
 }

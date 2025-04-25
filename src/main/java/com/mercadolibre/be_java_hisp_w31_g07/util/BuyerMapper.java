@@ -8,7 +8,10 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import lombok.AllArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -41,18 +44,22 @@ public class BuyerMapper {
         return sellerDto;
     }
 
-    public static SellerDto toSellerDto(Seller seller, String userName) {
+    public static SellerDto toSellerDto(Seller seller, String userName, Map<UUID, String> userNames) {
         SellerDto sellerDto = new SellerDto();
         sellerDto.setId(seller.getId());
 
         sellerDto.setUserName(userName);
 
-        List<BuyerResponseDto> followerBuyer = seller.getFollowers().stream()
-                .map(buyer -> toBuyerReponseDto(buyer, userName))
-                .collect(Collectors.toList());
+        List<BuyerResponseDto> followers = seller.getFollowers().stream()
+                .map(buyer -> new BuyerResponseDto(
+                        buyer.getId(),
+                        userNames.get(buyer.getId()),
+                        new ArrayList<>()
+                ))
+                .toList();
 
-        sellerDto.setFollowers(followerBuyer);
-        sellerDto.setFollowerCount(followerBuyer.size());
+        sellerDto.setFollowers(followers);
+        sellerDto.setFollowerCount(followers.size());
 
         return sellerDto;
     }

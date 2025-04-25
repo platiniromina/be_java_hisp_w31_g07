@@ -1,12 +1,12 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
-import java.util.UUID;
-
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+
+import java.util.UUID;
 
 public interface ISellerService {
     /**
@@ -16,7 +16,7 @@ public interface ISellerService {
      * @param userId the unique identifier of the seller whose followers count is
      *               to be retrieved
      * @return a SellerFollowersCountResponseDto containing the seller's ID,
-     *         username, and followers count
+     * username, and followers count
      * @throws BadRequest if the seller with the given ID is not found
      */
     public SellerFollowersCountResponseDto findFollowersCount(UUID userId);
@@ -35,7 +35,6 @@ public interface ISellerService {
      * and the buyer to the seller's followers list.
      *
      * @param sellerId the unique identifier of the seller to be followed
-     * @param buyerId  the unique identifier of the buyer who wants to follow the
      * @param buyerId  the unique identifier of the buyer who wants to follow the
      *                 seller
      * @throws BadRequest if the sellerId and buyerId are the same
@@ -86,11 +85,10 @@ public interface ISellerService {
      * @param order    the sorting order; "name_asc" for ascending and "name_desc"
      *                 for descending
      * @return a SellerDto object containing the seller's information and the sorted
-     *         list of followers
+     * list of followers
      * @throws IllegalArgumentException if the provided order is invalid (not
      *                                  "name_asc" or "name_desc")
-     * @throws NotFoundException        if the seller with the specified ID is not
-     *                                  found
+     * @throws BadRequest               if the seller with the specified ID is not found
      */
     public SellerDto sortFollowersByName(UUID sellerId, String order);
 }

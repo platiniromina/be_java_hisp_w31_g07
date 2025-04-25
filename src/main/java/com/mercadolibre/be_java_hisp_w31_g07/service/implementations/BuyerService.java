@@ -1,6 +1,8 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerPurchasesResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class BuyerService implements IBuyerService {
     private final IBuyerRepository buyerRepository;
     private final IUserService userService;
+    private final PostService postService;
 
     @Override
     public Buyer findBuyerById(UUID id) {
@@ -40,7 +43,6 @@ public class BuyerService implements IBuyerService {
     public BuyerDto findFollowed(UUID userId) {
         Buyer buyer = buyerRepository.findBuyerById(userId)
                 .orElseThrow(() -> new BadRequest("Buyer: " + userId + " not found"));
-
         String buyerUserName = userService.findById(buyer.getId()).getUserName();
         return BuyerMapper.toBuyerDto(buyer, buyerUserName);
     }
@@ -49,4 +51,16 @@ public class BuyerService implements IBuyerService {
     public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
         buyerRepository.removeSellerFromFollowedList(seller, buyerId);
     }
+
+    @Override
+    public BuyerPurchasesResponseDto findBuyerPurchase(UUID userId, String product) {
+        PostDto postDtos = postService.findProductByPurchase(product);
+        Buyer buyer = this.findBuyerById(userId);
+
+        return new BuyerPurchasesResponseDto(
+                buyer.getId(),
+                userService.findById(buyer.getId()).getUserName(),
+                postDtos);
+    }
+
 }

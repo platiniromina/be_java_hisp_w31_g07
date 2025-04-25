@@ -11,7 +11,7 @@ public interface IProductService {
 
     /**
      * Adds a new product to the repository.
-     *
+     * <p>
      * This method delegates the task of storing the given {@link Product}
      * instance to the underlying product repository. It calls the
      * {@link ProductRepository#createProduct(Product)} method to perform the
@@ -27,7 +27,7 @@ public interface IProductService {
      *
      * @param userId the unique identifier of the seller to be retrieved
      * @return a UserPostReponseObject object containing the seller's information
-     *         and post.
+     * and post.
      * @throws BadRequest if the seller cannot be found
      */
     public UserPostResponseDto getSellerPromoPosts(UUID userId);
