@@ -1,10 +1,10 @@
 package com.mercadolibre.be_java_hisp_w31_g07.repository;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public interface IBuyerRepository {
     /**
@@ -12,7 +12,7 @@ public interface IBuyerRepository {
      *
      * @param userId the UUID of the buyer to be found
      * @return an Optional containing the Buyer if found, or an empty Optional if no
-     *         match is found
+     * match is found
      */
     public Optional<Buyer> findBuyerById(UUID userId);
 
@@ -22,8 +22,8 @@ public interface IBuyerRepository {
      * @param seller  the seller to be added to the followed list
      * @param buyerId the ID of the buyer who is following the seller
      * @return an Optional containing the updated Buyer if found, or an empty
-     *         Optional if no
-     *         match is found
+     * Optional if no
+     * match is found
      */
     public Optional<Buyer> addSellerToFollowedList(Seller seller, UUID buyerId);
 
@@ -33,7 +33,7 @@ public interface IBuyerRepository {
      * @param seller  The seller to check if they are being followed.
      * @param buyerId The unique identifier of the buyer.
      * @return {@code true} if the buyer is following the seller, {@code false}
-     *         otherwise.
+     * otherwise.
      */
     public boolean buyerIsFollowingSeller(Seller seller, UUID buyerId);
 

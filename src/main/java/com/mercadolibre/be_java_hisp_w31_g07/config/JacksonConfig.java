@@ -8,18 +8,19 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JacksonConfig {
-    @Bean
     /**
      * Configures a {@link Jackson2ObjectMapperBuilderCustomizer} to customize the
-     * global configuration of the Jackson {@link ObjectMapper}.
+     * global configuration of the Jackson ObjectMapper.
      * This method registers the {@link JavaTimeModule}, which is necessary for
      * handling Java 8 date and time types, such as {@link java.time.LocalDate}.
      * Additionally, it disables the {@link SerializationFeature#WRITE_DATES_AS_TIMESTAMPS}
      * feature, ensuring that dates are serialized in a human-readable format
      * (ISO-8601) instead of as timestamps.
+     *
      * @return a {@link Jackson2ObjectMapperBuilderCustomizer} configured to
-     *         properly handle Java 8 date and time types.
+     * properly handle Java 8 date and time types.
      */
+    @Bean
     public Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
         return builder -> builder
                 .modules(new JavaTimeModule())

@@ -3,7 +3,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.repository.implementations;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import org.springframework.stereotype.Repository;
@@ -37,12 +36,8 @@ public class PostRepository implements IPostRepository {
 
     @Override
     public void createPost(Post post) {
-        if (post.getHasPromo() == null) {
-            post.setHasPromo(false);
-        }
-        if (post.getDiscount() == null) {
-            post.setDiscount(0.0);
-        }
+        post.setHasPromo(post.getHasPromo() != null && post.getHasPromo());
+        post.setDiscount(post.getDiscount() == null ? 0.0 : post.getDiscount());
         postList.add(post);
     }
 
@@ -72,15 +67,15 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
-    public List<Post> findPricePerPosts(UUID userId) {
+    public List<Post> findPostsBySellerId(UUID userId) {
         return postList.stream()
                 .filter(post -> post.getSellerId().equals(userId))
                 .toList();
     }
 
     @Override
-    public Post findProductByPurchase(String product) {
+    public Optional<Post> findProductByPurchase(String product) {
         return postList.stream().filter(post -> post.getProduct().getProductName().equalsIgnoreCase(product))
-                .findFirst().orElseThrow(() -> new BadRequest("Product not found"));
+                .findFirst();
     }
 }
