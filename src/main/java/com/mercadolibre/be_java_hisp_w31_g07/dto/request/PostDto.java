@@ -29,10 +29,11 @@ public class PostDto {
     private ProductDto product;
 
     @NotNull(message = "Category cannot be null")
+    @PositiveOrZero
     private Integer category;
 
     @NotNull(message = "Price cannot be null")
-    @Max(value = 10000000, message = "The maximum price is: 10.000.000")
+    @Max(value = 10000000, message = "The maximum price is: $10.000.000")
     private Double price;
 
     @JsonProperty("user_id")
