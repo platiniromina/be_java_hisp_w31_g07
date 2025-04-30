@@ -66,12 +66,11 @@ class SellerServiceTest {
         assertAll(
                 () -> assertEquals(sellerId, result.getId()),
                 () -> assertEquals(user.getUserName(), result.getUserName()),
-                () -> assertEquals(seller.getFollowers().size(), result.getFollowerCount()),
-                () -> verify(sellerRepository).findSellerById(sellerId),
-                () -> verify(userService, times(2)).findById(sellerId),
-                () -> verifyNoMoreInteractions(sellerRepository, userService)
+                () -> assertEquals(seller.getFollowers().size(), result.getFollowerCount())
         );
-
+        verify(sellerRepository).findSellerById(sellerId);
+        verify(userService, times(2)).findById(sellerId);
+        verifyNoMoreInteractions(sellerRepository, userService);
     }
 
     @Test
@@ -83,12 +82,11 @@ class SellerServiceTest {
         BadRequest exception = assertThrows(BadRequest.class, () -> {
             sellerService.findFollowers(sellerId);
         });
-        assertAll(
-                () -> assertEquals("Buyer: " + sellerId + " not found", exception.getMessage()),
-                () -> verify(sellerRepository).findSellerById(sellerId),
-                () -> verifyNoInteractions(userService),
-                () -> verifyNoMoreInteractions(sellerRepository)
-        );
+
+        assertEquals("Buyer: " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository).findSellerById(sellerId);
+        verifyNoInteractions(userService);
+        verifyNoMoreInteractions(sellerRepository);
     }
 
 
