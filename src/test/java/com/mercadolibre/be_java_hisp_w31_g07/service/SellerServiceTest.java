@@ -288,15 +288,27 @@ class SellerServiceTest {
     }
 
     @Test
-    @DisplayName("[SUCCESS] Find followers sorted by name")
-    void testSortFollowersByNameSuccess() {
+    @DisplayName("[SUCCESS] Find followers sorted by name asc")
+    void testSortFollowersByNameAscSuccess() {
+
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Find followers sorted by name desc")
+    void testSortFollowersByNameDescSuccess() {
 
     }
 
     @Test
     @DisplayName("[ERROR] Find followers sorted by name - Seller not found")
     void testSortFollowersByNameBadRequest() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.sortFollowersByName(sellerId, "name_asc"));
+
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository).findSellerById(sellerId);
+        verifyNoMoreInteractions(sellerRepository, userService);
     }
 
     private void stubValidBuyerAndSeller() {
