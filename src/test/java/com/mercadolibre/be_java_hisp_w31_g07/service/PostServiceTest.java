@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.ObjectProvider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,14 +26,13 @@ public class PostServiceTest {
 
     @Mock
     private IPostRepository postRepository;
-    @Mock
-    private ObjectProvider<IProductService> productServiceProvider;
-    @Mock
-    private ObjectProvider<ISellerService> sellerServiceProvider;
+
     @Mock
     private ISellerService sellerService;
+
     @Mock
     private IProductService productService;
+
     @Mock
     private GenericObjectMapper mapper;
 
@@ -48,8 +46,6 @@ public class PostServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(sellerServiceProvider.getObject()).thenReturn(sellerService);
-        when(productServiceProvider.getObject()).thenReturn(productService);
 
         seller = SellerFactory.createSeller();
         postDto = PostFactory.createPostDto(seller.getId());
@@ -64,6 +60,7 @@ public class PostServiceTest {
         doNothing().when(productService).createProduct(post.getProduct());
         doNothing().when(postRepository).createPost(post);
         when(mapper.map(post, PostResponseDto.class)).thenReturn(postResponseDto);
+        when(mapper.map(postDto, Post.class)).thenReturn(post);
 
         PostResponseDto result = postService.createPost(postDto);
 
