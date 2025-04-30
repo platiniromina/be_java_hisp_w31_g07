@@ -2,6 +2,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
@@ -17,8 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,7 +75,14 @@ public class PostServiceTest {
     @Test
     @DisplayName("[ERROR] Create post - Seller not found")
     void testCreatePostError() {
-        // Implement the test logic here
+        when(sellerService.findSellerById(seller.getId())).thenThrow(
+                new BadRequest("Seller " + seller.getId() + " not found")
+        );
+
+        assertThrows(BadRequest.class, () ->
+                postService.createPost(postDto));
+
+        verifyNoMoreInteractions(sellerService, postRepository, productService);
     }
 
 }
