@@ -64,8 +64,10 @@ public class PostServiceTest {
 
         PostResponseDto result = postService.createPost(postDto);
 
-        assertNotNull(result);
-        assertEquals(postResponseDto, result);
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(postResponseDto, result)
+        );
 
         verify(sellerService).findSellerById(seller.getId());
         verify(postRepository).createPost(post);
