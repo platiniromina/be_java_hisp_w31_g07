@@ -8,6 +8,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.SellerServi
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,6 +47,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[SUCCESS] Follow seller")
     void testFollowSellerSuccess() {
         stubValidBuyerAndSeller();
 
@@ -56,6 +58,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow seller - buyer tries to follow themselves")
     void testFollowSellerSameUserError() {
         UUID sameId = UUID.randomUUID();
 
@@ -68,6 +71,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow seller - buyer is already following seller")
     void testFollowSellerAlreadyFollowingError() {
         stubValidBuyerAndSeller();
         when(sellerRepository.sellerIsBeingFollowedByBuyer(buyer, sellerId)).thenReturn(true);
@@ -84,6 +88,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow seller - seller not found")
     void testFollowSellerThatDoesNotExistError() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
@@ -97,6 +102,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow seller - buyer not found")
     void testFollowSellerButBuyerNotFoundError() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
         when(buyerService.findBuyerById(buyerId)).thenThrow(new BadRequest("Buyer " + buyerId + " not found"));
@@ -111,6 +117,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[SUCCESS] Find seller")
     void testFindSellerByIdSuccess() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
 
@@ -122,6 +129,7 @@ class SellerServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Find seller - seller not found")
     void testFindSellerByIdNotFoundError() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
@@ -132,6 +140,65 @@ class SellerServiceTest {
         assertEquals("Error message mismatch", "Seller " + sellerId + " not found", exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Unfollow seller")
+    void testUnfollowSellerSuccess() {
+        stubValidBuyerAndSeller();
+        when(sellerRepository.sellerIsBeingFollowedByBuyer(buyer, sellerId)).thenReturn(true);
+        when(buyerService.buyerIsFollowingSeller(seller, buyerId)).thenReturn(true);
+
+        sellerService.unfollowSeller(sellerId, buyerId);
+
+        verify(sellerRepository).removeBuyerFromFollowersList(buyer, sellerId);
+        verify(buyerService).removeSellerFromFollowedList(seller, buyerId);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Unfollow seller - buyer is not following seller")
+    void testUnfollowSellerWhoImNotFollowingError() {
+        stubValidBuyerAndSeller();
+        when(sellerRepository.sellerIsBeingFollowedByBuyer(buyer, sellerId)).thenReturn(false);
+        when(buyerService.buyerIsFollowingSeller(seller, buyerId)).thenReturn(false);
+
+        BadRequest exception = assertThrows(BadRequest.class, () ->
+                sellerService.unfollowSeller(sellerId, buyerId)
+        );
+
+        assertEquals("Error message mismatch", "Buyer " + buyer.getId() + " is not following seller "
+                + seller.getId() + ". Unfollow action cannot be done", exception.getMessage());
+        verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
+        verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Unfollow seller - seller not found")
+    void testUnfollowSellerThatDoesNotExistError() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
+
+        BadRequest exception = assertThrows(BadRequest.class, () ->
+                sellerService.unfollowSeller(sellerId, buyerId)
+        );
+
+        assertEquals("Error message mismatch", "Seller " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
+        verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Unfollow seller - buyer not found")
+    void testUnfollowSellerButBuyerNotFoundError() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
+        when(buyerService.findBuyerById(buyerId)).thenThrow(new BadRequest("Buyer " + buyerId + " not found"));
+
+        BadRequest exception = assertThrows(BadRequest.class, () ->
+                sellerService.unfollowSeller(sellerId, buyerId)
+        );
+
+        assertEquals("Error message mismatch", "Buyer " + buyerId + " not found", exception.getMessage());
+        verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
+        verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
     }
 
     private void stubValidBuyerAndSeller() {
