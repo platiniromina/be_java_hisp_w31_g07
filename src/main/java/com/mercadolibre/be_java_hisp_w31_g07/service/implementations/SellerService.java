@@ -13,6 +13,8 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.ISellerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,7 +25,9 @@ public class SellerService implements ISellerService {
     private final ISellerRepository sellerRepository;
     private final IUserService userService;
     private final IBuyerService buyerService;
-    private final IPostService postService;
+    @Autowired
+    @Lazy
+    private IPostService postService;
 
     // ------------------------------
     // Public methods
