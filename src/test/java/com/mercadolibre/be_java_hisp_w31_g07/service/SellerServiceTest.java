@@ -224,7 +224,7 @@ class SellerServiceTest {
         Seller sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         sellerWithFollowers.setId(sellerId);
         UserDto userDto = UserFactory.createUserDto();
-        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(sellerWithFollowers));
         when(userService.findById(sellerId)).thenReturn(userDto);
 
         SellerFollowersCountResponseDto result = sellerService.findFollowersCount(sellerId);
@@ -232,7 +232,7 @@ class SellerServiceTest {
         assertAll(
                 () -> assertEquals(sellerId, result.getUser_id()),
                 () -> assertEquals(userDto.getUserName(), result.getUser_name()),
-                () -> assertEquals(seller.getFollowers().size(), result.getFollowersCount()));
+                () -> assertEquals(sellerWithFollowers.getFollowers().size(), result.getFollowersCount()));
         verify(sellerRepository).findSellerById(sellerId);
         verify(userService).findById(sellerId);
         verifyNoMoreInteractions(sellerRepository, userService);
