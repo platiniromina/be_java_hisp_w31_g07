@@ -4,11 +4,9 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
-import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.BuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
-import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BuyerServiceTest {
+class BuyerServiceTest {
     @InjectMocks
     private BuyerService buyerService;
 
@@ -34,19 +32,15 @@ public class BuyerServiceTest {
     @Mock
     private IUserService userService;
 
-    private Seller seller;
     private Buyer buyer;
     private UserDto userDto;
     private UUID buyerId;
-    private UUID sellerId;
 
     @BeforeEach
     void setUp() {
-        seller = SellerFactory.createSeller();
         buyer = BuyerFactory.createBuyer();
         userDto = UserFactory.createUserDto();
         buyerId = buyer.getId();
-        sellerId = seller.getId();
     }
 
     @Test
