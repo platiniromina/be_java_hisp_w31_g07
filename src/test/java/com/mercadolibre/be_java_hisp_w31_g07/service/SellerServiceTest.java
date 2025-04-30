@@ -10,7 +10,6 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.SellerServi
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.UserFactory;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,9 +63,9 @@ class SellerServiceTest {
 
         assertAll(
                 () -> assertNotNull(result),
-                () -> Assertions.assertEquals(sellerId, result.getId()),
-                () -> Assertions.assertEquals(userDto.getUserName(), result.getUserName()),
-                () -> Assertions.assertEquals(seller.getFollowers().size(), result.getFollowerCount())
+                () -> assertEquals(sellerId, result.getId()),
+                () -> assertEquals(userDto.getUserName(), result.getUserName()),
+                () -> assertEquals(seller.getFollowers().size(), result.getFollowerCount())
         );
         verify(sellerRepository).findSellerById(sellerId);
         verify(userService, times(2)).findById(sellerId);
@@ -74,13 +73,13 @@ class SellerServiceTest {
     }
 
     @Test
-    @DisplayName("[Error] Follow seller - a seller with that id does not exist")
+    @DisplayName("[Error] Find followers - a seller with that id does not exist")
     void testFindFollowersBadRequest() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
         BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findFollowers(sellerId));
 
-        Assertions.assertEquals("Seller: " + sellerId + " not found", exception.getMessage());
+        assertEquals("Seller: " + sellerId + " not found", exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoInteractions(userService);
         verifyNoMoreInteractions(sellerRepository);
