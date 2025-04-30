@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class SellerFactory {
-
     public static Seller createSeller() {
         Seller seller = new Seller();
         seller.setId(UUID.randomUUID());
@@ -15,4 +14,3 @@ public class SellerFactory {
         return seller;
     }
 }
-
