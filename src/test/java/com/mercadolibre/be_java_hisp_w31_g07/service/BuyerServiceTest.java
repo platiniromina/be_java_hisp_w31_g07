@@ -69,10 +69,8 @@ class BuyerServiceTest {
     void testFindFollowedFail() {
         when(buyerRepository.findBuyerById(buyerId)).thenReturn(Optional.empty());
 
-        BadRequest exception = assertThrows(BadRequest.class, () -> {
-            buyerService.findFollowed(buyerId);
-        });
-
+        BadRequest exception = assertThrows(BadRequest.class, () -> buyerService.findFollowed(buyerId));
+        
         assertEquals("Buyer: " + buyerId + " not found", exception.getMessage());
         verify(buyerRepository).findBuyerById(buyerId);
         verifyNoInteractions(userService);
