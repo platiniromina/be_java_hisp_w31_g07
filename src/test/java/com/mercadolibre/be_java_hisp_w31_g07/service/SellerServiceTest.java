@@ -78,9 +78,7 @@ class SellerServiceTest {
     void testFindFollowersBadRequest() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
-        BadRequest exception = assertThrows(BadRequest.class, () -> {
-            sellerService.findFollowers(sellerId);
-        });
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findFollowers(sellerId));
 
         Assertions.assertEquals("Seller: " + sellerId + " not found", exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
@@ -157,9 +155,7 @@ class SellerServiceTest {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
         when(buyerService.findBuyerById(buyerId)).thenThrow(new BadRequest("Buyer " + buyerId + " not found"));
 
-        BadRequest exception = assertThrows(BadRequest.class, () ->
-                sellerService.followSeller(sellerId, buyerId)
-        );
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.followSeller(sellerId, buyerId));
 
         assertEquals("Buyer " + buyerId + " not found", exception.getMessage());
 
