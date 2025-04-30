@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "400", description = "Bad Request: seller not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @PostMapping("/post")
-    ResponseEntity<PostResponseDto> createPost(@RequestBody PostDto newPost);
+    ResponseEntity<PostResponseDto> createPost(@Valid @RequestBody PostDto newPost);
 
     @Operation(summary = "Create a new post with discount - [REQ - 10]", description = "Creates a new post with a product associated.")
     @ApiResponses(value = {
@@ -35,7 +36,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found or the buyer is not following any sellers.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @PostMapping("/promo-post")
-    ResponseEntity<PostResponseDto> createPromoPost(@RequestBody PostDto newPromoPost);
+    ResponseEntity<PostResponseDto> createPromoPost(@Valid @RequestBody PostDto newPromoPost);
 
     @Operation(summary = "Get latest posts from sellers - [REQ - 6]", description = "Returns the most recent posts from sellers followed by the given buyer. Only includes posts from the last two weeks, sorted by newest first.")
     @ApiResponses(value = {
