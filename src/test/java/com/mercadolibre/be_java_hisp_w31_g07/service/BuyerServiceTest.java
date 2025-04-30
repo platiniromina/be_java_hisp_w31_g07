@@ -9,6 +9,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.BuyerServic
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,6 +45,7 @@ class BuyerServiceTest {
     }
 
     @Test
+    @DisplayName("[SUCCESS] Find followed")
     void testFindFollowedSuccess() {
         when(buyerRepository.findBuyerById(buyerId)).thenReturn(Optional.of(buyer));
         when(userService.findById(buyerId)).thenReturn(userDto);
@@ -63,6 +65,7 @@ class BuyerServiceTest {
 
 
     @Test
+    @DisplayName("[ERROR] Find followed - a buyer with that buyerId does not exist.")
     void testFindFollowedFail() {
         when(buyerRepository.findBuyerById(buyerId)).thenReturn(Optional.empty());
 
