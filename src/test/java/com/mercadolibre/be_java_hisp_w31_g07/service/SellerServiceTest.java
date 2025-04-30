@@ -18,9 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class SellerServiceTest {
@@ -55,6 +55,7 @@ class SellerServiceTest {
 
         verify(sellerRepository).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService).addSellerToFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -66,7 +67,8 @@ class SellerServiceTest {
                 sellerService.followSeller(sameId, sameId)
         );
 
-        assertEquals("Error message mismatch", "User cannot follow themselves.", exception.getMessage());
+        assertEquals("User cannot follow themselves.", exception.getMessage());
+
         verifyNoInteractions(sellerRepository, buyerService);
     }
 
@@ -81,10 +83,12 @@ class SellerServiceTest {
                 sellerService.followSeller(sellerId, buyerId)
         );
 
-        assertEquals("Error message mismatch", "Buyer " + buyer.getId() + " already follows seller "
+        assertEquals("Buyer " + buyer.getId() + " already follows seller "
                 + seller.getId(), exception.getMessage());
+
         verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -96,9 +100,11 @@ class SellerServiceTest {
                 sellerService.followSeller(sellerId, buyerId)
         );
 
-        assertEquals("Error message mismatch", "Seller " + sellerId + " not found", exception.getMessage());
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+
         verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -111,9 +117,11 @@ class SellerServiceTest {
                 sellerService.followSeller(sellerId, buyerId)
         );
 
-        assertEquals("Error message mismatch", "Buyer " + buyerId + " not found", exception.getMessage());
+        assertEquals("Buyer " + buyerId + " not found", exception.getMessage());
+
         verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -123,7 +131,8 @@ class SellerServiceTest {
 
         Seller foundSeller = sellerService.findSellerById(sellerId);
 
-        assertEquals("Seller ID mismatch", sellerId, foundSeller.getId());
+        assertEquals(sellerId, foundSeller.getId());
+
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository);
     }
@@ -137,7 +146,7 @@ class SellerServiceTest {
                 sellerService.findSellerById(sellerId)
         );
 
-        assertEquals("Error message mismatch", "Seller " + sellerId + " not found", exception.getMessage());
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository);
     }
@@ -153,6 +162,7 @@ class SellerServiceTest {
 
         verify(sellerRepository).removeBuyerFromFollowersList(buyer, sellerId);
         verify(buyerService).removeSellerFromFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -166,10 +176,11 @@ class SellerServiceTest {
                 sellerService.unfollowSeller(sellerId, buyerId)
         );
 
-        assertEquals("Error message mismatch", "Buyer " + buyer.getId() + " is not following seller "
+        assertEquals("Buyer " + buyer.getId() + " is not following seller "
                 + seller.getId() + ". Unfollow action cannot be done", exception.getMessage());
         verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
         verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -181,9 +192,11 @@ class SellerServiceTest {
                 sellerService.unfollowSeller(sellerId, buyerId)
         );
 
-        assertEquals("Error message mismatch", "Seller " + sellerId + " not found", exception.getMessage());
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+
         verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
         verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     @Test
@@ -196,9 +209,11 @@ class SellerServiceTest {
                 sellerService.unfollowSeller(sellerId, buyerId)
         );
 
-        assertEquals("Error message mismatch", "Buyer " + buyerId + " not found", exception.getMessage());
+        assertEquals("Buyer " + buyerId + " not found", exception.getMessage());
+
         verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
         verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
+        verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
     private void stubValidBuyerAndSeller() {
