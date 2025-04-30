@@ -9,6 +9,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -58,6 +59,7 @@ class SellerControllerTest {
     }
 
     @Test
+    @DisplayName("[SUCCESS] Follow a seller")
     void testFollowSellerSuccess() throws Exception {
         stubValidBuyerAndSeller();
 
@@ -67,6 +69,7 @@ class SellerControllerTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow a seller with invalid buyerId")
     void testFollowSellerSameUserError() throws Exception {
         stubValidBuyerAndSeller();
 
@@ -76,6 +79,7 @@ class SellerControllerTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow a seller with invalid sellerId")
     void testFollowSellerAlreadyFollowingError() throws Exception {
         seller.addFollower(buyer);
         buyer.addFollowedSeller(seller);
@@ -89,6 +93,7 @@ class SellerControllerTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow a seller with invalid buyerId")
     void testFollowSellerThatDoesNotExistError() throws Exception {
         when(buyerService.findBuyerById(buyerId)).thenReturn(buyer);
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
@@ -99,6 +104,7 @@ class SellerControllerTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Follow a seller with invalid buyerId")
     void testFollowSellerButBuyerNotFoundError() throws Exception {
         when(buyerService.findBuyerById(buyerId)).thenThrow(new BadRequest("Buyer " + buyerId + " not found"));
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
