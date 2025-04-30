@@ -39,19 +39,19 @@ class PostServiceTest {
 
     private Post post;
     private UUID postId;
-    private Seller seller;
+    private PostResponseDto postResponseDto;
 
     @BeforeEach
     void setUp() {
-        seller = SellerFactory.createSeller();
+        Seller seller = SellerFactory.createSeller();
         post = PostFactory.createPost(seller.getId());
         postId = post.getId();
+        postResponseDto = PostFactory.createPostResponseDto(seller.getId());
     }
 
     @Test
     @DisplayName("[SUCCESS] Find post - Success")
     void testFindPostSuccess() {
-        PostResponseDto postResponseDto = PostFactory.createPostResponseDto(seller.getId());
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(mapper.map(post, PostResponseDto.class)).thenReturn(postResponseDto);
 
