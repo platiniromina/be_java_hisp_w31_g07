@@ -78,7 +78,7 @@ class SellerServiceTest {
             sellerService.findFollowers(sellerId);
         });
 
-        assertEquals("Buyer: " + sellerId + " not found", exception.getMessage());
+        assertEquals("Seller: " + sellerId + " not found", exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoInteractions(userService);
         verifyNoMoreInteractions(sellerRepository);
