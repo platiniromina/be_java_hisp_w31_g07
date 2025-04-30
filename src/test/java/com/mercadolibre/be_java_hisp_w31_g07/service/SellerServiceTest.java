@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
@@ -33,13 +34,14 @@ class SellerServiceTest {
     private IBuyerService buyerService;
 
     @Mock
-    private ISellerRepository sellerRepository;
+    private IUserService userService;
 
     @Mock
-    private IUserService userService;
+    private ISellerRepository sellerRepository;
 
     private Seller seller;
     private Buyer buyer;
+    private UserDto userDto;
     private UUID buyerId;
     private UUID sellerId;
 
@@ -47,8 +49,41 @@ class SellerServiceTest {
     void setUp() {
         seller = SellerFactory.createSeller();
         buyer = BuyerFactory.createBuyer();
+        userDto = UserFactory.createUserDto();
         buyerId = buyer.getId();
         sellerId = seller.getId();
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Find followers")
+    void testFindFollowersSuccess() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
+        when(userService.findById(sellerId)).thenReturn(userDto);
+
+        SellerDto result = sellerService.findFollowers(sellerId);
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(sellerId, result.getId()),
+                () -> assertEquals(userDto.getUserName(), result.getUserName()),
+                () -> assertEquals(seller.getFollowers().size(), result.getFollowerCount())
+        );
+        verify(sellerRepository).findSellerById(sellerId);
+        verify(userService, times(2)).findById(sellerId);
+        verifyNoMoreInteractions(sellerRepository, userService);
+    }
+
+    @Test
+    @DisplayName("[Error] Find followers - a seller with that id does not exist")
+    void testFindFollowersBadRequest() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findFollowers(sellerId));
+
+        assertEquals("Seller: " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository).findSellerById(sellerId);
+        verifyNoInteractions(userService);
+        verifyNoMoreInteractions(sellerRepository);
     }
 
     @Test
@@ -75,6 +110,7 @@ class SellerServiceTest {
         );
 
         assertEquals("User cannot follow themselves.", exception.getMessage());
+
         verifyNoInteractions(sellerRepository, buyerService);
     }
 
@@ -91,6 +127,7 @@ class SellerServiceTest {
 
         assertEquals("Buyer " + buyer.getId() + " already follows seller "
                 + seller.getId(), exception.getMessage());
+
         verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
         verifyNoMoreInteractions(sellerRepository, buyerService);
@@ -106,6 +143,7 @@ class SellerServiceTest {
         );
 
         assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+
         verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
         verifyNoMoreInteractions(sellerRepository, buyerService);
@@ -117,11 +155,10 @@ class SellerServiceTest {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
         when(buyerService.findBuyerById(buyerId)).thenThrow(new BadRequest("Buyer " + buyerId + " not found"));
 
-        BadRequest exception = assertThrows(BadRequest.class, () ->
-                sellerService.followSeller(sellerId, buyerId)
-        );
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.followSeller(sellerId, buyerId));
 
         assertEquals("Buyer " + buyerId + " not found", exception.getMessage());
+
         verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
         verifyNoMoreInteractions(sellerRepository, buyerService);
@@ -135,6 +172,7 @@ class SellerServiceTest {
         Seller foundSeller = sellerService.findSellerById(sellerId);
 
         assertEquals(sellerId, foundSeller.getId());
+
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository);
     }
@@ -219,11 +257,10 @@ class SellerServiceTest {
     }
 
     @Test
-    @DisplayName("[SUCCESS] Find followers")
+    @DisplayName("[SUCCESS] Find followers count")
     void testFindFollowersCountSuccess() {
         Seller sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         sellerWithFollowers.setId(sellerId);
-        UserDto userDto = UserFactory.createUserDto();
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(sellerWithFollowers));
         when(userService.findById(sellerId)).thenReturn(userDto);
 
@@ -239,7 +276,7 @@ class SellerServiceTest {
     }
 
     @Test
-    @DisplayName("[ERROR] Find followers - seller not found")
+    @DisplayName("[ERROR] Find followers count - seller not found")
     void testFindFollowersCountSellerNotFoundError() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
