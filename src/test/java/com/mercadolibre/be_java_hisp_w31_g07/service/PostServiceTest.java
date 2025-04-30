@@ -10,6 +10,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.util.GenericObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,6 +49,7 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Find post - Success")
     void testFindPostSuccess() {
         PostResponseDto postResponseDto = PostFactory.createPostResponseDto(seller.getId());
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -62,6 +64,7 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("[ERROR] Find post - Not Found")
     void testFindPostNotFound() {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
