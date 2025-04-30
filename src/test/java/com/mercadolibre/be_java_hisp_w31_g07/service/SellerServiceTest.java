@@ -2,6 +2,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
@@ -253,6 +254,37 @@ class SellerServiceTest {
         verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
         verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
         verifyNoMoreInteractions(sellerRepository, buyerService);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Find followers count")
+    void testFindFollowersCountSuccess() {
+        Seller sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
+        sellerWithFollowers.setId(sellerId);
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(sellerWithFollowers));
+        when(userService.findById(sellerId)).thenReturn(userDto);
+
+        SellerFollowersCountResponseDto result = sellerService.findFollowersCount(sellerId);
+
+        assertAll(
+                () -> assertEquals(sellerId, result.getUser_id()),
+                () -> assertEquals(userDto.getUserName(), result.getUser_name()),
+                () -> assertEquals(sellerWithFollowers.getFollowers().size(), result.getFollowersCount()));
+        verify(sellerRepository).findSellerById(sellerId);
+        verify(userService).findById(sellerId);
+        verifyNoMoreInteractions(sellerRepository, userService);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Find followers count - seller not found")
+    void testFindFollowersCountSellerNotFoundError() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findFollowersCount(sellerId));
+
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository).findSellerById(sellerId);
+        verifyNoMoreInteractions(sellerRepository, userService);
     }
 
     private void stubValidBuyerAndSeller() {
