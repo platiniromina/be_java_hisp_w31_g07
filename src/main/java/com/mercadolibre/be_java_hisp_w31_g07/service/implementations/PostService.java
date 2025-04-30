@@ -52,12 +52,15 @@ public class PostService implements IPostService {
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
         validateExistingSeller(userId);
         List<Post> postList = getPromoPostsOrThrow(userId);
+        
         return mapPostsToDto(postList);
     }
 
     @Override
     public Double findAveragePrice(UUID userId) {
-        return postRepository.findPostsBySellerId(userId).stream().map(post -> {
+        return postRepository.findPostsBySellerId(userId)
+                .stream()
+                .map(post -> {
                     double finalPrice = post.getPrice();
                     if ((post.getHasPromo())) {
                         post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));

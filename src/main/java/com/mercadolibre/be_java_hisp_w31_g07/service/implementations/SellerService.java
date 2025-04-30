@@ -45,7 +45,7 @@ public class SellerService implements ISellerService {
     @Override
     public SellerDto findFollowers(UUID sellerId) {
         Seller seller = sellerRepository.findSellerById(sellerId)
-                .orElseThrow(() -> new BadRequest("Buyer: " + sellerId + " not found"));
+                .orElseThrow(() -> new BadRequest("Seller: " + sellerId + " not found"));
 
         String buyerUserName = userService.findById(seller.getId()).getUserName();
         return BuyerMapper.toSellerDto(seller, buyerUserName, buildUsernamesMap(seller));
