@@ -1,0 +1,84 @@
+package com.mercadolibre.be_java_hisp_w31_g07.service;
+
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostService;
+import com.mercadolibre.be_java_hisp_w31_g07.util.GenericObjectMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
+import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class PostServiceTest {
+
+    @Mock
+    private IPostRepository postRepository;
+    @Mock
+    private ObjectProvider<IProductService> productServiceProvider;
+    @Mock
+    private ObjectProvider<ISellerService> sellerServiceProvider;
+    @Mock
+    private ISellerService sellerService;
+    @Mock
+    private IProductService productService;
+    @Mock
+    private GenericObjectMapper mapper;
+
+    @InjectMocks
+    private PostService postService;
+
+    private PostDto postDto;
+    private Post post;
+    private PostResponseDto postResponseDto;
+    private Seller seller;
+
+    @BeforeEach
+    void setUp() {
+        when(sellerServiceProvider.getObject()).thenReturn(sellerService);
+        when(productServiceProvider.getObject()).thenReturn(productService);
+
+        seller = SellerFactory.createSeller();
+        postDto = PostFactory.createPostDto(seller.getId());
+        post = PostFactory.createPost(seller.getId());
+        postResponseDto = PostFactory.createPostResponseDto(seller.getId());
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Create post")
+    void testCreatePostSuccess() {
+        when(sellerService.findSellerById(seller.getId())).thenReturn(seller);
+        doNothing().when(productService).createProduct(post.getProduct());
+        doNothing().when(postRepository).createPost(post);
+        when(mapper.map(post, PostResponseDto.class)).thenReturn(postResponseDto);
+
+        PostResponseDto result = postService.createPost(postDto);
+
+        assertNotNull(result);
+        assertEquals(postResponseDto, result);
+
+        verify(sellerService).findSellerById(seller.getId());
+        verify(postRepository).createPost(post);
+        verify(mapper).map(post, PostResponseDto.class);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Create post - Seller not found")
+    void testCreatePostError() {
+        // Implement the test logic here
+    }
+
+}

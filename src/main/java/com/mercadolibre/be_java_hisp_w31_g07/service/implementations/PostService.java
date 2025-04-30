@@ -35,7 +35,8 @@ public class PostService implements IPostService {
 
     @Override
     public PostResponseDto createPost(PostDto newPost) {
-        Post post = buildPostFromDto(newPost);
+        validateExistingSeller(newPost.getSellerId());
+        Post post = fromPostDtoToPost(newPost);
         savePostAndProduct(post);
         return mapper.map(post, PostResponseDto.class);
     }
@@ -52,7 +53,7 @@ public class PostService implements IPostService {
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
         validateExistingSeller(userId);
         List<Post> postList = getPromoPostsOrThrow(userId);
-        
+
         return mapPostsToDto(postList);
     }
 
@@ -164,8 +165,7 @@ public class PostService implements IPostService {
     // Data Transformation Methods
     // ------------------------------
 
-    private Post buildPostFromDto(PostDto dto) {
-        validateExistingSeller(dto.getSellerId());
+    private Post fromPostDtoToPost(PostDto dto) {
         Post post = mapper.map(dto, Post.class);
         post.setGeneratedId(IdUtils.generateId());
         return post;
