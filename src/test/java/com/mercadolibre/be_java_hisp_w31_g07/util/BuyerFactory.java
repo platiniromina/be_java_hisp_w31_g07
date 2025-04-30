@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class BuyerFactory {
+
     public static Buyer createBuyer() {
         Buyer buyer = new Buyer();
         buyer.setId(UUID.randomUUID());
