@@ -49,7 +49,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("[ERROR] Find post - Success")
+    @DisplayName("[SUCCESS] Find post - Success")
     void testFindPostSuccess() {
         PostResponseDto postResponseDto = PostFactory.createPostResponseDto(seller.getId());
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
