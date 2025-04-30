@@ -73,7 +73,7 @@ class SellerServiceTest {
     }
 
     @Test
-    @DisplayName("[Error] Find followers - a seller with that id does not exist")
+    @DisplayName("[ERROR] Find followers - Seller not found")
     void testFindFollowersBadRequest() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
@@ -253,6 +253,18 @@ class SellerServiceTest {
         verify(sellerRepository, never()).removeBuyerFromFollowersList(buyer, sellerId);
         verify(buyerService, never()).removeSellerFromFollowedList(seller, buyerId);
         verifyNoMoreInteractions(sellerRepository, buyerService);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Find followers sorted by name")
+    void testSortFollowersByNameSuccess() {
+
+    }
+
+    @Test
+    @DisplayName("[ERROR] Find followers sorted by name - Seller not found")
+    void testSortFollowersByNameBadRequest() {
+
     }
 
     private void stubValidBuyerAndSeller() {

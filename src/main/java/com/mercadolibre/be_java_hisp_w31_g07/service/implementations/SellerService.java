@@ -88,10 +88,8 @@ public class SellerService implements ISellerService {
 
     @Override
     public SellerDto sortFollowersByName(UUID sellerId, String order) {
-        String sellerUsername = userService.findById(sellerId).getUserName();
-
         Seller seller = getSellerById(sellerId);
-
+        String sellerUsername = userService.findById(sellerId).getUserName();
         List<Buyer> followers = new ArrayList<>(seller.getFollowers());
 
         Comparator<Buyer> comparator = getComparatorForOrder(order);
