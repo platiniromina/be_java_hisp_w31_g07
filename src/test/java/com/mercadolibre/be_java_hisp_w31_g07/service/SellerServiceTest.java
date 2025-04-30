@@ -3,9 +3,11 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.SellerService;
+import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +25,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SellerServiceTest {
-
     @InjectMocks
     private SellerService sellerService;
+
+    @Mock
+    private IBuyerService buyerService;
 
     @Mock
     private ISellerRepository sellerRepository;
@@ -34,12 +38,95 @@ class SellerServiceTest {
     private IUserService userService;
 
     private Seller seller;
+    private Buyer buyer;
+    private UUID buyerId;
     private UUID sellerId;
 
     @BeforeEach
     void setUp() {
         seller = SellerFactory.createSeller();
+        buyer = BuyerFactory.createBuyer();
+        buyerId = buyer.getId();
         sellerId = seller.getId();
+    }
+
+    @Test
+    void testFollowSellerSuccess() {
+        stubValidBuyerAndSeller();
+
+        sellerService.followSeller(sellerId, buyerId);
+
+        verify(sellerRepository).addBuyerToFollowersList(buyer, sellerId);
+        verify(buyerService).addSellerToFollowedList(seller, buyerId);
+    }
+
+    @Test
+    void testFollowSellerSameUserError() {
+        UUID sameId = UUID.randomUUID();
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.followSeller(sameId, sameId));
+
+        assertEquals("User cannot follow themselves.", exception.getMessage());
+        verifyNoInteractions(sellerRepository, buyerService);
+    }
+
+    @Test
+    void testFollowSellerAlreadyFollowingError() {
+        stubValidBuyerAndSeller();
+        when(sellerRepository.sellerIsBeingFollowedByBuyer(buyer, sellerId)).thenReturn(true);
+        when(buyerService.buyerIsFollowingSeller(seller, buyerId)).thenReturn(true);
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.followSeller(sellerId, buyerId));
+
+        assertEquals("Buyer " + buyer.getId() + " already follows seller "
+                + seller.getId(), exception.getMessage());
+        verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
+        verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
+    }
+
+    @Test
+    void testFollowSellerThatDoesNotExistError() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.followSeller(sellerId, buyerId));
+
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
+        verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
+    }
+
+    @Test
+    void testFollowSellerButBuyerNotFoundError() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
+        when(buyerService.findBuyerById(buyerId)).thenThrow(new BadRequest("Buyer " + buyerId + " not found"));
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.followSeller(sellerId, buyerId));
+
+        assertEquals("Buyer " + buyerId + " not found", exception.getMessage());
+        verify(sellerRepository, never()).addBuyerToFollowersList(buyer, sellerId);
+        verify(buyerService, never()).addSellerToFollowedList(seller, buyerId);
+    }
+
+    @Test
+    void testFindSellerByIdSuccess() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
+
+        Seller foundSeller = sellerService.findSellerById(sellerId);
+
+        assertEquals(sellerId, foundSeller.getId());
+        verify(sellerRepository).findSellerById(sellerId);
+        verifyNoMoreInteractions(sellerRepository);
+    }
+
+    @Test
+    void testFindSellerByIdNotFoundError() {
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
+
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findSellerById(sellerId));
+
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        verify(sellerRepository).findSellerById(sellerId);
+        verifyNoMoreInteractions(sellerRepository);
     }
 
     @Test
@@ -55,8 +142,7 @@ class SellerServiceTest {
         assertAll(
                 () -> assertEquals(sellerId, result.getUser_id()),
                 () -> assertEquals(userDto.getUserName(), result.getUser_name()),
-                () -> assertEquals(seller.getFollowers().size(), result.getFollowersCount())
-        );
+                () -> assertEquals(seller.getFollowers().size(), result.getFollowersCount()));
         verify(sellerRepository).findSellerById(sellerId);
         verify(userService).findById(sellerId);
         verifyNoMoreInteractions(sellerRepository, userService);
@@ -66,12 +152,15 @@ class SellerServiceTest {
     void testFindFollowersCountSellerNotFoundError() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
-        BadRequest exception = assertThrows(BadRequest.class, () ->
-                sellerService.findFollowersCount(sellerId)
-        );
+        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findFollowersCount(sellerId));
 
         assertEquals("Seller " + sellerId + " not found", exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository, userService);
+    }
+
+    private void stubValidBuyerAndSeller() {
+        when(buyerService.findBuyerById(buyerId)).thenReturn(buyer);
+        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
     }
 }
