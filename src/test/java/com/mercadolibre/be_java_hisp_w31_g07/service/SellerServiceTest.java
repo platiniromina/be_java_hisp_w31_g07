@@ -55,6 +55,8 @@ class SellerServiceTest {
 
         verify(sellerRepository).addBuyerToFollowersList(buyer, sellerId);
         verify(buyerService).addSellerToFollowedList(seller, buyerId);
+        verify(sellerRepository).sellerIsBeingFollowedByBuyer(buyer, sellerId);
+        verify(buyerService).buyerIsFollowingSeller(seller, buyerId);
         verifyNoMoreInteractions(sellerRepository, buyerService);
     }
 
