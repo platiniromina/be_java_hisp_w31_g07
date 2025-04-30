@@ -39,7 +39,7 @@ class SellerServiceTest {
 
     private Seller seller;
     private Buyer buyer;
-    private UserDto user;
+    private UserDto userDto;
     private UUID buyerId;
     private UUID sellerId;
 
@@ -47,25 +47,22 @@ class SellerServiceTest {
     void setUp() {
         seller = SellerFactory.createSeller();
         buyer = BuyerFactory.createBuyer();
-        user = UserFactory.createUserDto();
+        userDto = UserFactory.createUserDto();
         buyerId = buyer.getId();
         sellerId = seller.getId();
     }
 
     @Test
-    void testFindFollowersSucces() {
-        //Arrange
+    void testFindFollowersSuccess() {
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
-        when(userService.findById(sellerId)).thenReturn(user);
+        when(userService.findById(sellerId)).thenReturn(userDto);
 
-        //Act
         SellerDto result = sellerService.findFollowers(sellerId);
 
-        //Assert
-        assertNotNull(result);
         assertAll(
+                () -> assertNotNull(result),
                 () -> assertEquals(sellerId, result.getId()),
-                () -> assertEquals(user.getUserName(), result.getUserName()),
+                () -> assertEquals(userDto.getUserName(), result.getUserName()),
                 () -> assertEquals(seller.getFollowers().size(), result.getFollowerCount())
         );
         verify(sellerRepository).findSellerById(sellerId);
@@ -75,10 +72,8 @@ class SellerServiceTest {
 
     @Test
     void testFindFollowersBadRequest() {
-        //Arrange
         when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
 
-        //Act & Assert
         BadRequest exception = assertThrows(BadRequest.class, () -> {
             sellerService.findFollowers(sellerId);
         });
