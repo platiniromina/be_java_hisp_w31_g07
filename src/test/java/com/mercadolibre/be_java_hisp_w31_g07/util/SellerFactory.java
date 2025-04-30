@@ -1,12 +1,10 @@
 package com.mercadolibre.be_java_hisp_w31_g07.util;
 
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 public class SellerFactory {
 
     public static Seller createSeller() {
