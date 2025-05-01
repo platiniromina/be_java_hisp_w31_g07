@@ -12,7 +12,6 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.*;
 import com.mercadolibre.be_java_hisp_w31_g07.util.GenericObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.util.IdUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -23,9 +22,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService implements IPostService {
     private final IPostRepository postRepository;
-    private final ObjectProvider<ISellerService> sellerServiceProvider;
-    private final ObjectProvider<IProductService> productServiceProvider;
-    private final ObjectProvider<IBuyerService> buyerServiceProvider;
+    private final ISellerService sellerService;
+    private final IProductService productService;
+    private final IBuyerService buyerService;
     private final IUserService userService;
     private final GenericObjectMapper mapper;
 
@@ -35,7 +34,8 @@ public class PostService implements IPostService {
 
     @Override
     public PostResponseDto createPost(PostDto newPost) {
-        Post post = buildPostFromDto(newPost);
+        validateExistingSeller(newPost.getSellerId());
+        Post post = fromPostDtoToPost(newPost);
         savePostAndProduct(post);
         return mapper.map(post, PostResponseDto.class);
     }
@@ -52,7 +52,7 @@ public class PostService implements IPostService {
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
         validateExistingSeller(userId);
         List<Post> postList = getPromoPostsOrThrow(userId);
-        
+
         return mapPostsToDto(postList);
     }
 
@@ -110,7 +110,7 @@ public class PostService implements IPostService {
     // ------------------------------
 
     private void savePostAndProduct(Post post) {
-        productServiceProvider.getObject().createProduct(post.getProduct());
+        productService.createProduct(post.getProduct());
         postRepository.createPost(post);
     }
 
@@ -132,7 +132,7 @@ public class PostService implements IPostService {
     // ------------------------------
 
     private void validateExistingSeller(UUID sellerId) {
-        sellerServiceProvider.getObject().findSellerById(sellerId);
+        sellerService.findSellerById(sellerId);
     }
 
     // ------------------------------
@@ -140,7 +140,7 @@ public class PostService implements IPostService {
     // ------------------------------
 
     private List<UUID> getFollowedSellerIdsOrThrow(UUID buyerId) {
-        List<SellerResponseDto> sellers = buyerServiceProvider.getObject().findFollowed(buyerId).getFollowed();
+        List<SellerResponseDto> sellers = buyerService.findFollowed(buyerId).getFollowed();
 
         if (sellers.isEmpty()) {
             throw new BadRequest("The buyer is not following any sellers");
@@ -164,8 +164,7 @@ public class PostService implements IPostService {
     // Data Transformation Methods
     // ------------------------------
 
-    private Post buildPostFromDto(PostDto dto) {
-        validateExistingSeller(dto.getSellerId());
+    private Post fromPostDtoToPost(PostDto dto) {
         Post post = mapper.map(dto, Post.class);
         post.setGeneratedId(IdUtils.generateId());
         return post;
