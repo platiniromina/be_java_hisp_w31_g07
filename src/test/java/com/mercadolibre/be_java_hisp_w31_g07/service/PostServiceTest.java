@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
@@ -20,10 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -32,21 +31,67 @@ class PostServiceTest {
     private IPostRepository postRepository;
 
     @Mock
+    private ISellerService sellerService;
+
+    @Mock
+    private IProductService productService;
+
+    @Mock
     private GenericObjectMapper mapper;
 
     @InjectMocks
     private PostService postService;
 
+    private PostDto postDto;
     private Post post;
     private UUID postId;
     private PostResponseDto postResponseDto;
+    private Seller seller;
+    private UUID sellerId;
 
     @BeforeEach
     void setUp() {
-        Seller seller = SellerFactory.createSeller();
-        post = PostFactory.createPost(seller.getId());
+        seller = SellerFactory.createSeller();
+        sellerId = seller.getId();
+        postDto = PostFactory.createPostDto(sellerId, false);
+        post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
-        postResponseDto = PostFactory.createPostResponseDto(seller.getId());
+        postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Create post")
+    void testCreatePostSuccess() {
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
+        doNothing().when(productService).createProduct(post.getProduct());
+        doNothing().when(postRepository).createPost(post);
+        when(mapper.map(post, PostResponseDto.class)).thenReturn(postResponseDto);
+        when(mapper.map(postDto, Post.class)).thenReturn(post);
+
+        PostResponseDto result = postService.createPost(postDto);
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(postResponseDto, result)
+        );
+
+        verify(sellerService).findSellerById(sellerId);
+        verify(postRepository).createPost(post);
+        verify(mapper).map(post, PostResponseDto.class);
+        verifyNoMoreInteractions(postRepository, sellerService, mapper);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Create post - Seller not found")
+    void testCreatePostError() {
+        when(sellerService.findSellerById(sellerId)).thenThrow(
+                new BadRequest("Seller " + sellerId + " not found")
+        );
+
+        assertThrows(BadRequest.class, () ->
+                postService.createPost(postDto));
+
+        verifyNoMoreInteractions(sellerService, postRepository, productService);
     }
 
     @Test
