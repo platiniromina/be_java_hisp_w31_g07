@@ -77,25 +77,25 @@ class PostServiceTest {
 
     @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers")
-    void getLatestPostsFromSellers() {
+    void testGetLatestPostsFromSellers() {
 
     }
 
     @Test
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
-    void getLatestPostsFromSellersBuyerNotFound() {
+    void testGetLatestPostsFromSellersBuyerNotFound() {
 
     }
 
     @Test
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
-    void getLatestPostsFromSellersBuyerNotFollowingAnyone() {
+    void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() {
 
     }
 
     @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers - No posts")
-    void getLatestPostsFromSellersButNoPostsMatchTheFilter() {
+    void testGetLatestPostsFromSellersButNoPostsMatchTheFilter() {
 
     }
 
