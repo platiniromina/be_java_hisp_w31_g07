@@ -147,7 +147,8 @@ class PostServiceTest {
 
         when(buyerService.findFollowed(buyerId)).thenReturn(buyerDto);
         when(postRepository.findLatestPostsFromSellers(List.of(sellerResponseDto.getId()))).thenReturn(List.of(post));
-
+        when(mapper.mapList(List.of(post), PostResponseDto.class)).thenReturn(List.of(expected));
+        
         FollowersPostsResponseDto result = postService.getLatestPostsFromSellers(buyerId);
 
         Assertions.assertAll(
