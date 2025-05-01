@@ -16,9 +16,9 @@ public class SellerFactory {
         return seller;
     }
 
-    public static SellerResponseDto createSellerResponseDto() {
+    public static SellerResponseDto createSellerResponseDto(UUID sellerId) {
         SellerResponseDto seller = new SellerResponseDto();
-        seller.setId(UUID.randomUUID());
+        seller.setId(sellerId);
         seller.setFollowerCount(0);
         seller.setFollowers(new ArrayList<>());
         return seller;

@@ -62,6 +62,7 @@ class PostServiceTest {
     private Buyer buyer;
     private UUID buyerId;
     private BuyerDto buyerDto;
+    private SellerResponseDto sellerResponseDto;
 
     @BeforeEach
     void setUp() {
@@ -74,6 +75,7 @@ class PostServiceTest {
         buyer = BuyerFactory.createBuyer();
         buyerId = buyer.getId();
         postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
+        sellerResponseDto = SellerFactory.createSellerResponseDto(sellerId);
     }
 
     @Test
@@ -140,17 +142,33 @@ class PostServiceTest {
     @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers")
     void testGetLatestPostsFromSellers() {
+        buyerDto.setFollowed(List.of(sellerResponseDto));
+        PostResponseDto expected = PostFactory.createPostResponseDto(sellerId, postId, false);
 
+        when(buyerService.findFollowed(buyerId)).thenReturn(buyerDto);
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerResponseDto.getId()))).thenReturn(List.of(post));
+
+        FollowersPostsResponseDto result = postService.getLatestPostsFromSellers(buyerId);
+
+        Assertions.assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(buyerId, result.getId()),
+                () -> assertEquals(1, result.getPosts().size()),
+                () -> assertEquals(expected, result.getPosts().get(0))
+        );
+
+        verify(buyerService).findFollowed(buyerId);
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerResponseDto.getId()));
+        verifyNoMoreInteractions(buyerService, postRepository);
     }
 
     @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers - No posts")
     void testGetLatestPostsFromSellersButNoPostsMatchTheFilter() {
-        SellerResponseDto followedSeller = SellerFactory.createSellerResponseDto();
-        buyerDto.setFollowed(List.of(followedSeller));
+        buyerDto.setFollowed(List.of(sellerResponseDto));
 
         when(buyerService.findFollowed(buyerId)).thenReturn(buyerDto);
-        when(postRepository.findLatestPostsFromSellers(List.of(followedSeller.getId())))
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerResponseDto.getId())))
                 .thenReturn(Collections.emptyList());
 
         FollowersPostsResponseDto result = postService.getLatestPostsFromSellers(buyerId);
@@ -160,9 +178,9 @@ class PostServiceTest {
                 () -> assertEquals(buyerId, result.getId()),
                 () -> assertTrue(result.getPosts().isEmpty())
         );
-        
+
         verify(buyerService).findFollowed(buyerId);
-        verify(postRepository).findLatestPostsFromSellers(List.of(followedSeller.getId()));
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerResponseDto.getId()));
         verifyNoMoreInteractions(buyerService, postRepository);
     }
 
