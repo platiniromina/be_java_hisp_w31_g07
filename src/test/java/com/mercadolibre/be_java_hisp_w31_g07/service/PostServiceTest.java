@@ -47,20 +47,22 @@ class PostServiceTest {
     private UUID postId;
     private PostResponseDto postResponseDto;
     private Seller seller;
+    private UUID sellerId;
 
     @BeforeEach
     void setUp() {
         seller = SellerFactory.createSeller();
-        postDto = PostFactory.createPostDto(seller.getId());
-        post = PostFactory.createPost(seller.getId());
+        sellerId = seller.getId();
+        postDto = PostFactory.createPostDto(sellerId);
+        post = PostFactory.createPost(sellerId);
         postId = post.getId();
-        postResponseDto = PostFactory.createPostResponseDto(seller.getId());
+        postResponseDto = PostFactory.createPostResponseDto(sellerId);
     }
 
     @Test
     @DisplayName("[SUCCESS] Create post")
     void testCreatePostSuccess() {
-        when(sellerService.findSellerById(seller.getId())).thenReturn(seller);
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
         doNothing().when(productService).createProduct(post.getProduct());
         doNothing().when(postRepository).createPost(post);
         when(mapper.map(post, PostResponseDto.class)).thenReturn(postResponseDto);
@@ -73,7 +75,7 @@ class PostServiceTest {
                 () -> assertEquals(postResponseDto, result)
         );
 
-        verify(sellerService).findSellerById(seller.getId());
+        verify(sellerService).findSellerById(sellerId);
         verify(postRepository).createPost(post);
         verify(mapper).map(post, PostResponseDto.class);
         verifyNoMoreInteractions(postRepository, sellerService, mapper);
@@ -82,8 +84,8 @@ class PostServiceTest {
     @Test
     @DisplayName("[ERROR] Create post - Seller not found")
     void testCreatePostError() {
-        when(sellerService.findSellerById(seller.getId())).thenThrow(
-                new BadRequest("Seller " + seller.getId() + " not found")
+        when(sellerService.findSellerById(sellerId)).thenThrow(
+                new BadRequest("Seller " + sellerId + " not found")
         );
 
         assertThrows(BadRequest.class, () ->
