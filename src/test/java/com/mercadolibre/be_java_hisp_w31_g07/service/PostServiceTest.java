@@ -1,12 +1,15 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostService;
+import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.GenericObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
@@ -34,6 +37,9 @@ class PostServiceTest {
     private ISellerService sellerService;
 
     @Mock
+    private IBuyerService buyerService;
+
+    @Mock
     private IProductService productService;
 
     @Mock
@@ -47,10 +53,16 @@ class PostServiceTest {
     private UUID postId;
     private PostResponseDto postResponseDto;
     private Seller seller;
+    private Buyer buyer;
+    private UUID buyerId;
+    private BuyerDto buyerDto;
 
     @BeforeEach
     void setUp() {
+        buyerDto = BuyerFactory.createBuyerDto();
         seller = SellerFactory.createSeller();
+        buyer = BuyerFactory.createBuyer();
+        buyerId = buyer.getId();
         postDto = PostFactory.createPostDto(seller.getId());
         post = PostFactory.createPost(seller.getId());
         postId = post.getId();
@@ -125,22 +137,27 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
-    void testGetLatestPostsFromSellersBuyerNotFound() {
-
-    }
-
-    @Test
-    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
-    void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() {
-
-    }
-
-    @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers - No posts")
     void testGetLatestPostsFromSellersButNoPostsMatchTheFilter() {
 
     }
 
+    @Test
+    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
+    void testGetLatestPostsFromSellersBuyerNotFound() {
+        when(buyerService.findFollowed(buyerId)).thenThrow(new BadRequest("Buyer: " + buyerId + " not found"));
+        Exception exception = assertThrows(BadRequest.class, () -> postService.getLatestPostsFromSellers(buyerId));
+        assertEquals("Buyer: " + buyerId + " not found", exception.getMessage());
+        verifyNoMoreInteractions(buyerService, postRepository);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
+    void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() {
+        when(buyerService.findFollowed(buyerId)).thenReturn(buyerDto);
+        Exception exception = assertThrows(BadRequest.class, () -> postService.getLatestPostsFromSellers(buyerId));
+        assertEquals("The buyer is not following any sellers", exception.getMessage());
+        verifyNoMoreInteractions(buyerService, postRepository);
+    }
 
 }
