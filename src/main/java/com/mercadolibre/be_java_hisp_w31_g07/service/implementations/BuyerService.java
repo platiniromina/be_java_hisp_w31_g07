@@ -11,6 +11,8 @@ import com.mercadolibre.be_java_hisp_w31_g07.service.IBuyerService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IUserService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,7 +22,9 @@ import java.util.UUID;
 public class BuyerService implements IBuyerService {
     private final IBuyerRepository buyerRepository;
     private final IUserService userService;
-    private final PostService postService;
+    @Autowired
+    @Lazy
+    private PostService postService;
 
     @Override
     public Buyer findBuyerById(UUID id) {

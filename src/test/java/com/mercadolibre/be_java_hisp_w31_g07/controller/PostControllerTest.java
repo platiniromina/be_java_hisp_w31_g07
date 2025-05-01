@@ -52,10 +52,9 @@ class PostControllerTest {
     @Test
     @DisplayName("[SUCCESS] Find post by ID")
     void testFindPostSuccess() throws Exception {
-        String expectedResponse = JsonUtil.generateFromDto(PostFactory.createPostResponseDto(post.getId(), seller.getId()));
+        String expectedResponse = JsonUtil.generateFromDto(PostFactory.createPostResponseDto(seller.getId(), post.getId()));
         System.out.println(expectedResponse);
         ResultActions resultActions = performGet(post.getId(), "/products/post/{postId}");
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
