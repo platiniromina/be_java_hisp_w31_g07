@@ -75,4 +75,29 @@ class PostServiceTest {
         verifyNoMoreInteractions(postRepository);
     }
 
+    @Test
+    @DisplayName("[SUCCESS] Get latest posts from from sellers")
+    void getLatestPostsFromSellers() {
+
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
+    void getLatestPostsFromSellersBuyerNotFound() {
+
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
+    void getLatestPostsFromSellersBuyerNotFollowingAnyone() {
+
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get latest posts from from sellers - No posts")
+    void getLatestPostsFromSellersButNoPostsMatchTheFilter() {
+
+    }
+
+
 }
