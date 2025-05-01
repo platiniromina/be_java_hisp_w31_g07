@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +50,6 @@ class PostServiceTest {
 
     @BeforeEach
     void setUp() {
-
         seller = SellerFactory.createSeller();
         postDto = PostFactory.createPostDto(seller.getId());
         post = PostFactory.createPost(seller.getId());
@@ -78,6 +76,7 @@ class PostServiceTest {
         verify(sellerService).findSellerById(seller.getId());
         verify(postRepository).createPost(post);
         verify(mapper).map(post, PostResponseDto.class);
+        verifyNoMoreInteractions(postRepository, sellerService, mapper);
     }
 
     @Test
