@@ -2,7 +2,9 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
@@ -13,6 +15,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.GenericObjectMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -141,7 +146,24 @@ class PostServiceTest {
     @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers - No posts")
     void testGetLatestPostsFromSellersButNoPostsMatchTheFilter() {
+        SellerResponseDto followedSeller = SellerFactory.createSellerResponseDto();
+        buyerDto.setFollowed(List.of(followedSeller));
 
+        when(buyerService.findFollowed(buyerId)).thenReturn(buyerDto);
+        when(postRepository.findLatestPostsFromSellers(List.of(followedSeller.getId())))
+                .thenReturn(Collections.emptyList());
+
+        FollowersPostsResponseDto result = postService.getLatestPostsFromSellers(buyerId);
+
+        Assertions.assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(buyerId, result.getId()),
+                () -> assertTrue(result.getPosts().isEmpty())
+        );
+        
+        verify(buyerService).findFollowed(buyerId);
+        verify(postRepository).findLatestPostsFromSellers(List.of(followedSeller.getId()));
+        verifyNoMoreInteractions(buyerService, postRepository);
     }
 
     @Test
