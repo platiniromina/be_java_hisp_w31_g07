@@ -18,7 +18,7 @@ public interface IPostRepository {
      * @param post the {@link Post} instance to be created and stored in the
      *             repository.
      */
-    public void createPost(Post post);
+    void createPost(Post post);
 
     /**
      * Retrieves a post by its unique identifier.
@@ -32,7 +32,7 @@ public interface IPostRepository {
      * @return an {@link Optional} containing the found {@link Post}, or an empty
      * {@link Optional} if no post with the specified ID exists.
      */
-    public Optional<Post> findById(UUID postId);
+    Optional<Post> findById(UUID postId);
 
     /**
      * Retrieves a list of posts that have promotional content for a specified user.
@@ -48,7 +48,7 @@ public interface IPostRepository {
      * belong
      * to the specified seller; may be empty if no such posts exist.
      */
-    public List<Post> findHasPromo(UUID userId);
+    List<Post> findHasPromo(UUID userId);
 
     /**
      * Retrieves all posts matching the sellers ids within the last two weeks.
@@ -56,7 +56,7 @@ public interface IPostRepository {
      *
      * @param sellers the unique identifier of the sellers.
      */
-    public List<Post> findLatestPostsFromSellers(List<UUID> sellers);
+    List<Post> findLatestPostsFromSellers(List<UUID> sellers);
 
     /**
      * Retrieves a list of posts associated with a specific seller ID.
@@ -64,7 +64,7 @@ public interface IPostRepository {
      * @param userId the UUID of the seller whose posts are to be retrieved
      * @return a list of {@link Post} objects that belong to the specified seller
      */
-    public List<Post> findPostsBySellerId(UUID userId);
+    List<Post> findPostsBySellerId(UUID userId);
 
     /**
      * Finds a post containing a product by its name.
@@ -73,5 +73,12 @@ public interface IPostRepository {
      * @return an {@link Optional} containing the {@link Post} if a match is found,
      * or an empty {@link Optional} if no match is found.
      */
-    public Optional<Post> findProductByPurchase(String product);
+    Optional<Post> findProductByPurchase(String product);
+
+    /**
+     * Saves a post to the repository.
+     *
+     * @param post the {@link Post} instance to be saved.
+     */
+    void save(Post post);
 }
