@@ -14,5 +14,14 @@ public class SellerFactory {
         seller.setFollowers(new ArrayList<>());
         return seller;
     }
+
+    public static Seller createSellerWithFollowers(int followerCount) {
+        Seller seller = createSeller();
+        for (int i = 0; i < followerCount; i++) {
+            seller.addFollower(BuyerFactory.createBuyer());
+        }
+        seller.setFollowerCount(followerCount);
+        return seller;
+    }
 }
 
