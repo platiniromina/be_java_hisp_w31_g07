@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PostControllerTest {
+class ProductControllerTest {
     @Autowired
     private ISellerRepository sellerRepository;
 
@@ -38,13 +38,15 @@ class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private Seller seller;
-    private Post post;
+    private UUID sellerId;
+    private UUID postId;
 
     @BeforeEach
     void setUp() {
-        seller = SellerFactory.createSeller();
-        post = PostFactory.createPost(seller.getId());
+        Seller seller = SellerFactory.createSeller();
+        sellerId = seller.getId();
+        Post post = PostFactory.createPost(sellerId, false);
+        postId = post.getId();
         postRepository.save(post);
         sellerRepository.save(seller);
     }
@@ -52,9 +54,8 @@ class PostControllerTest {
     @Test
     @DisplayName("[SUCCESS] Find post by ID")
     void testFindPostSuccess() throws Exception {
-        String expectedResponse = JsonUtil.generateFromDto(PostFactory.createPostResponseDto(seller.getId(), post.getId()));
-        System.out.println(expectedResponse);
-        ResultActions resultActions = performGet(post.getId(), "/products/post/{postId}");
+        String expectedResponse = JsonUtil.generateFromDto(PostFactory.createPostResponseDto(sellerId, postId, false));
+        ResultActions resultActions = performGet(postId, "/products/post/{postId}");
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
