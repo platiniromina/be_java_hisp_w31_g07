@@ -36,6 +36,11 @@ public class SellerRepository implements ISellerRepository {
     }
 
     @Override
+    public void save(Seller seller) {
+        sellerList.add(seller);
+    }
+
+    @Override
     public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
         return this.findSellerById(sellerId)
                 .map(seller -> {

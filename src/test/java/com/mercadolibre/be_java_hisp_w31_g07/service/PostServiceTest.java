@@ -53,10 +53,10 @@ class PostServiceTest {
     void setUp() {
         seller = SellerFactory.createSeller();
         sellerId = seller.getId();
-        postDto = PostFactory.createPostDto(sellerId);
-        post = PostFactory.createPost(sellerId);
+        postDto = PostFactory.createPostDto(sellerId, false);
+        post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
-        postResponseDto = PostFactory.createPostResponseDto(sellerId);
+        postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
     }
 
     @Test

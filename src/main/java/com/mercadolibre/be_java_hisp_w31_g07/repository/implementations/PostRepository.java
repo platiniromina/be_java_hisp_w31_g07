@@ -35,6 +35,11 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
+    public void save(Post post) {
+        postList.add(post);
+    }
+
+    @Override
     public void createPost(Post post) {
         post.setHasPromo(post.getHasPromo() != null && post.getHasPromo());
         post.setDiscount(post.getDiscount() == null ? 0.0 : post.getDiscount());
