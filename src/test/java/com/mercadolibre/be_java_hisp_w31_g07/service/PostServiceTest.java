@@ -46,7 +46,7 @@ class PostServiceTest {
         Seller seller = SellerFactory.createSeller();
         post = PostFactory.createPost(seller.getId());
         postId = post.getId();
-        postResponseDto = PostFactory.createPostResponseDto(seller.getId());
+        postResponseDto = PostFactory.createPostResponseDto(seller.getId(), seller.getId());
     }
 
     @Test

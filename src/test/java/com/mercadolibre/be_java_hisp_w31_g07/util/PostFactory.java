@@ -1,6 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.util;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.ProductResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
 
@@ -24,14 +25,16 @@ public class PostFactory {
         return post;
     }
 
-    public static PostResponseDto createPostResponseDto(UUID postId) {
+    public static PostResponseDto createPostResponseDto(UUID postId, UUID sellerId) {
         PostResponseDto postResponseDto = new PostResponseDto();
         postResponseDto.setId(postId);
         postResponseDto.setDate(LocalDate.parse("30-04-2025", DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         postResponseDto.setCategory(1);
         postResponseDto.setPrice(100.0);
-        postResponseDto.setHasPromo(true);
-        postResponseDto.setDiscount(0.1);
+        postResponseDto.setHasPromo(false);
+        postResponseDto.setDiscount(0.0);
+        postResponseDto.setSellerId(sellerId);
+        postResponseDto.setProduct(createProductResponseDto(postId));
         return postResponseDto;
     }
 
@@ -44,5 +47,16 @@ public class PostFactory {
         product.setColor("Test Color");
         product.setNote("Test Note");
         return product;
+    }
+
+    public static ProductResponseDto createProductResponseDto(UUID productId) {
+        ProductResponseDto productResponseDto = new ProductResponseDto();
+        productResponseDto.setId(productId);
+        productResponseDto.setProductName("Test product");
+        productResponseDto.setType("Test type");
+        productResponseDto.setBrand("Test Brand");
+        productResponseDto.setColor("Test Color");
+        productResponseDto.setNote("Test Note");
+        return productResponseDto;
     }
 }
