@@ -51,8 +51,8 @@ public class SellerService implements ISellerService {
         Seller seller = sellerRepository.findSellerById(sellerId)
                 .orElseThrow(() -> new BadRequest("Seller: " + sellerId + " not found"));
 
-        String buyerUserName = userService.findById(seller.getId()).getUserName();
-        return BuyerMapper.toSellerDto(seller, buyerUserName, buildUsernamesMap(seller));
+        String sellerUserName = userService.findById(seller.getId()).getUserName();
+        return BuyerMapper.toSellerDto(seller, sellerUserName, buildUsernamesMap(seller));
     }
 
     @Override

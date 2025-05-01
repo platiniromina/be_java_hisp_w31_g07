@@ -18,11 +18,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PostServiceTest {
+class PostServiceTest {
 
     @Mock
     private IPostRepository postRepository;
@@ -41,6 +45,7 @@ public class PostServiceTest {
 
     private PostDto postDto;
     private Post post;
+    private UUID postId;
     private PostResponseDto postResponseDto;
     private Seller seller;
 
@@ -50,6 +55,7 @@ public class PostServiceTest {
         seller = SellerFactory.createSeller();
         postDto = PostFactory.createPostDto(seller.getId());
         post = PostFactory.createPost(seller.getId());
+        postId = post.getId();
         postResponseDto = PostFactory.createPostResponseDto(seller.getId());
     }
 
@@ -85,6 +91,32 @@ public class PostServiceTest {
                 postService.createPost(postDto));
 
         verifyNoMoreInteractions(sellerService, postRepository, productService);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Find post - Success")
+    void testFindPostSuccess() {
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(mapper.map(post, PostResponseDto.class)).thenReturn(postResponseDto);
+
+        PostResponseDto result = postService.findPost(postId);
+
+        assertEquals(postResponseDto, result);
+        verify(postRepository).findById(postId);
+        verify(mapper).map(post, PostResponseDto.class);
+        verifyNoMoreInteractions(postRepository, mapper);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Find post - Not Found")
+    void testFindPostNotFound() {
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(BadRequest.class, () -> postService.findPost(postId));
+
+        assertEquals("Post " + postId + " not found", exception.getMessage());
+        verify(postRepository).findById(postId);
+        verifyNoMoreInteractions(postRepository);
     }
 
 }
