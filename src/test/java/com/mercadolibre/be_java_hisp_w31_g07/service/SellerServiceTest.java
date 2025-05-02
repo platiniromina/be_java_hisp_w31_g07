@@ -61,7 +61,7 @@ class SellerServiceTest {
                 sellerService.findSellerById(sellerId)
         );
 
-        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        assertEquals(ErrorMessagesUtil.sellerNotFound(sellerId), exception.getMessage());
         verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository);
     }
