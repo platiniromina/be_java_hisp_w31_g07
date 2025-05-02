@@ -26,7 +26,7 @@ public class UserRepository implements IUserRepository {
         File file;
         ObjectMapper objectMapper = new ObjectMapper();
         List<User> users;
-        
+
         file = ResourceUtils.getFile("classpath:user.json");
         users = objectMapper.readValue(file, new TypeReference<List<User>>() {
         });
@@ -39,6 +39,11 @@ public class UserRepository implements IUserRepository {
         return userList.stream()
                 .filter(user -> user.getId().equals(userId))
                 .findFirst();
+    }
+
+    @Override
+    public void save(User user) {
+        userList.add(user);
     }
 
 }

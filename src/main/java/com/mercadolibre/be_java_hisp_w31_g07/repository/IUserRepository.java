@@ -13,6 +13,13 @@ public interface IUserRepository {
      * @return a user with his attributes if the user is found,
      * or an empty Optional otherwise.
      */
-    public Optional<User> findById(UUID userId);
+    Optional<User> findById(UUID userId);
+
+    /**
+     * Saves a user in the database.
+     *
+     * @param user user to save.
+     */
+    void save(User user);
 
 }
