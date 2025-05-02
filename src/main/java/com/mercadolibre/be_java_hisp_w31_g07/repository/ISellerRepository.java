@@ -22,10 +22,8 @@ public interface ISellerRepository {
      *
      * @param buyer    the buyer who wants to follow the seller
      * @param sellerId the ID of the seller to be followed
-     * @return an Optional containing the updated Seller if found, or empty if no
-     * seller with the given ID exists
      */
-    Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId);
+    void addBuyerToFollowersList(Buyer buyer, UUID sellerId);
 
     /**
      * Checks if a given seller is being followed by a specific buyer.

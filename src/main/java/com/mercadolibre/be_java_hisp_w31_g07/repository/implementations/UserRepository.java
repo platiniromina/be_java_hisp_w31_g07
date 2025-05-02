@@ -9,10 +9,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class UserRepository implements IUserRepository {
@@ -26,7 +23,7 @@ public class UserRepository implements IUserRepository {
         File file;
         ObjectMapper objectMapper = new ObjectMapper();
         List<User> users;
-        
+
         file = ResourceUtils.getFile("classpath:user.json");
         users = objectMapper.readValue(file, new TypeReference<List<User>>() {
         });
@@ -39,6 +36,15 @@ public class UserRepository implements IUserRepository {
         return userList.stream()
                 .filter(user -> user.getId().equals(userId))
                 .findFirst();
+    }
+
+    @Override
+    public List<User> findAllById(Set<UUID> ids) {
+        return ids.stream()
+                .map(this::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 
 }
