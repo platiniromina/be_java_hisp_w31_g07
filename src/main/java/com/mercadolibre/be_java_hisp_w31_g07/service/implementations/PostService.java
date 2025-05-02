@@ -39,14 +39,14 @@ public class PostService implements IPostService {
     @Override
     public List<Post> findUserPromoPosts(UUID userId) {
         List<Post> posts = postRepository.findHasPromo(userId);
-        throwIfEmpty(posts, "No promotional posts found for user: " + userId);
+        throwIfEmpty(posts, ErrorMessagesUtil.noPromoPostForUser(userId));
         return posts;
     }
 
     @Override
     public Double findAveragePriceBySellerId(UUID sellerId) {
         List<Post> posts = postRepository.findPostsBySellerId(sellerId);
-        throwIfEmpty(posts, "User " + sellerId + " has no posts.");
+        throwIfEmpty(posts, ErrorMessagesUtil.noPostsFoundForUser(sellerId));
 
         return posts.stream()
                 .mapToDouble(this::getEffectivePrice)

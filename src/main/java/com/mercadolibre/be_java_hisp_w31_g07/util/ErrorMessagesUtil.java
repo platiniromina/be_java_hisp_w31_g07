@@ -43,4 +43,12 @@ public class ErrorMessagesUtil {
         return "No purchases found for product " + product;
     }
 
+    public static String noPromoPostForUser(UUID userId) {
+        return "No promotional posts found for user: " + userId;
+    }
+    
+    public static String noPostsFoundForUser(UUID userId) {
+        return "No posts found for user: " + userId;
+    }
+
 }
