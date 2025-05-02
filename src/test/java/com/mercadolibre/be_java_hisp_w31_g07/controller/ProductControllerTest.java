@@ -7,10 +7,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.util.JsonUtil;
-import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
-import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
-import com.mercadolibre.be_java_hisp_w31_g07.util.UserFactory;
+import com.mercadolibre.be_java_hisp_w31_g07.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,7 +79,7 @@ class ProductControllerTest {
     void testGetUserPromoPostsCountSellerNotFound() throws Exception {
         UUID nonExistentSellerId = UUID.randomUUID();
         ResultActions resultActions = performGetPromoPostCount(nonExistentSellerId, "/products/promo-post/count");
-        assertBadRequestWithMessage(resultActions, "Seller " + nonExistentSellerId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
     @Test
@@ -99,7 +96,7 @@ class ProductControllerTest {
     void testFindPostNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
         ResultActions resultActions = performGet(nonExistentPostId, "/products/post/{postId}");
-        assertBadRequestWithMessage(resultActions, "Post " + nonExistentPostId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.postNotFound(nonExistentPostId));
     }
 
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
