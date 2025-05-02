@@ -11,16 +11,16 @@ public class SellerFactory {
 
     private static final int DEFAULT_FOLLOWER_COUNT = 0;
 
-    public static Seller createSeller() {
+    public static Seller createSeller(UUID sellerId) {
         Seller seller = new Seller();
-        seller.setId(UUID.randomUUID());
+        seller.setId(sellerId != null ? sellerId : UUID.randomUUID());
         seller.setFollowerCount(DEFAULT_FOLLOWER_COUNT);
         seller.setFollowers(new ArrayList<>());
         return seller;
     }
 
     public static Seller createSellerWithFollowers(int followerCount) {
-        Seller seller = createSeller();
+        Seller seller = createSeller(null);
         List<Buyer> followers = generateFollowers(followerCount);
         seller.setFollowers(followers);
         seller.setFollowerCount(followerCount);
@@ -32,7 +32,7 @@ public class SellerFactory {
     private static List<Buyer> generateFollowers(int count) {
         List<Buyer> followers = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            followers.add(BuyerFactory.createBuyer());
+            followers.add(BuyerFactory.createBuyer(null));
         }
         return followers;
     }

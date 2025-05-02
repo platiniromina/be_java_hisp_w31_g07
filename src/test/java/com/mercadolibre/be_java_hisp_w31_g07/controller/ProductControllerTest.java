@@ -44,7 +44,7 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
-        Seller seller = SellerFactory.createSeller();
+        Seller seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
         Post post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
