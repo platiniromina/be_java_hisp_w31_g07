@@ -41,8 +41,8 @@ public class SellerRepository implements ISellerRepository {
     }
 
     @Override
-    public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
-        return this.findSellerById(sellerId)
+    public void addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
+        findSellerById(sellerId)
                 .map(seller -> {
                     seller.addFollower(buyer);
                     seller.incrementFollowerCount();

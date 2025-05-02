@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Tag(name = "Product", description = "Operations related to products and posts")
-@RequestMapping("/products")
 public interface IProductController {
 
-    @GetMapping("/promo-post/list")
+    @GetMapping("/products/promo-post/list")
     ResponseEntity<UserPostResponseDto> getUserPromoPosts(@RequestParam(name = "user_id") UUID userId);
 
     @Operation(summary = "Create a new post - [REQ - 5]", description = "Creates a new post with a product associated.")
@@ -27,7 +26,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request: seller not found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    @PostMapping("/post")
+    @PostMapping("/products/post")
     ResponseEntity<PostResponseDto> createPost(@Valid @RequestBody PostDto newPost);
 
     @Operation(summary = "Create a new post with discount - [REQ - 10]", description = "Creates a new post with a product associated.")
@@ -35,7 +34,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found or the buyer is not following any sellers.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    @PostMapping("/promo-post")
+    @PostMapping("/products/promo-post")
     ResponseEntity<PostResponseDto> createPromoPost(@Valid @RequestBody PostDto newPromoPost);
 
     @Operation(summary = "Get latest posts from sellers - [REQ - 6]", description = "Returns the most recent posts from sellers followed by the given buyer. Only includes posts from the last two weeks, sorted by newest first.")
@@ -43,11 +42,11 @@ public interface IProductController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found or the buyer is not following any sellers.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    @GetMapping("/followed/{userId}/list")
+    @GetMapping("/products/followed/{userId}/list")
     ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(
             @Parameter(description = "Buyer id", required = true) @PathVariable UUID userId);
 
-    @GetMapping("/followed/{userId}/sorted")
+    @GetMapping("/products/followed/{userId}/sorted")
     ResponseEntity<FollowersPostsResponseDto> getSortedPostsByDate(
             @PathVariable UUID userId,
             @RequestParam(name = "order", required = false, defaultValue = "date_desc") String order);
@@ -57,9 +56,12 @@ public interface IProductController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request: buyer not found or the buyer is not following any sellers.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    @GetMapping("/promo-post/count")
+    @GetMapping("/products/promo-post/count")
     ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(@RequestParam(name = "user_id") UUID userId);
 
-    @GetMapping("/post/{postId}")
+    @GetMapping("/products/post/{postId}")
     ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId);
+
+    @GetMapping("/users/{userId}/average-post-price")
+    ResponseEntity<SellerAveragePrice> getAveragePrice(@PathVariable UUID userId);
 }
