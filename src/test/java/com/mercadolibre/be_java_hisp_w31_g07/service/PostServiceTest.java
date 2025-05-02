@@ -5,9 +5,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostBridgeService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostOrchestrator;
 import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostMapper;
@@ -20,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,26 +27,30 @@ import static org.mockito.Mockito.*;
 class PostServiceTest {
 
     @Mock
-    private IPostRepository postRepository;
+    private IPostService postService;
 
     @Mock
-    private PostBridgeService bridgeService;
+    private ISellerService sellerService;
+
+    @Mock
+    private IProductService productService;
 
     @Mock
     private PostMapper mapper;
 
     @InjectMocks
-    private PostService postService;
+    private PostOrchestrator postOrchestrator;
 
     private PostDto postDto;
     private Post post;
     private UUID postId;
     private PostResponseDto postResponseDto;
     private UUID sellerId;
+    private Seller seller;
 
     @BeforeEach
     void setUp() {
-        Seller seller = SellerFactory.createSeller();
+        seller = SellerFactory.createSeller();
         sellerId = seller.getId();
 
         post = PostFactory.createPost(sellerId, false);
@@ -62,62 +63,62 @@ class PostServiceTest {
     @Test
     @DisplayName("[SUCCESS] Create post")
     void testCreatePostSuccess() {
-        doNothing().when(bridgeService).validateSellerExists(sellerId);
-        doNothing().when(bridgeService).createProduct(post.getProduct());
-        doNothing().when(postRepository).createPost(post);
-        when(mapper.fromPostDtoToPost(postDto)).thenReturn(post);
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
+        when(postService.createPost(postDto)).thenReturn(post);
+        when(mapper.fromProductDtoToProduct(postDto.getProduct())).thenReturn(post.getProduct());
+        doNothing().when(productService).createProduct(post.getProduct());
         when(mapper.fromPostToPostResponseDto(post)).thenReturn(postResponseDto);
 
-        PostResponseDto result = postService.createPost(postDto);
+        PostResponseDto result = postOrchestrator.createPost(postDto);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(postResponseDto, result)
         );
-
-        verify(bridgeService).validateSellerExists(sellerId);
-        verify(postRepository).createPost(post);
-        verify(bridgeService).createProduct(post.getProduct());
+        verify(sellerService).findSellerById(sellerId);
+        verify(postService).createPost(postDto);
+        verify(mapper).fromProductDtoToProduct(postDto.getProduct());
+        verify(productService).createProduct(post.getProduct());
         verify(mapper).fromPostToPostResponseDto(post);
-        verifyNoMoreInteractions(bridgeService, postRepository, mapper);
+        verifyNoMoreInteractions(postService, productService, mapper);
     }
 
     @Test
     @DisplayName("[ERROR] Create post - Seller not found")
     void testCreatePostError() {
         doThrow(new BadRequest(ErrorMessagesUtil.sellerNotFound(sellerId)))
-                .when(bridgeService).validateSellerExists(sellerId);
+                .when(sellerService).findSellerById(sellerId);
 
         assertThrows(BadRequest.class, () ->
-                postService.createPost(postDto));
+                postOrchestrator.createPost(postDto));
 
-        verifyNoMoreInteractions(bridgeService, postRepository);
+        verifyNoMoreInteractions(sellerService, postService, productService, mapper);
     }
 
     @Test
     @DisplayName("[SUCCESS] Find post - Success")
     void testFindPostSuccess() {
-        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(postService.findPost(postId)).thenReturn(post);
         when(mapper.fromPostToPostResponseDto(post)).thenReturn(postResponseDto);
 
-        PostResponseDto result = postService.findPost(postId);
+        PostResponseDto result = postOrchestrator.findPost(postId);
 
         assertEquals(postResponseDto, result);
-        verify(postRepository).findById(postId);
+        verify(postService).findPost(postId);
         verify(mapper).fromPostToPostResponseDto(post);
-        verifyNoMoreInteractions(postRepository, mapper);
+        verifyNoMoreInteractions(postService, mapper);
     }
 
     @Test
     @DisplayName("[ERROR] Find post - Not Found")
     void testFindPostNotFound() {
-        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+        when(postService.findPost(postId)).thenThrow(new BadRequest(ErrorMessagesUtil.postNotFound(postId)));
 
         Exception exception = assertThrows(BadRequest.class, () -> postService.findPost(postId));
 
-        assertEquals("Post " + postId + " not found", exception.getMessage());
-        verify(postRepository).findById(postId);
-        verifyNoMoreInteractions(postRepository);
+        assertEquals(ErrorMessagesUtil.postNotFound(postId), exception.getMessage());
+        verify(postService).findPost(postId);
+        verifyNoMoreInteractions(postService);
     }
 
 }

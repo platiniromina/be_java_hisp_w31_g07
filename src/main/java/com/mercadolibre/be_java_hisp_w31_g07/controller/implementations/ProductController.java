@@ -3,8 +3,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller.implementations;
 import com.mercadolibre.be_java_hisp_w31_g07.controller.IProductController;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostOrchestrator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,46 +15,45 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductController implements IProductController {
 
-    private final IProductService productService;
-    private final IPostService postService;
+    private final IPostOrchestrator postOrchestrator;
 
     @Override
     public ResponseEntity<UserPostResponseDto> getUserPromoPosts(UUID userId) {
-        return new ResponseEntity<>(postService.getSellerPromoPosts(userId), HttpStatus.OK);
+        return new ResponseEntity<>(postOrchestrator.findUserPromoPosts(userId), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<PostResponseDto> createPost(PostDto newPost) {
-        return new ResponseEntity<>(postService.createPost(newPost), HttpStatus.OK);
+        return new ResponseEntity<>(postOrchestrator.createPost(newPost), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<PostResponseDto> createPromoPost(PostDto newPromoPost) {
-        return new ResponseEntity<>(postService.createPost(newPromoPost), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(UUID userId) {
-        return new ResponseEntity<>(postService.getLatestPostsFromSellers(userId), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<FollowersPostsResponseDto> getSortedPostsByDate(UUID userId, String order) {
-        return ResponseEntity.ok(postService.sortPostsByDate(userId, order));
+        return new ResponseEntity<>(postOrchestrator.createPost(newPromoPost), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<SellerPromoPostsCountResponseDto> getUserPromoPostCount(UUID userId) {
-        return new ResponseEntity<>(postService.getPromoPostsCount(userId), HttpStatus.OK);
+        return new ResponseEntity<>(postOrchestrator.findPromoPostsCount(userId), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<FollowersPostsResponseDto> getLatestPostsFromSellers(UUID userId) {
+        return new ResponseEntity<>(postOrchestrator.findLatestPostsFromSellers(userId), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<FollowersPostsResponseDto> getSortedPostsByDate(UUID userId, String order) {
+        return ResponseEntity.ok(postOrchestrator.findLatestPostsFromSellersSortedByDate(userId, order));
     }
 
     @Override
     public ResponseEntity<PostResponseDto> getPost(UUID postId) {
-        return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
+        return new ResponseEntity<>(postOrchestrator.findPost(postId), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<SellerAveragePrice> getAveragePrice(UUID userId) {
-        return new ResponseEntity<>(postService.findPricePerPosts(userId), HttpStatus.OK);
+    public ResponseEntity<SellerAveragePrice> getAveragePricePerPostsBySellerId(UUID userId) {
+        return new ResponseEntity<>(postOrchestrator.findPricePerPostsBySellerId(userId), HttpStatus.OK);
     }
 }
