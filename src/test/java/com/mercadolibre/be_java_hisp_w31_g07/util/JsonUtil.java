@@ -18,7 +18,6 @@ public final class JsonUtil {
             .writer();
 
     static {
-        // Configura el formato "dd-MM-yyyy" para LocalDate
         mapper.configOverride(LocalDate.class)
                 .setFormat(JsonFormat.Value.forPattern("dd-MM-yyyy"));
     }
