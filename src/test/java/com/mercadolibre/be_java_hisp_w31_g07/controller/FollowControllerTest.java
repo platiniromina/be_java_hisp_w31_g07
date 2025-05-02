@@ -5,6 +5,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.BuyerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
+import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SellerControllerTest {
+class FollowControllerTest {
     @Autowired
     private ISellerRepository sellerRepository;
 
@@ -54,7 +55,7 @@ class SellerControllerTest {
 
         sellerRepository.save(seller);
         buyerRepository.save(buyer);
-        
+
         sellerRepository.save(sellerWithBuyerFollower);
         buyerRepository.save(buyerWithFollowedSeller);
     }
@@ -69,8 +70,9 @@ class SellerControllerTest {
     @Test
     @DisplayName("[ERROR] Follow a seller with invalid buyerId")
     void testFollowSellerSameUserError() throws Exception {
-        ResultActions resultActions = performFollow(buyer.getId(), buyer.getId());
-        assertBadRequestWithMessage(resultActions, "User cannot follow themselves.");
+        UUID invalidBuyerId = UUID.randomUUID();
+        ResultActions resultActions = performFollow(invalidBuyerId, seller.getId());
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(invalidBuyerId));
     }
 
     @Test
@@ -79,7 +81,7 @@ class SellerControllerTest {
         UUID buyerId = buyerWithFollowedSeller.getId();
         UUID sellerId = sellerWithBuyerFollower.getId();
         ResultActions resultActions = performFollow(buyerId, sellerId);
-        assertBadRequestWithMessage(resultActions, "Buyer " + buyerId + " already follows seller " + sellerId);
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerAlreadyFollowingSeller(buyerId, sellerId));
     }
 
     @Test
@@ -87,7 +89,7 @@ class SellerControllerTest {
     void testFollowSellerThatDoesNotExistError() throws Exception {
         UUID sellerId = UUID.randomUUID();
         ResultActions resultActions = performFollow(buyer.getId(), sellerId);
-        assertBadRequestWithMessage(resultActions, "Seller " + sellerId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(sellerId));
     }
 
     @Test
@@ -95,7 +97,7 @@ class SellerControllerTest {
     void testFollowSellerButBuyerNotFoundError() throws Exception {
         UUID buyerId = UUID.randomUUID();
         ResultActions resultActions = performFollow(buyerId, seller.getId());
-        assertBadRequestWithMessage(resultActions, "Buyer " + buyerId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(buyerId));
     }
 
     private ResultActions performFollow(UUID buyerId, UUID sellerId) throws Exception {

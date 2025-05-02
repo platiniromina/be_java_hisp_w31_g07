@@ -6,15 +6,14 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
-import lombok.AllArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-@AllArgsConstructor
+@UtilityClass
 public class BuyerMapper {
 
     public static BuyerDto toBuyerDto(Buyer buyer, String userName) {
@@ -25,7 +24,7 @@ public class BuyerMapper {
 
         List<SellerResponseDto> followedSellers = buyer.getFollowed().stream()
                 .map(seller -> toSellerResponseDto(seller, userName))
-                .collect(Collectors.toList());
+                .toList();
 
         buyerDto.setFollowed(followedSellers);
 
@@ -63,16 +62,5 @@ public class BuyerMapper {
 
         return sellerDto;
     }
-
-    public static BuyerResponseDto toBuyerReponseDto(Buyer buyer, String userName) {
-        if (buyer == null) {
-            return null;
-        }
-
-        BuyerResponseDto buyerResponseDto = new BuyerResponseDto();
-        buyerResponseDto.setId(buyer.getId());
-        buyerResponseDto.setUserName(userName);
-
-        return buyerResponseDto;
-    }
+    
 }

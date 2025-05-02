@@ -9,6 +9,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class GenericObjectMapper {
+    
     private final ObjectMapper objectMapper;
 
     public <T, R> R map(T source, Class<R> targetClass) {
