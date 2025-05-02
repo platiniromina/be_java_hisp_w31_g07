@@ -39,7 +39,7 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public List<User> findAllByIdIn(Set<UUID> ids) {
+    public List<User> findAllById(Set<UUID> ids) {
         return ids.stream()
                 .map(this::findById)
                 .filter(Optional::isPresent)

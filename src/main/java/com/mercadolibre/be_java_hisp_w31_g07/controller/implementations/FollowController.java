@@ -1,6 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller.implementations;
 
-import com.mercadolibre.be_java_hisp_w31_g07.controller.IFollowontroller;
+import com.mercadolibre.be_java_hisp_w31_g07.controller.IFollowController;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-public class FollowController implements IFollowontroller {
+public class FollowController implements IFollowController {
 
     private final IFollowService followService;
 

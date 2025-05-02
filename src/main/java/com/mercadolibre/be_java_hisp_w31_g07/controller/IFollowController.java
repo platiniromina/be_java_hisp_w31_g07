@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Tag(name = "Seller", description = "Operations related to sellers")
-public interface IFollowontroller {
+public interface IFollowController {
 
     @Operation(summary = "Get followers - [REQ - 3]", description = "Returns a list of the buyers that follow the given seller.")
     @ApiResponses(value = {

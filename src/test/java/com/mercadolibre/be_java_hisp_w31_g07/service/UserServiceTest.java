@@ -74,13 +74,13 @@ class UserServiceTest {
     void testFindUsernamesSuccess() {
         Map<UUID, String> idMap = new HashMap<>();
         idMap.put(userId, userDto.getUserName());
-        when(userRepository.findAllByIdIn(idMap.keySet())).thenReturn(Collections.singletonList(user));
+        when(userRepository.findAllById(idMap.keySet())).thenReturn(Collections.singletonList(user));
 
         Map<UUID, String> result = userService.findUsernames(idMap);
 
         assertEquals(1, result.size());
         assertEquals(userDto.getUserName(), result.get(userId));
-        verify(userRepository).findAllByIdIn(idMap.keySet());
+        verify(userRepository).findAllById(idMap.keySet());
         verifyNoMoreInteractions(userRepository);
     }
 

@@ -24,6 +24,6 @@ public interface IUserRepository {
      * @return a list of {@link User} objects that match the provided IDs.
      * If no users are found, an empty list is returned.
      */
-    List<User> findAllByIdIn(Set<UUID> ids);
+    List<User> findAllById(Set<UUID> ids);
 
 }

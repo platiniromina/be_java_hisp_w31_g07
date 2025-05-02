@@ -34,7 +34,7 @@ public class UserService implements IUserService {
     public Map<UUID, String> findUsernames(Map<UUID, String> idMap) {
         if (idMap == null || idMap.isEmpty()) return Collections.emptyMap();
 
-        List<User> users = userRepository.findAllByIdIn(idMap.keySet());
+        List<User> users = userRepository.findAllById(idMap.keySet());
 
         return users.stream()
                 .collect(Collectors.toMap(User::getId, User::getUserName));
