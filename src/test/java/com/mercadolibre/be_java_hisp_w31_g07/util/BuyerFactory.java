@@ -13,5 +13,6 @@ public class BuyerFactory {
         buyer.setFollowed(new ArrayList<>());
         return buyer;
     }
+    
 }
 

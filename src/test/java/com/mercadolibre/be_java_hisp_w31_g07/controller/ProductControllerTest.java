@@ -6,6 +6,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
 import com.mercadolibre.be_java_hisp_w31_g07.util.JsonUtil;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
@@ -122,7 +123,7 @@ class ProductControllerTest {
     void testFindPostNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
         ResultActions resultActions = performGet(nonExistentPostId, "/products/post/{postId}");
-        assertBadRequestWithMessage(resultActions, "Post " + nonExistentPostId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.postNotFound(nonExistentPostId));
     }
 
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {

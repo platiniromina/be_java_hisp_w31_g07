@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    
     @ExceptionHandler(BadRequest.class)
     public ResponseEntity<?> badRequest(BadRequest e) {
         GlobalExceptioHandlerDto exceptionDto = new GlobalExceptioHandlerDto(e.getMessage());
