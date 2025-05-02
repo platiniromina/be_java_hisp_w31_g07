@@ -16,7 +16,6 @@ public class BuyerController implements IBuyerController {
 
     private final IBuyerService buyerService;
 
-
     @Override
     public ResponseEntity<BuyerPurchasesResponseDto> getBuyerPurchases(UUID userId, String product) {
         return new ResponseEntity<>(HttpStatus.OK);

@@ -27,7 +27,6 @@ public class UserService implements IUserService {
     public UserDto findById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BadRequest(ErrorMessagesUtil.userNotFound(id)));
-
         return mapper.map(user, UserDto.class);
     }
 
