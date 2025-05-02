@@ -39,7 +39,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserFactory.createUser();
+        user = UserFactory.createUser(null);
         userId = user.getId();
         userDto = UserFactory.createUserDto(userId);
     }

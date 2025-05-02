@@ -19,9 +19,9 @@ public class UserFactory {
         return userDto;
     }
 
-    public static User createUser() {
+    public static User createUser(UUID id) {
         User user = new User();
-        user.setId(UUID.randomUUID());
+        user.setId(id != null ? id : UUID.randomUUID());
         populateUserFields(user);
         return user;
     }
