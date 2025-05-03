@@ -27,9 +27,9 @@ public interface IUserRepository {
     List<User> findAllById(Set<UUID> ids);
 
     /**
-     * Saves a user in the repository.
+     * Saves a user in the database.
      *
-     * @param user the user to save.
+     * @param user user to save.
      */
     void save(User user);
 

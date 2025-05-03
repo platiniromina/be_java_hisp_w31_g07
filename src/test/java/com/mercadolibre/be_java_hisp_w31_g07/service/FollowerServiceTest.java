@@ -7,6 +7,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountRe
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
+import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.FollowService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
@@ -48,26 +49,46 @@ class FollowerServiceTest {
 
     private Seller seller;
     private UUID sellerId;
+    private UserDto userSellerDto;
     private Buyer buyer;
     private UUID buyerId;
-    private UserDto userDto;
+    private User userBuyer;
+    private Buyer buyer2;
+    private User userBuyer2;
+    private UserDto userBuyerDto;
+    private UserDto userBuyer2Dto;
+
 
     @BeforeEach
     void setUp() {
-        seller = SellerFactory.createSeller();
-        buyer = BuyerFactory.createBuyer();
-        userDto = UserFactory.createUserDto(null);
-        buyerId = buyer.getId();
+        User userSeller = UserFactory.createUser(null);
+        UUID userSellerId = userSeller.getId();
+
+        seller = SellerFactory.createSeller(userSellerId);
         sellerId = seller.getId();
+
+        userBuyer = UserFactory.createUser(null);
+        UUID userBuyerId = userBuyer.getId();
+
+        userBuyerDto = UserFactory.createUserDto(userBuyerId);
+
+        buyer = BuyerFactory.createBuyer(userBuyerId);
+        buyerId = buyer.getId();
+
+        userBuyer2 = UserFactory.createUser(null);
+        buyer2 = BuyerFactory.createBuyer(userBuyer2.getId());
+        userBuyer2Dto = UserFactory.createUserDto(userBuyer2.getId());
+
+        userSellerDto = UserFactory.createUserDto(userSellerId);
     }
 
     @Test
     @DisplayName("[SUCCESS] Find followers")
     void testFindFollowersSuccess() {
         when(sellerService.findSellerById(sellerId)).thenReturn(seller);
-        when(userService.findById(sellerId)).thenReturn(userDto);
+        when(userService.findById(sellerId)).thenReturn(userSellerDto);
         when(userService.findUsernames(initializeUsernameMap(seller)))
-                .thenReturn(Map.of(sellerId, userDto.getUserName()));
+                .thenReturn(Map.of(sellerId, userSellerDto.getUserName()));
 
 
         SellerDto result = followService.findFollowers(sellerId);
@@ -75,7 +96,7 @@ class FollowerServiceTest {
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(sellerId, result.getId()),
-                () -> assertEquals(userDto.getUserName(), result.getUserName()),
+                () -> assertEquals(userSellerDto.getUserName(), result.getUserName()),
                 () -> assertEquals(seller.getFollowers().size(), result.getFollowerCount())
         );
         verify(sellerService).findSellerById(sellerId);
@@ -244,13 +265,13 @@ class FollowerServiceTest {
         Seller sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         sellerWithFollowers.setId(sellerId);
         when(sellerService.findSellerById(sellerId)).thenReturn(sellerWithFollowers);
-        when(userService.findById(sellerId)).thenReturn(userDto);
+        when(userService.findById(sellerId)).thenReturn(userSellerDto);
 
         SellerFollowersCountResponseDto result = followService.findFollowersCount(sellerId);
 
         assertAll(
                 () -> assertEquals(sellerId, result.getUser_id()),
-                () -> assertEquals(userDto.getUserName(), result.getUser_name()),
+                () -> assertEquals(userSellerDto.getUserName(), result.getUser_name()),
                 () -> assertEquals(sellerWithFollowers.getFollowers().size(), result.getFollowersCount()));
         verify(sellerService).findSellerById(sellerId);
         verify(userService).findById(sellerId);
@@ -273,21 +294,20 @@ class FollowerServiceTest {
     @DisplayName("[SUCCESS] Find followed")
     void testFindFollowedSuccess() {
         when(buyerService.findBuyerById(buyerId)).thenReturn(buyer);
-        when(userService.findById(buyerId)).thenReturn(userDto);
+        when(userService.findById(buyerId)).thenReturn(userBuyerDto);
 
         BuyerDto result = followService.findFollowed(buyerId);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(buyerId, result.getId()),
-                () -> assertEquals(userDto.getUserName(), result.getUserName()),
+                () -> assertEquals(userBuyerDto.getUserName(), result.getUserName()),
                 () -> assertEquals(buyer.getFollowed().size(), result.getFollowed().size())
         );
         verify(buyerService).findBuyerById(buyerId);
         verify(userService).findById(buyerId);
         verifyNoMoreInteractions(buyerService, userService);
     }
-
 
     @Test
     @DisplayName("[ERROR] Find followed - a buyer with that buyerId does not exist.")
@@ -303,10 +323,119 @@ class FollowerServiceTest {
         verifyNoMoreInteractions(buyerService);
     }
 
+    @Test
+    @DisplayName("[OK] Sort followers by name - ascending order")
+    void testSortFollowersByNameAsc() {
+        userBuyer.setUserName("A");
+        userBuyer2.setUserName("B");
+        seller.addFollower(buyer);
+        seller.addFollower(buyer2);
+        userBuyerDto.setUserName("A");
+        userBuyer2Dto.setUserName("B");
+
+        Map<UUID, String> usernameMap = initializeUsernameMap(seller);
+        usernameMap.put(userBuyer.getId(), userBuyerDto.getUserName());
+        usernameMap.put(userBuyer2.getId(), userBuyer2Dto.getUserName());
+
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
+        when(userService.findById(sellerId)).thenReturn(userSellerDto);
+        when(userService.findUsernames(initializeUsernameMap(seller)))
+                .thenReturn(usernameMap);
+        when(userService.findById(userBuyer.getId())).thenReturn(userBuyerDto);
+        when(userService.findById(userBuyer2.getId())).thenReturn(userBuyer2Dto);
+
+        SellerDto result = followService.findSortedFollowersByName(sellerId, "name_asc");
+
+        assertAll(
+                () -> assertEquals("A", result.getFollowers().get(0).getUserName()),
+                () -> assertEquals("B", result.getFollowers().get(1).getUserName())
+        );
+        verify(sellerService).findSellerById(sellerId);
+        verify(userService).findById(sellerId);
+        verify(userService).findUsernames(initializeUsernameMap(seller));
+        verify(userService).findById(userBuyer.getId());
+        verify(userService).findById(userBuyer2.getId());
+        verifyNoMoreInteractions(sellerService, userService);
+    }
+
+
+    @DisplayName("[OK] Sort followers by name - descending order")
+    @Test
+    void testSortFollowersByNameDesc() {
+        userBuyer.setUserName("A");
+        userBuyer2.setUserName("B");
+        seller.addFollower(buyer);
+        seller.addFollower(buyer2);
+        userBuyerDto.setUserName("A");
+        userBuyer2Dto.setUserName("B");
+
+        Map<UUID, String> usernameMap = initializeUsernameMap(seller);
+        usernameMap.put(userBuyer.getId(), userBuyerDto.getUserName());
+        usernameMap.put(userBuyer2.getId(), userBuyer2Dto.getUserName());
+
+        when(userService.findById(seller.getId())).thenReturn(userSellerDto);
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
+        when(userService.findById(userBuyer2.getId())).thenReturn(userBuyer2Dto);
+        when(userService.findById(userBuyer.getId())).thenReturn(userBuyerDto);
+        when(userService.findUsernames(initializeUsernameMap(seller)))
+                .thenReturn(usernameMap);
+
+        SellerDto result = followService.findSortedFollowersByName(sellerId, "name_desc");
+
+        assertAll(
+                () -> assertEquals("B", result.getFollowers().get(0).getUserName()),
+                () -> assertEquals("A", result.getFollowers().get(1).getUserName())
+        );
+        verify(sellerService).findSellerById(sellerId);
+        verify(userService).findById(sellerId);
+        verify(userService).findById(userBuyer.getId());
+        verify(userService).findById(userBuyer2.getId());
+        verifyNoMoreInteractions(sellerService, userService);
+    }
+
+
+    @DisplayName("[ERROR] Sort followers by name - seller has no followers")
+    @Test
+    void testSortFollowersByNameNoFollowers() {
+        when(userService.findById(seller.getId())).thenReturn(userSellerDto);
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
+        when(userService.findUsernames(initializeUsernameMap(seller)))
+                .thenReturn(initializeUsernameMap(seller));
+
+        SellerDto result = followService.findSortedFollowersByName(sellerId, "name_asc");
+
+        assertEquals(userSellerDto.getUserName(), result.getUserName());
+        assertTrue(result.getFollowers().isEmpty(), "Followers list should be empty");
+
+        verify(sellerService).findSellerById(sellerId);
+        verify(userService).findById(sellerId);
+        verify(userService).findUsernames(initializeUsernameMap(seller));
+        verifyNoMoreInteractions(sellerService, userService);
+    }
+
+    @DisplayName("[ERROR] Sort followers by name - invalid order parameter")
+    @Test
+    void testSortFollowersByName_InvalidOrderParam() {
+        when(userService.findById(seller.getId())).thenReturn(userSellerDto);
+        when(sellerService.findSellerById(sellerId)).thenReturn(seller);
+
+        BadRequest exception = assertThrows(BadRequest.class, () ->
+                followService.findSortedFollowersByName(sellerId, "invalid_order")
+        );
+
+        assertEquals(ErrorMessagesUtil.invalidSortingParameter("invalid_order"), exception.getMessage());
+        verify(sellerService).findSellerById(sellerId);
+        verify(userService).findById(sellerId);
+        verifyNoMoreInteractions(sellerService, userService);
+    }
+
     private void stubValidBuyerAndSeller() {
         when(buyerService.findBuyerById(buyerId)).thenReturn(buyer);
         when(sellerService.findSellerById(sellerId)).thenReturn(seller);
     }
-
 }
+
+
+
+
 

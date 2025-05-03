@@ -7,6 +7,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostBridgeService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostMapper;
@@ -24,7 +25,7 @@ import static com.mercadolibre.be_java_hisp_w31_g07.util.ValidationUtil.throwIfE
 public class PostService implements IPostService {
 
     private final IPostRepository postRepository;
-    private final PostBridgeService postBridgeService;
+    private final IPostBridgeService postBridgeService;
     private final PostMapper postMapper;
 
     // ------------------------------

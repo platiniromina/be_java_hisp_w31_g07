@@ -1,17 +1,15 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostBridgeService;
 import com.mercadolibre.be_java_hisp_w31_g07.service.implementations.PostService;
-import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
-import com.mercadolibre.be_java_hisp_w31_g07.util.PostFactory;
-import com.mercadolibre.be_java_hisp_w31_g07.util.PostMapper;
-import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
+import com.mercadolibre.be_java_hisp_w31_g07.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,7 +32,7 @@ class PostServiceTest {
     private IPostRepository postRepository;
 
     @Mock
-    private PostBridgeService bridgeService;
+    private IPostBridgeService bridgeService;
 
     @Mock
     private PostMapper mapper;
@@ -45,11 +44,12 @@ class PostServiceTest {
     private Post post;
     private UUID postId;
     private PostResponseDto postResponseDto;
+    private UserDto userSeller;
     private UUID sellerId;
 
     @BeforeEach
     void setUp() {
-        Seller seller = SellerFactory.createSeller();
+        Seller seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
 
         post = PostFactory.createPost(sellerId, false);
@@ -57,6 +57,8 @@ class PostServiceTest {
 
         postDto = PostFactory.createPostDto(sellerId, false);
         postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
+
+        userSeller = UserFactory.createUserDto(sellerId);
     }
 
     @Test
@@ -118,6 +120,48 @@ class PostServiceTest {
         assertEquals("Post " + postId + " not found", exception.getMessage());
         verify(postRepository).findById(postId);
         verifyNoMoreInteractions(postRepository);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get Seller promo posts count")
+    void testGetPromoPostsCountSuccess() {
+        List<Post> promoPosts = List.of(
+                PostFactory.createPost(sellerId, true),
+                PostFactory.createPost(sellerId, true)
+        );
+        SellerPromoPostsCountResponseDto expected =
+                new SellerPromoPostsCountResponseDto(sellerId, userSeller.getUserName(), promoPosts.size());
+        when(postRepository.findHasPromo(sellerId)).thenReturn(promoPosts);
+        doNothing().when(bridgeService).validateSellerExists(sellerId);
+        when(bridgeService.getUserName(sellerId)).thenReturn(userSeller.getUserName());
+
+        SellerPromoPostsCountResponseDto result = postService.getPromoPostsCount(sellerId);
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(expected.getUserId(), result.getUserId()),
+                () -> assertEquals(expected.getUserName(), result.getUserName()),
+                () -> assertEquals(expected.getPromoPostsCount(), result.getPromoPostsCount())
+        );
+        verify(postRepository).findHasPromo(sellerId);
+        verify(bridgeService).getUserName(sellerId);
+        verify(bridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postRepository, bridgeService);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Seller promo posts count - Seller not found")
+    void testGetPromoPostsCountError() {
+        doThrow(new BadRequest(ErrorMessagesUtil.sellerNotFound(sellerId)))
+                .when(bridgeService).validateSellerExists(sellerId);
+
+        Exception exception = assertThrows(BadRequest.class,
+                () -> postService.getPromoPostsCount(sellerId));
+
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        verify(bridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(bridgeService);
+        verifyNoInteractions(postRepository);
     }
 
 }
