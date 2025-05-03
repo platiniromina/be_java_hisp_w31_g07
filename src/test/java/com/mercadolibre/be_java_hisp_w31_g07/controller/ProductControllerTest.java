@@ -99,6 +99,30 @@ class ProductControllerTest {
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.postNotFound(nonExistentPostId));
     }
 
+    @Test
+    @DisplayName("[SUCCESS] Get latest posts from from sellers")
+    void testGetLatestPostsFromSellers() throws Exception {
+
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get latest posts from from sellers - No posts")
+    void testGetLatestPostsFromSellersButNoPostsMatchTheFilter() throws Exception {
+
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
+    void testGetLatestPostsFromSellersBuyerNotFound() throws Exception {
+
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
+    void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() throws Exception {
+
+    }
+
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(result ->
@@ -106,9 +130,9 @@ class ProductControllerTest {
                                 Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
-    private ResultActions performGet(UUID postId, String path) throws Exception {
+    private ResultActions performGet(UUID id, String path) throws Exception {
         return mockMvc.perform(
-                get(path, postId)
+                get(path, id)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
     }
