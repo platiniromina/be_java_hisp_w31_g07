@@ -2,8 +2,10 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -43,34 +45,36 @@ class PostServiceTest {
     @InjectMocks
     private PostService postService;
 
-    private PostDto postDto;
-    private Post post;
-    private UUID postId;
-    private PostResponseDto postResponseDto;
     private UUID sellerId;
     private UUID buyerId;
-    private BuyerDto buyerDto;
-    private Buyer buyer;
-    private SellerResponseDto sellerResponseDto;
+    private UUID postId;
+
+    private UserDto userSeller;
     private Seller seller;
+    private SellerResponseDto sellerResponseDto;
+
+    private Buyer buyer;
+    private BuyerDto buyerDto;
+
+    private Post post;
+    private PostDto postDto;
+    private PostResponseDto postResponseDto;
 
     @BeforeEach
     void setUp() {
-        buyerDto = BuyerFactory.createBuyerDto();
-
-        seller = SellerFactory.createSeller();
+        seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
+        userSeller = UserFactory.createUserDto(sellerId);
+        sellerResponseDto = SellerFactory.createSellerResponseDto(sellerId);
+
+        buyer = BuyerFactory.createBuyer(null);
+        buyerId = buyer.getId();
+        buyerDto = BuyerFactory.createBuyerDto();
 
         post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
-
-        buyer = BuyerFactory.createBuyer();
-        buyerId = buyer.getId();
-
         postDto = PostFactory.createPostDto(sellerId, false);
         postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
-
-        sellerResponseDto = SellerFactory.createSellerResponseDto(sellerId);
     }
 
     @Test
@@ -133,7 +137,7 @@ class PostServiceTest {
         verify(postRepository).findById(postId);
         verifyNoMoreInteractions(postRepository);
     }
-    
+
     @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers")
     void testGetLatestPostsFromSellers() {
@@ -202,6 +206,48 @@ class PostServiceTest {
         assertEquals(ErrorMessagesUtil.noSellersFollowed(buyerId), exception.getMessage());
         verify(postBridgeService).getFollowed(buyerId);
         verifyNoMoreInteractions(postBridgeService, postRepository);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get Seller promo posts count")
+    void testGetPromoPostsCountSuccess() {
+        List<Post> promoPosts = List.of(
+                PostFactory.createPost(sellerId, true),
+                PostFactory.createPost(sellerId, true)
+        );
+        SellerPromoPostsCountResponseDto expected =
+                new SellerPromoPostsCountResponseDto(sellerId, userSeller.getUserName(), promoPosts.size());
+        when(postRepository.findHasPromo(sellerId)).thenReturn(promoPosts);
+        doNothing().when(postBridgeService).validateSellerExists(sellerId);
+        when(postBridgeService.getUserName(sellerId)).thenReturn(userSeller.getUserName());
+
+        SellerPromoPostsCountResponseDto result = postService.getPromoPostsCount(sellerId);
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(expected.getUserId(), result.getUserId()),
+                () -> assertEquals(expected.getUserName(), result.getUserName()),
+                () -> assertEquals(expected.getPromoPostsCount(), result.getPromoPostsCount())
+        );
+        verify(postRepository).findHasPromo(sellerId);
+        verify(postBridgeService).getUserName(sellerId);
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postRepository, postBridgeService);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Seller promo posts count - Seller not found")
+    void testGetPromoPostsCountError() {
+        doThrow(new BadRequest(ErrorMessagesUtil.sellerNotFound(sellerId)))
+                .when(postBridgeService).validateSellerExists(sellerId);
+
+        Exception exception = assertThrows(BadRequest.class,
+                () -> postService.getPromoPostsCount(sellerId));
+
+        assertEquals("Seller " + sellerId + " not found", exception.getMessage());
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postBridgeService);
+        verifyNoInteractions(postRepository);
     }
 
 }

@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public class BuyerFactory {
 
-    public static Buyer createBuyer() {
+    public static Buyer createBuyer(UUID id) {
         Buyer buyer = new Buyer();
-        buyer.setId(UUID.randomUUID());
+        buyer.setId(id != null ? id : UUID.randomUUID());
         buyer.setFollowed(new ArrayList<>());
         return buyer;
     }
