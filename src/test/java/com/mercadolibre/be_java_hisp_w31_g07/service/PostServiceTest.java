@@ -49,7 +49,7 @@ class PostServiceTest {
 
     @BeforeEach
     void setUp() {
-        Seller seller = SellerFactory.createSeller();
+        Seller seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
 
         post = PostFactory.createPost(sellerId, false);
