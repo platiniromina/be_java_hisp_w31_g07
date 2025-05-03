@@ -47,4 +47,8 @@ public class UserRepository implements IUserRepository {
                 .toList();
     }
 
+    @Override
+    public void save(User user) {
+        userList.add(user);
+    }
 }
