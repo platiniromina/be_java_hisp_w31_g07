@@ -81,4 +81,11 @@ public interface IPostRepository {
      * @param post the {@link Post} instance to be saved.
      */
     void save(Post post);
+
+    /**
+     * Retrieves all posts from the repository.
+     *
+     * @return a list of all {@link Post} instances stored in the repository.
+     */
+    List<Post> findAll();
 }

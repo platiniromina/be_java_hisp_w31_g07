@@ -32,40 +32,40 @@ class PostServiceTest {
     private IPostRepository postRepository;
 
     @Mock
-    private IPostBridgeService bridgeService;
+    private PostMapper mapper;
 
     @Mock
-    private PostMapper mapper;
+    private IPostBridgeService postBridgeService;
 
     @InjectMocks
     private PostService postService;
 
-    private PostDto postDto;
-    private Post post;
-    private UUID postId;
-    private PostResponseDto postResponseDto;
-    private UserDto userSeller;
     private UUID sellerId;
+    private UUID postId;
+
+    private UserDto userSeller;
+
+    private Post post;
+    private PostDto postDto;
+    private PostResponseDto postResponseDto;
 
     @BeforeEach
     void setUp() {
         Seller seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
+        userSeller = UserFactory.createUserDto(sellerId);
 
         post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
-
         postDto = PostFactory.createPostDto(sellerId, false);
         postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
-
-        userSeller = UserFactory.createUserDto(sellerId);
     }
 
     @Test
     @DisplayName("[SUCCESS] Create post")
     void testCreatePostSuccess() {
-        doNothing().when(bridgeService).validateSellerExists(sellerId);
-        doNothing().when(bridgeService).createProduct(post.getProduct());
+        doNothing().when(postBridgeService).validateSellerExists(sellerId);
+        doNothing().when(postBridgeService).createProduct(post.getProduct());
         doNothing().when(postRepository).createPost(post);
         when(mapper.fromPostDtoToPost(postDto)).thenReturn(post);
         when(mapper.fromPostToPostResponseDto(post)).thenReturn(postResponseDto);
@@ -77,23 +77,24 @@ class PostServiceTest {
                 () -> assertEquals(postResponseDto, result)
         );
 
-        verify(bridgeService).validateSellerExists(sellerId);
+        verify(postBridgeService).validateSellerExists(sellerId);
         verify(postRepository).createPost(post);
-        verify(bridgeService).createProduct(post.getProduct());
+        verify(postBridgeService).createProduct(post.getProduct());
         verify(mapper).fromPostToPostResponseDto(post);
-        verifyNoMoreInteractions(bridgeService, postRepository, mapper);
+        verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
     }
 
     @Test
     @DisplayName("[ERROR] Create post - Seller not found")
     void testCreatePostError() {
         doThrow(new BadRequest(ErrorMessagesUtil.sellerNotFound(sellerId)))
-                .when(bridgeService).validateSellerExists(sellerId);
+                .when(postBridgeService).validateSellerExists(sellerId);
 
         assertThrows(BadRequest.class, () ->
                 postService.createPost(postDto));
 
-        verifyNoMoreInteractions(bridgeService, postRepository);
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postBridgeService, postRepository);
     }
 
     @Test
@@ -117,7 +118,7 @@ class PostServiceTest {
 
         Exception exception = assertThrows(BadRequest.class, () -> postService.findPost(postId));
 
-        assertEquals("Post " + postId + " not found", exception.getMessage());
+        assertEquals(ErrorMessagesUtil.postNotFound(postId), exception.getMessage());
         verify(postRepository).findById(postId);
         verifyNoMoreInteractions(postRepository);
     }
@@ -132,8 +133,8 @@ class PostServiceTest {
         SellerPromoPostsCountResponseDto expected =
                 new SellerPromoPostsCountResponseDto(sellerId, userSeller.getUserName(), promoPosts.size());
         when(postRepository.findHasPromo(sellerId)).thenReturn(promoPosts);
-        doNothing().when(bridgeService).validateSellerExists(sellerId);
-        when(bridgeService.getUserName(sellerId)).thenReturn(userSeller.getUserName());
+        doNothing().when(postBridgeService).validateSellerExists(sellerId);
+        when(postBridgeService.getUserName(sellerId)).thenReturn(userSeller.getUserName());
 
         SellerPromoPostsCountResponseDto result = postService.getPromoPostsCount(sellerId);
 
@@ -144,23 +145,23 @@ class PostServiceTest {
                 () -> assertEquals(expected.getPromoPostsCount(), result.getPromoPostsCount())
         );
         verify(postRepository).findHasPromo(sellerId);
-        verify(bridgeService).getUserName(sellerId);
-        verify(bridgeService).validateSellerExists(sellerId);
-        verifyNoMoreInteractions(postRepository, bridgeService);
+        verify(postBridgeService).getUserName(sellerId);
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postRepository, postBridgeService);
     }
 
     @Test
     @DisplayName("[ERROR] Get Seller promo posts count - Seller not found")
     void testGetPromoPostsCountError() {
         doThrow(new BadRequest(ErrorMessagesUtil.sellerNotFound(sellerId)))
-                .when(bridgeService).validateSellerExists(sellerId);
+                .when(postBridgeService).validateSellerExists(sellerId);
 
         Exception exception = assertThrows(BadRequest.class,
                 () -> postService.getPromoPostsCount(sellerId));
 
         assertEquals("Seller " + sellerId + " not found", exception.getMessage());
-        verify(bridgeService).validateSellerExists(sellerId);
-        verifyNoMoreInteractions(bridgeService);
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postBridgeService);
         verifyNoInteractions(postRepository);
     }
 
