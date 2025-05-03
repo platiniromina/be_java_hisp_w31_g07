@@ -139,7 +139,7 @@ public class PostService implements IPostService {
 
     private List<UUID> getFollowedSellerIdsOrThrow(UUID buyerId) {
         List<Seller> sellers = postBridgeService.getFollowed(buyerId);
-        throwIfEmpty(sellers, "The buyer is not following any sellers");
+        throwIfEmpty(sellers, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyerId));
         return sellers.stream().map(Seller::getId).toList();
     }
 

@@ -1,12 +1,14 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.BuyerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,9 +44,13 @@ class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private BuyerRepository buyerRepository;
+
     private UUID sellerId;
     private UUID postId;
     private String userName;
+    private Buyer buyer;
 
     @BeforeEach
     void setUp() {
@@ -54,9 +60,12 @@ class ProductControllerTest {
         postId = post.getId();
         User user = UserFactory.createUser(sellerId);
         userName = user.getUserName();
+        buyer = BuyerFactory.createBuyer(null);
+
         postRepository.save(post);
         sellerRepository.save(seller);
         userRepository.save(user);
+        buyerRepository.save(buyer);
     }
 
     @Test
@@ -122,7 +131,8 @@ class ProductControllerTest {
     @Test
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
     void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() throws Exception {
-
+        ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyer.getId()));
     }
 
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
