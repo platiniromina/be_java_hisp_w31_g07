@@ -114,7 +114,9 @@ class ProductControllerTest {
     @Test
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
     void testGetLatestPostsFromSellersBuyerNotFound() throws Exception {
-
+        UUID nonExistentBuyerId = UUID.randomUUID();
+        ResultActions resultActions = performGet(nonExistentBuyerId, "/products/followed/{userId}/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(nonExistentBuyerId));
     }
 
     @Test
