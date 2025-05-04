@@ -68,7 +68,10 @@ class PostServiceTest {
 
         buyer = BuyerFactory.createBuyer(null);
         buyerId = buyer.getId();
-        seller.addFollower(buyer);  // Aquí se le asigna el buyer al seller
+
+        seller.addFollower(buyer);
+        buyer.addFollowedSeller(seller);
+
 
         post = PostFactory.createPost(sellerId, false);
         post2 = PostFactory.createPost(sellerId, false);
@@ -81,40 +84,41 @@ class PostServiceTest {
         postResponseDto2 = PostFactory.createPostResponseDto(sellerId, postId2, false);
     }
     @Test
-    @DisplayName("[SUCCESS] Sort post Asc")
     void testSortPostsByDate_asc() {
-        when(postService.getLatestPostsFromSellers(buyerId))
-                .thenReturn(new FollowersPostsResponseDto(buyerId, List.of(postResponseDto2, postResponseDto)));
-
-        when(postService.sortPostsByDate(buyerId, "date_asc")).thenCallRealMethod();
+        when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
+        when(postRepository.findLatestPostsFromSellers(any())).thenReturn(List.of(post2, post));
+        when(mapper.fromPostListToPostResponseDtoList(any()))
+                .thenReturn(List.of(postResponseDto2, postResponseDto));
 
         FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
 
         assertEquals(postId2, result.getPosts().get(0).getId(), "Error: El primer post no es el más antiguo.");
         assertEquals(postId, result.getPosts().get(1).getId(), "Error: El segundo post no es el más reciente.");
     }
+
     @Test
     @DisplayName("[SUCCESS] Sort post Desc")
     void testSortPostsByDate_desc() {
-        when(postService.getLatestPostsFromSellers(buyerId))
-                .thenReturn(new FollowersPostsResponseDto(buyerId, List.of(postResponseDto, postResponseDto2)));
+        when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
+        when(postRepository.findLatestPostsFromSellers(any())).thenReturn(List.of(post, post2));
+        when(mapper.fromPostListToPostResponseDtoList(any()))
+                .thenReturn(List.of(postResponseDto, postResponseDto2));
 
-        when(postService.sortPostsByDate(buyerId, "date_desc")).thenCallRealMethod();
+        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
 
-        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_desc");
-
-        assertEquals(postId, result.getPosts().get(0).getId(), "Error: El primer post no es el más reciente.");
-        assertEquals(postId2, result.getPosts().get(1).getId(), "Error: El segundo post no es el más antiguo.");
+        assertEquals(postId, result.getPosts().get(0).getId(), "Error: El primer post no es el más antiguo.");
+        assertEquals(postId2, result.getPosts().get(1).getId(), "Error: El segundo post no es el más reciente.");
     }
+
     @Test
     @DisplayName("[FAIL] Sort posts with invalid order throws BadRequest exception")
     void testSortPostsByDate_invalidOrder_throwsException() {
         String invalidOrder = "invalid_order";
 
-        when(postService.getLatestPostsFromSellers(buyerId))
-                .thenReturn(new FollowersPostsResponseDto(buyerId, List.of(postResponseDto, postResponseDto2)));
-
-        when(postService.sortPostsByDate(buyerId, invalidOrder)).thenCallRealMethod();
+        when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerId))).thenReturn(List.of(post, post2));
+        when(mapper.fromPostListToPostResponseDtoList(List.of(post, post2)))
+                .thenReturn(List.of(postResponseDto, postResponseDto2));
 
         BadRequest exception = assertThrows(BadRequest.class, () ->
                 postService.sortPostsByDate(buyerId, invalidOrder)
