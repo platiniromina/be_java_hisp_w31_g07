@@ -13,6 +13,13 @@ public class BuyerFactory {
         buyer.setFollowed(new ArrayList<>());
         return buyer;
     }
-    
+   /* public static Buyer createBuyerFollowingSeller(Seller seller) {
+        Buyer buyer = createBuyer();
+        buyer.setFollowed(List.of(seller));
+        return buyer;
+    }
+
+    */
+
 }
 

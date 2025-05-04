@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ class ProductControllerTest {
     void setUp() {
         Seller seller = SellerFactory.createSeller();
         sellerId = seller.getId();
-        Post post = PostFactory.createPost(sellerId, false);
+        Post post = PostFactory.createPost(sellerId, false, LocalDateTime.now());
         postId = post.getId();
         postRepository.save(post);
         sellerRepository.save(seller);

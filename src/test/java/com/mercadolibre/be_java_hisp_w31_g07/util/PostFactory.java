@@ -7,6 +7,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -25,12 +26,12 @@ public class PostFactory {
     private static final String DEFAULT_COLOR = "Test Color";
     private static final String DEFAULT_NOTE = "Test Note";
 
-    public static Post createPost(UUID sellerId, boolean hasPromo) {
+    public static Post createPost(UUID sellerId, boolean hasPromo, LocalDateTime postDate) {
         UUID postId = UUID.randomUUID();
         Post post = new Post();
         post.setId(postId);
         post.setProduct(createProduct(postId));
-        populatePostFields(post, sellerId, hasPromo);
+        populatePostFields(post, sellerId, hasPromo, postDate);
         return post;
     }
 
@@ -62,7 +63,7 @@ public class PostFactory {
 
     // --- Populate Methods ---
 
-    private static void populatePostFields(Post post, UUID sellerId, boolean hasPromo) {
+    private static void populatePostFields(Post post, UUID sellerId, boolean hasPromo, LocalDateTime postDate) {
         post.setDate(DEFAULT_DATE);
         post.setCategory(DEFAULT_CATEGORY);
         post.setPrice(DEFAULT_PRICE);
