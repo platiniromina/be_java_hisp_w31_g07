@@ -145,7 +145,7 @@ public class PostService implements IPostService {
 
     private List<Post> getPromoPostsOrThrow(UUID userId) {
         List<Post> posts = postRepository.findHasPromo(userId);
-        throwIfEmpty(posts, "No promotional posts found for user: " + userId);
+        throwIfEmpty(posts, ErrorMessagesUtil.noPromotionPostFound(userId));
         return posts;
     }
 

@@ -39,6 +39,10 @@ public class ErrorMessagesUtil {
         return "Buyer " + buyerId + " and seller " + sellerId + " are the same";
     }
 
+    public static String noPromotionPostFound(UUID userId) {
+        return "No promotional posts found for user: " + userId;
+    }
+
     public static String noPurchasesForProduct(String product) {
         return "No purchases found for product " + product;
     }
