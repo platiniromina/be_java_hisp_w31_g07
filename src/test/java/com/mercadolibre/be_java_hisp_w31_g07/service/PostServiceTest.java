@@ -180,8 +180,8 @@ class PostServiceTest {
 
         userPostResponseDto.setPostList(postsListExpected);
 
-        when(postRepository.findHasPromo(userPostRespDtoId)).thenReturn(promoPostList);
-        when(postBridgeService.getUserById(userPostRespDtoId)).thenReturn(userSeller);
+        when(postRepository.findHasPromo(sellerId)).thenReturn(promoPostList);
+        when(postBridgeService.getUserById(sellerId)).thenReturn(userSeller);
         when(mapper.fromPostListToPostResponseDtoList(promoPostList)).thenReturn(postsListExpected);
 
         UserPostResponseDto result = postService.getSellerPromoPosts(sellerId);
@@ -206,10 +206,10 @@ class PostServiceTest {
                 .when(postBridgeService).validateSellerExists(sellerId);
 
         Exception exception = assertThrows(BadRequest.class,
-                () -> postService.getSellerPromoPosts(userPostRespDtoId));
+                () -> postService.getSellerPromoPosts(sellerId));
 
         assertEquals("Seller " + sellerId + " not found", exception.getMessage());
-        verify(postBridgeService).validateSellerExists(userPostRespDtoId);
+        verify(postBridgeService).validateSellerExists(sellerId);
         verifyNoMoreInteractions(postBridgeService);
         verifyNoInteractions(postRepository);
     }
@@ -217,13 +217,13 @@ class PostServiceTest {
     @Test
     @DisplayName("[ERROR] Find Promos posts - Not Found Post Promotion List")
     void testGetSellerPromoPostsEmptyPostList() {
-        when(postRepository.findHasPromo(userPostRespDtoId)).thenReturn(List.of());
+        when(postRepository.findHasPromo(sellerId)).thenReturn(List.of());
 
         Exception exception = assertThrows(BadRequest.class,
-                () -> postService.getSellerPromoPosts(userPostRespDtoId));
+                () -> postService.getSellerPromoPosts(sellerId));
 
-        assertEquals("No promotional posts found for user: " + userPostRespDtoId, exception.getMessage());
-        verify(postRepository).findHasPromo(userPostRespDtoId);
+        assertEquals("No promotional posts found for user: " + sellerId, exception.getMessage());
+        verify(postRepository).findHasPromo(sellerId);
         verify(postBridgeService).validateSellerExists(sellerId);
         verifyNoMoreInteractions(postRepository);
         verifyNoMoreInteractions(postBridgeService);
@@ -237,16 +237,16 @@ class PostServiceTest {
 
         userPostResponseDto.setPostList(postsListExpected);
 
-        when(postRepository.findHasPromo(userPostRespDtoId)).thenReturn(promoPostList);
+        when(postRepository.findHasPromo(sellerId)).thenReturn(promoPostList);
         when(mapper.fromPostListToPostResponseDtoList(promoPostList)).thenReturn(postsListExpected);
-        when(postBridgeService.getUserById(userPostRespDtoId))
-                .thenThrow(new BadRequest("User " + userPostRespDtoId + " not found"));
+        when(postBridgeService.getUserById(sellerId))
+                .thenThrow(new BadRequest("User " + sellerId + " not found"));
 
         Exception exception = assertThrows(BadRequest.class,
-                () -> postService.getSellerPromoPosts(userPostRespDtoId));
+                () -> postService.getSellerPromoPosts(sellerId));
 
-        assertEquals("User " + userPostRespDtoId + " not found", exception.getMessage());
-        verify(postRepository).findHasPromo(userPostRespDtoId);
+        assertEquals("User " + sellerId + " not found", exception.getMessage());
+        verify(postRepository).findHasPromo(sellerId);
         verify(postBridgeService).validateSellerExists(sellerId);
         verify(postBridgeService).getUserById(sellerId);
         verifyNoMoreInteractions(postRepository);
