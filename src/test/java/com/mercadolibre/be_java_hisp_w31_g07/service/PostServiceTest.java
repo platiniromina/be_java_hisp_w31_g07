@@ -230,7 +230,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("[ERROR] Find Promos posts - Not Found Post Promotion List")
+    @DisplayName("[ERROR] Find Promos posts - Not Found User")
     void testGetSellerPromoPostsUserNotFound() {
         List<Post> promoPostList = List.of(post);
         List<PostResponseDto> postsListExpected = List.of(postResponseDto);
