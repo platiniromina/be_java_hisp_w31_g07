@@ -2,9 +2,11 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
@@ -41,24 +43,84 @@ class PostServiceTest {
     private PostService postService;
 
     private UUID sellerId;
+    private UUID buyerId;
     private UUID postId;
+    private UUID postId2;
+
+    private Seller seller;
+    private Buyer buyer;
+
+    private Post post;
+    private Post post2;
+
+    private PostDto postDto;
+
+    private PostResponseDto postResponseDto;
+    private PostResponseDto postResponseDto2;
 
     private UserDto userSeller;
 
-    private Post post;
-    private PostDto postDto;
-    private PostResponseDto postResponseDto;
-
     @BeforeEach
     void setUp() {
-        Seller seller = SellerFactory.createSeller(null);
+        seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
         userSeller = UserFactory.createUserDto(sellerId);
 
+        buyer = BuyerFactory.createBuyer(null);
+        buyerId = buyer.getId();
+        seller.addFollower(buyer);  // Aquí se le asigna el buyer al seller
+
         post = PostFactory.createPost(sellerId, false);
+        post2 = PostFactory.createPost(sellerId, false);
         postId = post.getId();
+        postId2 = post2.getId();
+
+        // Crear DTOs
         postDto = PostFactory.createPostDto(sellerId, false);
-        postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
+        postResponseDto = PostFactory.createPostResponseDto(sellerId, postId, false);
+        postResponseDto2 = PostFactory.createPostResponseDto(sellerId, postId2, false);
+    }
+    @Test
+    @DisplayName("[SUCCESS] Sort post Asc")
+    void testSortPostsByDate_asc() {
+        when(postService.getLatestPostsFromSellers(buyerId))
+                .thenReturn(new FollowersPostsResponseDto(buyerId, List.of(postResponseDto2, postResponseDto)));
+
+        when(postService.sortPostsByDate(buyerId, "date_asc")).thenCallRealMethod();
+
+        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
+
+        assertEquals(postId2, result.getPosts().get(0).getId(), "Error: El primer post no es el más antiguo.");
+        assertEquals(postId, result.getPosts().get(1).getId(), "Error: El segundo post no es el más reciente.");
+    }
+    @Test
+    @DisplayName("[SUCCESS] Sort post Desc")
+    void testSortPostsByDate_desc() {
+        when(postService.getLatestPostsFromSellers(buyerId))
+                .thenReturn(new FollowersPostsResponseDto(buyerId, List.of(postResponseDto, postResponseDto2)));
+
+        when(postService.sortPostsByDate(buyerId, "date_desc")).thenCallRealMethod();
+
+        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_desc");
+
+        assertEquals(postId, result.getPosts().get(0).getId(), "Error: El primer post no es el más reciente.");
+        assertEquals(postId2, result.getPosts().get(1).getId(), "Error: El segundo post no es el más antiguo.");
+    }
+    @Test
+    @DisplayName("[FAIL] Sort posts with invalid order throws BadRequest exception")
+    void testSortPostsByDate_invalidOrder_throwsException() {
+        String invalidOrder = "invalid_order";
+
+        when(postService.getLatestPostsFromSellers(buyerId))
+                .thenReturn(new FollowersPostsResponseDto(buyerId, List.of(postResponseDto, postResponseDto2)));
+
+        when(postService.sortPostsByDate(buyerId, invalidOrder)).thenCallRealMethod();
+
+        BadRequest exception = assertThrows(BadRequest.class, () ->
+                postService.sortPostsByDate(buyerId, invalidOrder)
+        );
+
+        assertEquals("Invalid sorting parameter: invalid_order", exception.getMessage());
     }
 
     @Test
