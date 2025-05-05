@@ -50,4 +50,12 @@ public class ErrorMessagesUtil {
     public static String noPromotionalPostUser(UUID userId) {
         return "No promotional posts found for user: " + userId;
     }
+
+    public static String noSellersFollowed(UUID buyerId) {
+        return "Buyer " + buyerId + " is not following any sellers";
+    }
+
+    public static String noPromoPostsFoundForSeller(UUID sellerId) {
+        return "No promo posts found for seller " + sellerId;
+    }
 }

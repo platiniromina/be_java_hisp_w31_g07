@@ -32,4 +32,5 @@ public interface IUserRepository {
      * @param user user to save.
      */
     void save(User user);
+
 }

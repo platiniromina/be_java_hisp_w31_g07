@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.util;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
@@ -27,6 +28,14 @@ public class SellerFactory {
         return seller;
     }
 
+    public static SellerResponseDto createSellerResponseDto(UUID sellerId) {
+        SellerResponseDto seller = new SellerResponseDto();
+        seller.setId(sellerId);
+        seller.setFollowerCount(0);
+        seller.setFollowers(new ArrayList<>());
+        return seller;
+    }
+
     // --- Helper Method ---
 
     private static List<Buyer> generateFollowers(int count) {
@@ -37,6 +46,4 @@ public class SellerFactory {
         return followers;
     }
 }
-
-
 
