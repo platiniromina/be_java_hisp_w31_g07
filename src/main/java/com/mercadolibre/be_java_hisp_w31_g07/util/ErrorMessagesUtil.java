@@ -42,7 +42,7 @@ public class ErrorMessagesUtil {
     public static String noPurchasesForProduct(String product) {
         return "No purchases found for product " + product;
     }
-    
+
     public static String noSellersFollowed(UUID buyerId) {
         return "Buyer " + buyerId + " is not following any sellers";
     }
@@ -50,6 +50,4 @@ public class ErrorMessagesUtil {
     public static String noPromoPostsFoundForSeller(UUID sellerId) {
         return "No promo posts found for seller " + sellerId;
     }
-
-
 }

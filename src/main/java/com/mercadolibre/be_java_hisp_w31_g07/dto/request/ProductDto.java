@@ -21,17 +21,17 @@ public class ProductDto {
 
     @NotBlank(message = "The type cannot be blank")
     @Length(max = 15, message = "The type cannot be more than 15 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Special characters are not allowed")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Special characters are not allowed")
     private String type;
 
     @Length(max = 25, message = "Brand cannot be more than 25 characters")
     @NotBlank(message = "Brand cannot be blank")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Special characters are not allowed")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Special characters are not allowed")
     private String brand;
 
     @Length(max = 15, message = "Color cannot be more than 15 characters")
     @NotBlank(message = "Color cannot be blank")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Special characters are not allowed")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Special characters are not allowed")
     private String color;
 
     @Length(max = 80, message = "Notes cannot be more than 80 characters")
