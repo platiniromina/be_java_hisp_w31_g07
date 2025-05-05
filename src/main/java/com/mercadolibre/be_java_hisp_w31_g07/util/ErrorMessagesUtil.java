@@ -46,4 +46,8 @@ public class ErrorMessagesUtil {
     public static String userHasNotPosts(UUID sellerId) {
         return "User " + sellerId + " has no posts.";
     }
+
+    public static String noPromotionalPostUser(UUID userId) {
+        return "No promotional posts found for user: " + userId;
+    }
 }
