@@ -89,8 +89,8 @@ class PostServiceTest {
         when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
                 .thenReturn(List.of(post2, post));
 
-        doReturn(List.of(postResponseDto2, postResponseDto))
-                .when(mapper).fromPostListToPostResponseDtoList(List.of(post2, post)); // Mantén el mismo orden
+        when(mapper.fromPostListToPostResponseDtoList(List.of(post2, post)))
+                .thenReturn(List.of(postResponseDto2, postResponseDto));
 
         FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
 
@@ -108,8 +108,8 @@ class PostServiceTest {
         when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
                 .thenReturn(List.of(post, post2));
 
-        doReturn(List.of(postResponseDto, postResponseDto2))
-                .when(mapper).fromPostListToPostResponseDtoList(List.of(post, post2));
+        when(mapper.fromPostListToPostResponseDtoList(List.of(post, post2)))
+                .thenReturn(List.of(postResponseDto, postResponseDto2));
 
         FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_desc");
 
