@@ -3,6 +3,10 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -45,20 +49,21 @@ class PostServiceTest {
     private UUID sellerId;
     private UUID buyerId;
     private UUID postId;
+    private UUID userPostRespDtoId;
 
     private UserDto userSeller;
     private Seller seller;
     private SellerResponseDto sellerResponseDto;
 
+    private UserPostResponseDto userPostResponseDto;
+
     private Buyer buyer;
     private BuyerDto buyerDto;
 
     private Post post;
+    private Post post2;
     private PostDto postDto;
     private PostResponseDto postResponseDto;
-
-    private UserPostResponseDto userPostResponseDto;
-    private UUID userPostRespDtoId;
 
     @BeforeEach
     void setUp() {
@@ -76,6 +81,8 @@ class PostServiceTest {
 
         post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
+        post2 = PostFactory.createPost(sellerId, false);
+        post2.setPrice(150.0);
 
         postDto = PostFactory.createPostDto(sellerId, false);
         postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
@@ -333,5 +340,92 @@ class PostServiceTest {
         verify(postBridgeService).getUserById(sellerId);
         verifyNoMoreInteractions(postRepository, postBridgeService);
     }
+
+    @Test
+    @DisplayName("[SUCCESS] Find average price by seller - Success")
+    void testFindAveragePrice() {
+        List<Post> promoPostList = List.of(post, post2);
+        Double averageExpected = (post.getPrice() + post2.getPrice()) / 2;
+
+        doNothing().when(postBridgeService).validateSellerExists(sellerId);
+        when(postRepository.findPostsBySellerId(sellerId)).thenReturn(promoPostList);
+
+        Double result = postService.findAveragePrice(sellerId);
+
+        assertEquals(averageExpected, result);
+        verify(postRepository).findPostsBySellerId(sellerId);
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verifyNoMoreInteractions(postRepository, postBridgeService);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Find average price by seller - Not found Post")
+    void testFindAveragePriceNotPostFound() {
+        when(postRepository.findPostsBySellerId(sellerId)).thenReturn(List.of());
+
+        Exception exception = assertThrows(BadRequest.class,
+                () -> postService.findAveragePrice(sellerId)
+        );
+
+        assertEquals(ErrorMessagesUtil.userHasNotPosts(sellerId), exception.getMessage());
+        verify(postRepository).findPostsBySellerId(sellerId);
+        verifyNoMoreInteractions(postRepository);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Find price per post")
+    void testFindPricePerPosts() {
+        List<Post> promoPostList = List.of(post, post2);
+        UserDto userDto = UserFactory.createUserDto(sellerId);
+
+        Double averageExpected = (post.getPrice() + post2.getPrice()) / 2;
+
+        doNothing().when(postBridgeService).validateSellerExists(sellerId);
+        when(postRepository.findPostsBySellerId(sellerId)).thenReturn(promoPostList);
+        when(postBridgeService.getUserById(sellerId)).thenReturn(userDto);
+
+        SellerAveragePrice sellerExpected = new SellerAveragePrice(
+                userDto.getId(),
+                userDto.getUserName(),
+                averageExpected
+        );
+
+        SellerAveragePrice result = postService.findPricePerPosts(sellerId);
+
+        assertAll(
+                () -> assertEquals(sellerExpected.getIdSeller(), result.getIdSeller()),
+                () -> assertEquals(sellerExpected.getAveragePrice(), result.getAveragePrice()),
+                () -> assertEquals(sellerExpected.getUserName(), result.getUserName())
+        );
+
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verify(postBridgeService).getUserById(sellerId);
+        verify(postRepository).findPostsBySellerId(sellerId);
+        verifyNoMoreInteractions(postBridgeService, postRepository);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Find price per post - User not found")
+    void testFindPricePerPostsUserNotFound() {
+        List<Post> promoPostList = List.of(post, post2);
+
+        doNothing().when(postBridgeService).validateSellerExists(sellerId);
+        when(postRepository.findPostsBySellerId(sellerId)).thenReturn(promoPostList);
+        when(postBridgeService.getUserById(sellerId)).thenThrow(
+                new BadRequest(ErrorMessagesUtil.userNotFound(sellerId))
+        );
+
+        Exception exception = assertThrows(BadRequest.class,
+                () -> postService.findPricePerPosts(sellerId)
+        );
+
+        assertEquals(ErrorMessagesUtil.userNotFound(sellerId), exception.getMessage());
+
+        verify(postBridgeService).validateSellerExists(sellerId);
+        verify(postRepository).findPostsBySellerId(sellerId);
+        verify(postBridgeService).getUserById(sellerId);
+        verifyNoMoreInteractions(postBridgeService, postRepository);
+    }
+
 
 }

@@ -15,6 +15,8 @@ import com.mercadolibre.be_java_hisp_w31_g07.util.SortUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,13 +68,20 @@ public class PostService implements IPostService {
 
     @Override
     public Double findAveragePrice(UUID sellerId) {
-        List<Post> posts = postRepository.findPostsBySellerId(sellerId);
-        throwIfEmpty(posts, "User " + sellerId + " has no posts.");
+        postBridgeService.validateSellerExists(sellerId);
 
-        return posts.stream()
+        List<Post> posts = postRepository.findPostsBySellerId(sellerId);
+        throwIfEmpty(posts, ErrorMessagesUtil.userHasNotPosts(sellerId));
+
+        double average = posts.stream()
                 .mapToDouble(this::getEffectivePrice)
                 .average()
                 .orElseThrow(() -> new BadRequest(ErrorMessagesUtil.noPurchasesForProduct(sellerId.toString())));
+
+        BigDecimal roundedAverage = BigDecimal.valueOf(average)
+                .setScale(1, RoundingMode.HALF_UP);
+
+        return roundedAverage.doubleValue();
     }
 
 
