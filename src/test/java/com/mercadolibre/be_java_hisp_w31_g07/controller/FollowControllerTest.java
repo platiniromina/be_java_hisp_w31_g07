@@ -128,8 +128,8 @@ class FollowControllerTest {
         ).andDo(print());
 
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.followers[0].user_name").value("A"))
-                .andExpect(jsonPath("$.followers[1].user_name").value("B"));
+                .andExpect(jsonPath("$.followers[0].user_name").value(userBuyerA.getUserName()))
+                .andExpect(jsonPath("$.followers[1].user_name").value(userBuyerB.getUserName()));
     }
 
     @Test
@@ -155,8 +155,8 @@ class FollowControllerTest {
         ).andDo(print());
 
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.followers[0].user_name").value("B"))
-                .andExpect(jsonPath("$.followers[1].user_name").value("A"));
+                .andExpect(jsonPath("$.followers[0].user_name").value(userBuyerB.getUserName()))
+                .andExpect(jsonPath("$.followers[1].user_name").value(userBuyerA.getUserName()));
     }
 
     @Test
@@ -170,8 +170,8 @@ class FollowControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
 
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
+        resultActions.andExpect(jsonPath("$.message")
+                .value(ErrorMessagesUtil.invalidSortingParameter(invalidOrder)));
     }
 
 
