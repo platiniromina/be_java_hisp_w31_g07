@@ -380,7 +380,7 @@ class PostServiceTest {
         Exception exception = assertThrows(BadRequest.class,
                 () -> postService.getSellerPromoPosts(sellerId));
 
-        assertEquals(ErrorMessagesUtil.noPromoPostsFoundForSeller(sellerId), exception.getMessage());
+        assertEquals(ErrorMessagesUtil.noPromotionPostFound(sellerId), exception.getMessage());
         verify(postRepository).findHasPromo(sellerId);
         verify(postBridgeService).validateSellerExists(sellerId);
         verifyNoMoreInteractions(postRepository, postBridgeService);
