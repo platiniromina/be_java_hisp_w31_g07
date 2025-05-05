@@ -207,7 +207,7 @@ class PostServiceTest {
 
         Exception exception = assertThrows(BadRequest.class, () -> postService.getLatestPostsFromSellers(buyerId));
 
-        assertEquals(ErrorMessagesUtil.noSellersFollowed(buyerId), exception.getMessage());
+        assertEquals(ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyerId), exception.getMessage());
         verify(postBridgeService).getFollowed(buyerId);
         verifyNoMoreInteractions(postBridgeService, postRepository);
     }

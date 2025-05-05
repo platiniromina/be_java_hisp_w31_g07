@@ -46,9 +46,9 @@ public interface IBuyerRepository {
     void removeSellerFromFollowedList(Seller seller, UUID buyerId);
 
     /**
-     * Saves the given buyer to the list.
+     * Save a buyer in the repository.
      *
-     * @param buyer The buyer to be saved.
+     * @param buyer buyer to save.
      */
     void save(Buyer buyer);
 }

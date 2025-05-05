@@ -27,6 +27,10 @@ public class ErrorMessagesUtil {
         return "Invalid sorting parameter: " + parameter;
     }
 
+    public static String buyerIsNotFollowingAnySellers(UUID userId) {
+        return "The buyer " + userId + " is not following any sellers";
+    }
+
     public static String buyerNotFollowingSeller(UUID buyerId, UUID sellerId) {
         return "Buyer " + buyerId + " is not following seller " + sellerId;
     }
