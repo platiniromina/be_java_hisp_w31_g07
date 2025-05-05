@@ -35,6 +35,11 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
+    public List<Post> findAll() {
+        return postList;
+    }
+
+    @Override
     public void save(Post post) {
         postList.add(post);
     }
