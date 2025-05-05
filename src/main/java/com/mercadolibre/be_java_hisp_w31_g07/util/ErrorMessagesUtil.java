@@ -27,6 +27,10 @@ public class ErrorMessagesUtil {
         return "Invalid sorting parameter: " + parameter;
     }
 
+    public static String buyerIsNotFollowingAnySellers(UUID userId) {
+        return "The buyer " + userId + " is not following any sellers";
+    }
+
     public static String buyerNotFollowingSeller(UUID buyerId, UUID sellerId) {
         return "Buyer " + buyerId + " is not following seller " + sellerId;
     }
@@ -47,4 +51,19 @@ public class ErrorMessagesUtil {
         return "No purchases found for product " + product;
     }
 
+    public static String userHasNotPosts(UUID sellerId) {
+        return "User " + sellerId + " has no posts.";
+    }
+
+    public static String noPromotionalPostUser(UUID userId) {
+        return "No promotional posts found for user: " + userId;
+    }
+
+    public static String noSellersFollowed(UUID buyerId) {
+        return "Buyer " + buyerId + " is not following any sellers";
+    }
+
+    public static String noPromoPostsFoundForSeller(UUID sellerId) {
+        return "No promo posts found for seller " + sellerId;
+    }
 }

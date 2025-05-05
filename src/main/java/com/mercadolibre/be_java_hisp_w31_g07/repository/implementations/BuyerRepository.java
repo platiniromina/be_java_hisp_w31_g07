@@ -66,4 +66,9 @@ public class BuyerRepository implements IBuyerRepository {
             return buyer;
         });
     }
+
+    @Override
+    public void save(Buyer buyer) {
+        buyerList.add(buyer);
+    }
 }
