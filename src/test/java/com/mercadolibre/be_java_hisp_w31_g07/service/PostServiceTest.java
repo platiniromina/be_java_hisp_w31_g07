@@ -45,43 +45,115 @@ class PostServiceTest {
     private UUID sellerId;
     private UUID buyerId;
     private UUID postId;
+    private UUID postId2;
     private UUID userPostRespDtoId;
 
-    private UserDto userSeller;
     private Seller seller;
-    private SellerResponseDto sellerResponseDto;
-
-    private UserPostResponseDto userPostResponseDto;
-
     private Buyer buyer;
-    private BuyerDto buyerDto;
 
     private Post post;
     private Post post2;
     private PostDto postDto;
     private PostResponseDto postResponseDto;
+    private PostResponseDto postResponseDto2;
+
+    private UserDto userSeller;
+    private SellerResponseDto sellerResponseDto;
+    private UserPostResponseDto userPostResponseDto;
+
+    private BuyerDto buyerDto;
 
     @BeforeEach
     void setUp() {
         seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
         userSeller = UserFactory.createUserDto(sellerId);
+        sellerResponseDto = SellerFactory.createSellerResponseDto(sellerId);
 
         userPostResponseDto = UserFactory.createUserPostResponseDto(sellerId);
         userPostRespDtoId = userPostResponseDto.getUserId();
-        sellerResponseDto = SellerFactory.createSellerResponseDto(sellerId);
 
         buyer = BuyerFactory.createBuyer(null);
         buyerId = buyer.getId();
         buyerDto = BuyerFactory.createBuyerDto();
 
+        seller.addFollower(buyer);
+        buyer.addFollowedSeller(seller);
+
         post = PostFactory.createPost(sellerId, false);
         postId = post.getId();
+
         post2 = PostFactory.createPost(sellerId, false);
         post2.setPrice(150.0);
+        postId2 = post2.getId();
 
         postDto = PostFactory.createPostDto(sellerId, false);
-        postResponseDto = PostFactory.createPostResponseDto(postId, sellerId, false);
+        postResponseDto = PostFactory.createPostResponseDto(sellerId, postId, false);
+        postResponseDto2 = PostFactory.createPostResponseDto(sellerId, postId2, false);
+    }
+    @Test
+    @DisplayName("[SUCCESS] Sort post Asc")
+    void testSortPostsByDatAsc() {
+        when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
+                .thenReturn(List.of(post2, post));
+
+        when(mapper.fromPostListToPostResponseDtoList(List.of(post2, post)))
+                .thenReturn(List.of(postResponseDto2, postResponseDto));
+
+        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
+
+        assertEquals(List.of(postResponseDto2, postResponseDto), result.getPosts());
+
+        verify(postBridgeService).getFollowed(buyerId);
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerId));
+        verify(mapper).fromPostListToPostResponseDtoList(List.of(post2, post));
+        verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
+    }
+    @Test
+    @DisplayName("[SUCCESS] Sort post Desc")
+    void testSortPostsByDateDesc() {
+        when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
+                .thenReturn(List.of(post, post2));
+
+        when(mapper.fromPostListToPostResponseDtoList(List.of(post, post2)))
+                .thenReturn(List.of(postResponseDto, postResponseDto2));
+
+        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_desc");
+
+        assertEquals(List.of(postResponseDto, postResponseDto2), result.getPosts());
+
+        verify(postBridgeService).getFollowed(buyerId);
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerId));
+        verify(mapper).fromPostListToPostResponseDtoList(List.of(post, post2));
+        verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
+    }
+
+    @Test
+    @DisplayName("[ERROR] Sort posts with invalid order throws BadRequest exception")
+    void testSortPostsByDateInvalidOrderThrowsException() {
+        String invalidOrder = "invalid_order";
+
+        when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
+                .thenReturn(List.of(post, post2));
+        when(mapper.fromPostListToPostResponseDtoList(List.of(post, post2)))
+                .thenReturn(List.of(postResponseDto, postResponseDto2));
+
+        BadRequest exception = assertThrows(BadRequest.class, () ->
+                postService.sortPostsByDate(buyerId, invalidOrder)
+        );
+
+        assertAll(
+                () -> assertNotNull(exception),
+                () -> assertEquals(ErrorMessagesUtil.invalidSortingParameter(invalidOrder), exception.getMessage())
+        );
+
+        verify(postBridgeService).getFollowed(buyerId);
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerId));
+        verify(mapper).fromPostListToPostResponseDtoList(List.of(post, post2));
+        verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
     }
 
     @Test
@@ -307,6 +379,7 @@ class PostServiceTest {
 
         Exception exception = assertThrows(BadRequest.class,
                 () -> postService.getSellerPromoPosts(sellerId));
+
 
         assertEquals(ErrorMessagesUtil.noPromotionalPostUser(sellerId), exception.getMessage());
         verify(postRepository).findHasPromo(sellerId);
