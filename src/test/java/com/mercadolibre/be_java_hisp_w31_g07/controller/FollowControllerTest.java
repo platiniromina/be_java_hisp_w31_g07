@@ -205,6 +205,25 @@ class FollowControllerTest {
                 .andExpect(jsonPath("$.user_name").value(userWithFollowers.getUserName()));
     }
 
+    @Test
+    @DisplayName("[ERROR] Get Followers List - Seller not found")
+    void testFindFollowersSellerNotFound() throws Exception {
+        UUID sellerId = UUID.randomUUID();
+        ResultActions resultActions = performGet(sellerId, "/users/{userId}/followers/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(sellerId));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Followers List - User not found")
+    void testFindFollowersUserNotFound() throws Exception {
+        Seller sellerRandom = SellerFactory.createSeller(UUID.randomUUID());
+        sellerRepository.save(sellerRandom);
+
+        ResultActions resultActions = performGet(sellerRandom.getId(), "/users/{userId}/followers/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(sellerRandom.getId()));
+    }
+
+
     private ResultActions performFollow(UUID buyerId, UUID sellerId) throws Exception {
         return mockMvc.perform(
                 post("/users/{buyerId}/follow/{sellerId}", buyerId, sellerId)
