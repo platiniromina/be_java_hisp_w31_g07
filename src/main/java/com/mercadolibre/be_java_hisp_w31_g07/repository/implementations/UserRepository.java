@@ -32,6 +32,11 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public void save(User user) {
+        userList.add(user);
+    }
+
+    @Override
     public Optional<User> findById(UUID userId) {
         return userList.stream()
                 .filter(user -> user.getId().equals(userId))
@@ -46,9 +51,5 @@ public class UserRepository implements IUserRepository {
                 .map(Optional::get)
                 .toList();
     }
-
-    @Override
-    public void save(User user) {
-        userList.add(user);
-    }
+    
 }
