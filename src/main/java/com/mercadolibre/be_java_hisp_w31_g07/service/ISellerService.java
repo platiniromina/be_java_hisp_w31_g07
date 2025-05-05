@@ -1,94 +1,45 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
-import com.mercadolibre.be_java_hisp_w31_g07.dto.request.SellerDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerFollowersCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
 import java.util.UUID;
 
 public interface ISellerService {
-    /**
-     * Retrieves the count of followers for a given seller and constructs a response
-     * DTO.
-     *
-     * @param userId the unique identifier of the seller whose followers count is
-     *               to be retrieved
-     * @return a SellerFollowersCountResponseDto containing the seller's ID,
-     * username, and followers count
-     * @throws BadRequest if the seller with the given ID is not found
-     */
-    public SellerFollowersCountResponseDto findFollowersCount(UUID userId);
-
-    /**
-     * Returns a seller that match with the param userId.
-     *
-     * @param userId id to find the Seller.
-     * @return a seller dto with his followers list.
-     */
-    public SellerDto findFollowers(UUID userId);
-
-    /**
-     * Allows a buyer to follow a seller by adding the seller to the buyer's
-     * followed list
-     * and the buyer to the seller's followers list.
-     *
-     * @param sellerId the unique identifier of the seller to be followed
-     * @param buyerId  the unique identifier of the buyer who wants to follow the
-     *                 seller
-     * @throws BadRequest if the sellerId and buyerId are the same
-     * @throws BadRequest if the seller or buyer cannot be found
-     * @throws BadRequest if the buyer is already following the seller
-     */
-    public void followSeller(UUID sellerId, UUID buyerId);
-
-    /**
-     * Allows a buyer to unfollow a seller by removing the seller from the buyer's
-     * followed list
-     * and the buyer from the seller's followers list.
-     *
-     * @param sellerId the unique identifier of the seller to be unfollowed
-     * @param buyerId  the unique identifier of the buyer who wants to unfollow the
-     *                 seller
-     * @throws BadRequest if the seller or buyer cannot be found
-     * @throws BadRequest if the buyer is not previously following the seller
-     */
-    public void unfollowSeller(UUID sellerId, UUID buyerId);
 
     /**
      * Retrieves a seller by their unique identifier.
      *
-     * @param userId the unique identifier of the seller to be retrieved
-     * @return a Seller object containing the seller's information
-     * @throws BadRequest if the seller cannot be found
+     * @param sellerId the ID of the seller to retrieve
+     * @return the found seller
+     * @throws BadRequest if no seller is found with the given ID
      */
-    public Seller findSellerById(UUID userId);
+    Seller findSellerById(UUID sellerId);
 
     /**
-     * Retrieves a seller by their unique identifier.
+     * Adds a buyer to the list of followers of the given seller.
      *
-     * @param userId the unique identifier of the seller to be retrieved
-     * @return a Seller object containing the seller's information
-     * @throws BadRequest if the seller cannot be found
+     * @param buyer  the buyer who will follow the seller
+     * @param seller the seller to be followed
      */
-    public SellerAveragePrice findPricePerPosts(UUID userId);
+    void addBuyerToFollowers(Buyer buyer, Seller seller);
 
     /**
-     * Retrieves the seller's information and sorts their followers by name in
-     * either ascending or descending order.
-     * This method takes the seller's unique identifier and the desired order for
-     * sorting the followers.
+     * Checks if a given seller is currently followed by a specific buyer.
      *
-     * @param sellerId the unique identifier of the seller whose followers are to be
-     *                 sorted
-     * @param order    the sorting order; "name_asc" for ascending and "name_desc"
-     *                 for descending
-     * @return a SellerDto object containing the seller's information and the sorted
-     * list of followers
-     * @throws IllegalArgumentException if the provided order is invalid (not
-     *                                  "name_asc" or "name_desc")
-     * @throws BadRequest               if the seller with the specified ID is not found
+     * @param buyer    the buyer in question
+     * @param sellerId the ID of the seller to check
+     * @return true if the buyer is following the seller, false otherwise
      */
-    public SellerDto sortFollowersByName(UUID sellerId, String order);
+    boolean isSellerFollowedByBuyer(Buyer buyer, UUID sellerId);
+
+    /**
+     * Removes a buyer from the list of followers of the given seller.
+     *
+     * @param buyer    the buyer who will stop following the seller
+     * @param sellerId the ID of the seller to be unfollowed
+     */
+    void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId);
+
 }
