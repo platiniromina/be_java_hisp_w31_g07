@@ -26,6 +26,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -148,9 +149,46 @@ class FollowControllerTest {
         ).andDo(print());
     }
 
+    @Test
+    @DisplayName("[SUCCESS] Unfollow seller")
+    void testUnfollowSellerSuccess() throws Exception {
+        ResultActions resultActions = performUnfollow(buyerWithFollowedSeller.getId(), sellerWithBuyerFollower.getId());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("[ERROR] Unfollow seller - buyer is not following seller")
+    void testUnfollowSellerWhoImNotFollowingError() throws Exception {
+        ResultActions resultActions = performUnfollow(buyer.getId(), seller.getId());
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFollowingSeller(buyer.getId(), seller.getId()));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Unfollow seller - seller not found")
+    void testUnfollowSellerThatDoesNotExistError() throws Exception {
+        UUID sellerId = UUID.randomUUID();
+        ResultActions resultActions = performUnfollow(buyer.getId(), sellerId);
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(sellerId));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Unfollow seller - buyer not found")
+    void testUnfollowSellerButBuyerNotFoundError() throws Exception {
+        UUID buyerId = UUID.randomUUID();
+        ResultActions resultActions = performUnfollow(buyerId, seller.getId());
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(buyerId));
+    }
+
     private ResultActions performFollow(UUID buyerId, UUID sellerId) throws Exception {
         return mockMvc.perform(
                 post("/users/{buyerId}/follow/{sellerId}", buyerId, sellerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+    }
+
+    private ResultActions performUnfollow(UUID buyerId, UUID sellerId) throws Exception {
+        return mockMvc.perform(
+                put("/users/{userId}/unfollow/{userIdToUnfollow}", buyerId, sellerId)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
     }
