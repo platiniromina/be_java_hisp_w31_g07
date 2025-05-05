@@ -1,5 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
@@ -24,9 +26,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +47,9 @@ class FollowControllerTest {
     private MockMvc mockMvc;
 
     private Seller seller;
+    private SellerResponseDto sellerResponseDto;
     private Buyer buyer;
+    private BuyerResponseDto followerDto;
     private Seller sellerWithFollowers;
     private User userWithFollowers;
     private Seller sellerWithBuyerFollower;
@@ -66,6 +68,11 @@ class FollowControllerTest {
 
         sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         userWithFollowers = UserFactory.createUser(sellerWithFollowers.getId());
+
+        Buyer follower = sellerWithFollowers.getFollowers().get(0);
+        buyerRepository.save(follower);
+        followerDto = BuyerFactory.createBuyerResponseDto(follower.getId());
+        sellerResponseDto = SellerFactory.createSellerResponseDtoFollowers(sellerWithFollowers.getId(), followerDto);
 
         sellerRepository.save(sellerWithFollowers);
         userRepository.save(userWithFollowers);
@@ -177,6 +184,20 @@ class FollowControllerTest {
         UUID buyerId = UUID.randomUUID();
         ResultActions resultActions = performUnfollow(buyerId, seller.getId());
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(buyerId));
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get Followers List")
+    void testFindFollowers() throws Exception {
+        UUID sellerId = sellerResponseDto.getId();
+
+        ResultActions resultActions = performGet(sellerId, "/users/{userId}/followers/list");
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followers[0].user_id").value(sellerResponseDto.getFollowers().get(0).getId().toString()))
+                .andExpect(jsonPath("$.followers[0].user_name").value(sellerResponseDto.getFollowers().get(0).getUserName()))
+                .andExpect(jsonPath("$.user_id").value(sellerId.toString()))
+                .andExpect(jsonPath("$.user_name").value(userWithFollowers.getUserName()));
     }
 
     private ResultActions performFollow(UUID buyerId, UUID sellerId) throws Exception {
