@@ -15,6 +15,8 @@ import com.mercadolibre.be_java_hisp_w31_g07.util.SortUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,13 +68,20 @@ public class PostService implements IPostService {
 
     @Override
     public Double findAveragePrice(UUID sellerId) {
-        List<Post> posts = postRepository.findPostsBySellerId(sellerId);
-        throwIfEmpty(posts, "User " + sellerId + " has no posts.");
+        postBridgeService.validateSellerExists(sellerId);
 
-        return posts.stream()
+        List<Post> posts = postRepository.findPostsBySellerId(sellerId);
+        throwIfEmpty(posts, ErrorMessagesUtil.userHasNotPosts(sellerId));
+
+        double average = posts.stream()
                 .mapToDouble(this::getEffectivePrice)
                 .average()
                 .orElseThrow(() -> new BadRequest(ErrorMessagesUtil.noPurchasesForProduct(sellerId.toString())));
+
+        BigDecimal roundedAverage = BigDecimal.valueOf(average)
+                .setScale(1, RoundingMode.HALF_UP);
+
+        return roundedAverage.doubleValue();
     }
 
 
@@ -113,10 +122,10 @@ public class PostService implements IPostService {
 
 
     @Override
-    public SellerAveragePrice findPricePerPosts(UUID userId) {
+    public SellerAveragePriceDto findPricePerPosts(UUID userId) {
         Double averagePrice = findAveragePrice(userId);
         UserDto user = postBridgeService.getUserById(userId);
-        return new SellerAveragePrice(
+        return new SellerAveragePriceDto(
                 userId,
                 user.getUserName(),
                 averagePrice);
@@ -139,13 +148,13 @@ public class PostService implements IPostService {
 
     private List<UUID> getFollowedSellerIdsOrThrow(UUID buyerId) {
         List<Seller> sellers = postBridgeService.getFollowed(buyerId);
-        throwIfEmpty(sellers, "The buyer is not following any sellers");
+        throwIfEmpty(sellers, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyerId));
         return sellers.stream().map(Seller::getId).toList();
     }
 
     private List<Post> getPromoPostsOrThrow(UUID userId) {
         List<Post> posts = postRepository.findHasPromo(userId);
-        throwIfEmpty(posts, "No promotional posts found for user: " + userId);
+        throwIfEmpty(posts, ErrorMessagesUtil.noPromotionPostFound(userId));
         return posts;
     }
 
