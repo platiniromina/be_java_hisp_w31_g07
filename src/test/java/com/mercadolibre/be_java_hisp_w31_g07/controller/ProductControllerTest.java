@@ -187,7 +187,7 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(expected);
 
-        ResultActions resultActions = performGetAveragePrice(sellerId, "/users/{userId}/average-post-price");
+        ResultActions resultActions = performGet(sellerId, "/users/{userId}/average-post-price");
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -202,7 +202,7 @@ class ProductControllerTest {
         userRepository.save(user);
         sellerRepository.save(SellerFactory.createSeller(nonExistentSellerId));
 
-        ResultActions resultActions = performGetAveragePrice(user.getId(), "/users/{userId}/average-post-price");
+        ResultActions resultActions = performGet(user.getId(), "/users/{userId}/average-post-price");
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userHasNotPosts(user.getId()));
     }
 
@@ -210,7 +210,7 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get user posts average price - User not found")
     void testGetAveragePromoPostUserNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
-        ResultActions resultActions = performGetAveragePrice(nonExistentPostId, "/users/{userId}/average-post-price");
+        ResultActions resultActions = performGet(nonExistentPostId, "/users/{userId}/average-post-price");
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentPostId));
     }
 
@@ -255,13 +255,6 @@ class ProductControllerTest {
                 post(path)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.generateFromDto(postDto))
-        ).andDo(print());
-    }
-
-    private ResultActions performGetAveragePrice(UUID sellerId, String path) throws Exception {
-        return mockMvc.perform(
-                get(path, sellerId)
-                        .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
     }
 
