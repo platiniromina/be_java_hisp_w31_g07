@@ -12,7 +12,7 @@ import java.util.UUID;
 public class SellerFactory {
 
     private static final int DEFAULT_FOLLOWER_COUNT = 0;
-    private static final String DEFAULT_USER_NAME = "TEST USERNAME";
+    private static final String DEFAULT_USER_NAME = "testUser";
 
     public static Seller createSeller(UUID sellerId) {
         Seller seller = new Seller();
