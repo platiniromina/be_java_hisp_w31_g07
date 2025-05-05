@@ -86,7 +86,7 @@ class PostServiceTest {
     @DisplayName("[SUCCESS] Sort post Asc")
     void testSortPostsByDatAsc() {
         when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
-        when(postRepository.findLatestPostsFromSellers(any()))
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
                 .thenReturn(List.of(post2, post));
         when(mapper.fromPostListToPostResponseDtoList(any()))
                 .thenReturn(List.of(postResponseDto2, postResponseDto));
@@ -121,7 +121,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("[FAIL] Sort posts with invalid order throws BadRequest exception")
+    @DisplayName("[ERROR] Sort posts with invalid order throws BadRequest exception")
     void testSortPostsByDateInvalidOrderThrowsException() {
         String invalidOrder = "invalid_order";
 
@@ -137,8 +137,13 @@ class PostServiceTest {
 
         assertAll(
                 () -> assertNotNull(exception),
-                () -> assertEquals("Invalid sorting parameter: invalid_order", exception.getMessage())
+                () -> assertEquals(ErrorMessagesUtil.invalidSortingParameter(invalidOrder), exception.getMessage())
         );
+
+        verify(postBridgeService).getFollowed(buyerId);
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerId));
+        verify(mapper).fromPostListToPostResponseDtoList(List.of(post, post2));
+        verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
     }
 
     @Test
