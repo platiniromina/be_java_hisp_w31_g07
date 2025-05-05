@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class BuyerFactory {
 
-    private static final String DEFAULT_USER_NAME = "TEST USERNAME";
+    private static final String DEFAULT_USER_NAME = "testUser";
 
     public static Buyer createBuyer(UUID id) {
         Buyer buyer = new Buyer();

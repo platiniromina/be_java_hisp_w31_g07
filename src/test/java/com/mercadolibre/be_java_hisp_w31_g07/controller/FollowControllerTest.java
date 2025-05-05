@@ -47,13 +47,15 @@ class FollowControllerTest {
     private MockMvc mockMvc;
 
     private Seller seller;
-    private SellerResponseDto sellerResponseDto;
+    private SellerResponseDto sellerWithBuyerFollowerDto;
     private Buyer buyer;
     private BuyerResponseDto followerDto;
     private Seller sellerWithFollowers;
     private User userWithFollowers;
     private Seller sellerWithBuyerFollower;
     private Buyer buyerWithFollowedSeller;
+    private User userSellerWithBuyerFollower;
+    private User userBuyerWithFollowedSeller;
 
     @BeforeEach
     void setUp() {
@@ -62,20 +64,22 @@ class FollowControllerTest {
 
         sellerWithBuyerFollower = SellerFactory.createSeller(null);
         buyerWithFollowedSeller = BuyerFactory.createBuyer(null);
+        BuyerResponseDto buyerWithFollowedSellerDto = BuyerFactory.createBuyerResponseDto(buyerWithFollowedSeller.getId());
+        sellerWithBuyerFollowerDto = SellerFactory.createSellerResponseDtoFollowers(sellerWithBuyerFollower.getId(), buyerWithFollowedSellerDto);
 
         sellerWithBuyerFollower.addFollower(buyerWithFollowedSeller);
         buyerWithFollowedSeller.addFollowedSeller(sellerWithBuyerFollower);
 
+        userSellerWithBuyerFollower = UserFactory.createUser(sellerWithBuyerFollower.getId());
+        userBuyerWithFollowedSeller = UserFactory.createUser(buyerWithFollowedSeller.getId());
+
         sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         userWithFollowers = UserFactory.createUser(sellerWithFollowers.getId());
 
-        Buyer follower = sellerWithFollowers.getFollowers().get(0);
-        buyerRepository.save(follower);
-        followerDto = BuyerFactory.createBuyerResponseDto(follower.getId());
-        sellerResponseDto = SellerFactory.createSellerResponseDtoFollowers(sellerWithFollowers.getId(), followerDto);
-
         sellerRepository.save(sellerWithFollowers);
         userRepository.save(userWithFollowers);
+        userRepository.save(userSellerWithBuyerFollower);
+        userRepository.save(userBuyerWithFollowedSeller);
 
         sellerRepository.save(seller);
         buyerRepository.save(buyer);
@@ -189,13 +193,13 @@ class FollowControllerTest {
     @Test
     @DisplayName("[SUCCESS] Get Followers List")
     void testFindFollowers() throws Exception {
-        UUID sellerId = sellerResponseDto.getId();
+        UUID sellerId = userSellerWithBuyerFollower.getId();
 
         ResultActions resultActions = performGet(sellerId, "/users/{userId}/followers/list");
 
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.followers[0].user_id").value(sellerResponseDto.getFollowers().get(0).getId().toString()))
-                .andExpect(jsonPath("$.followers[0].user_name").value(sellerResponseDto.getFollowers().get(0).getUserName()))
+                .andExpect(jsonPath("$.followers[0].user_id").value(sellerWithBuyerFollower.getFollowers().get(0).getId().toString()))
+                .andExpect(jsonPath("$.followers[0].user_name").value(sellerWithBuyerFollowerDto.getFollowers().get(0).getUserName()))
                 .andExpect(jsonPath("$.user_id").value(sellerId.toString()))
                 .andExpect(jsonPath("$.user_name").value(userWithFollowers.getUserName()));
     }
