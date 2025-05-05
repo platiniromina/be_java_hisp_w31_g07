@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SellerAveragePrice {
+public class SellerAveragePriceDto {
     @JsonProperty("user_id")
     private UUID idSeller;
     @JsonProperty("user_name")

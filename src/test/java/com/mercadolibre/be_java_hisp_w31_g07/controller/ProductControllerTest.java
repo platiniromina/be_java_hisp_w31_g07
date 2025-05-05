@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePriceDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -25,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +58,7 @@ class ProductControllerTest {
     private BuyerRepository buyerRepository;
 
     private Post post;
+    private UUID sellerId;
     private String userName;
     private Buyer buyer;
     private Seller sellerWithPosts;
@@ -62,6 +66,8 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
+        Seller seller = SellerFactory.createSeller(null);
+        sellerId = seller.getId();
         sellerWithNoPosts = SellerFactory.createSeller(null);
         sellerWithPosts = SellerFactory.createSeller(null);
         post = PostFactory.createPost(sellerWithPosts.getId(), false);
@@ -216,6 +222,62 @@ class ProductControllerTest {
     }
 
     @Test
+    @DisplayName("[SUCCESS] Get user posts average price")
+    void testGetAveragePromoPost() throws Exception {
+        Post post1 = PostFactory.createPost(sellerId, false);
+        Post post2 = PostFactory.createPost(sellerId, true);
+
+        User user = UserFactory.createUser(sellerId);
+        userRepository.save(user);
+
+        sellerRepository.save(SellerFactory.createSeller(sellerId));
+        postRepository.save(post1);
+        postRepository.save(post2);
+
+        BigDecimal price1 = getEffectivePrice(post1);
+        BigDecimal price2 = getEffectivePrice(post2);
+        BigDecimal average = price1.add(price2)
+                .divide(BigDecimal.valueOf(2), 1, RoundingMode.HALF_UP);
+
+        Double averagePrice = average.doubleValue();
+
+        SellerAveragePriceDto expected = new SellerAveragePriceDto(
+                user.getId(),
+                user.getUserName(),
+                averagePrice
+        );
+
+        String expectedResponse = JsonUtil.generateFromDto(expected);
+
+        ResultActions resultActions = performGet(sellerId, "/users/{userId}/average-post-price");
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get user posts average price - User has no posts")
+    void testGetAveragePromoPostPostsNotFound() throws Exception {
+        UUID nonExistentSellerId = UUID.randomUUID();
+
+        User user = UserFactory.createUser(nonExistentSellerId);
+        userRepository.save(user);
+        sellerRepository.save(SellerFactory.createSeller(nonExistentSellerId));
+
+        ResultActions resultActions = performGet(user.getId(), "/users/{userId}/average-post-price");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userHasNotPosts(user.getId()));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get user posts average price - User not found")
+    void testGetAveragePromoPostUserNotFound() throws Exception {
+        UUID nonExistentPostId = UUID.randomUUID();
+        ResultActions resultActions = performGet(nonExistentPostId, "/users/{userId}/average-post-price");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentPostId));
+    }
+
+
+    @Test
     @DisplayName("[SUCCESS] Get latest posts from from sellers")
     void testGetLatestPostsFromSellers() throws Exception {
         buyer.setFollowed(List.of(sellerWithPosts));
@@ -259,7 +321,7 @@ class ProductControllerTest {
         ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyer.getId()));
     }
-  
+
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(result ->
@@ -311,4 +373,13 @@ class ProductControllerTest {
         ).andDo(print());
     }
 
+    private BigDecimal getEffectivePrice(Post post) {
+        BigDecimal price = BigDecimal.valueOf(post.getPrice());
+        if (Boolean.TRUE.equals(post.getHasPromo())) {
+            BigDecimal discount = BigDecimal.valueOf(post.getDiscount())
+                    .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+            return price.multiply(BigDecimal.ONE.subtract(discount));
+        }
+        return price;
+    }
 }

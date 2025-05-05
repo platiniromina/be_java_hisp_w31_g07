@@ -3,10 +3,6 @@ package com.mercadolibre.be_java_hisp_w31_g07.service;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.BuyerDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -384,13 +380,13 @@ class PostServiceTest {
         when(postRepository.findPostsBySellerId(sellerId)).thenReturn(promoPostList);
         when(postBridgeService.getUserById(sellerId)).thenReturn(userDto);
 
-        SellerAveragePrice sellerExpected = new SellerAveragePrice(
+        SellerAveragePriceDto sellerExpected = new SellerAveragePriceDto(
                 userDto.getId(),
                 userDto.getUserName(),
                 averageExpected
         );
 
-        SellerAveragePrice result = postService.findPricePerPosts(sellerId);
+        SellerAveragePriceDto result = postService.findPricePerPosts(sellerId);
 
         assertAll(
                 () -> assertEquals(sellerExpected.getIdSeller(), result.getIdSeller()),
