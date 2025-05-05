@@ -48,29 +48,38 @@ class FollowControllerTest {
 
     private Seller seller;
     private SellerResponseDto sellerWithBuyerFollowerDto;
-    private BuyerResponseDto buyerWithFollowedSellerDto;
     private Buyer buyer;
+    private Buyer buyerA;
+    private Buyer buyerB;
     private Seller sellerWithFollowers;
     private User userWithFollowers;
+    private User userSeller;
+    private User userBuyerA;
+    private User userBuyerB;
+
     private Seller sellerWithBuyerFollower;
     private Buyer buyerWithFollowedSeller;
     private User userSellerWithBuyerFollower;
-    private User userBuyerWithFollowedSeller;
     private BuyerResponseDto buyerWithFollowedSellerList;
-    private SellerResponseDto sellerWithBuyerDto;
 
     @BeforeEach
     void setUp() {
         seller = SellerFactory.createSeller(null);
+        userSeller = UserFactory.createUser(seller.getId());
+
         buyer = BuyerFactory.createBuyer(null);
+
+        userBuyerA = UserFactory.createUser(null);
+        buyerA = BuyerFactory.createBuyer(userBuyerA.getId());
+
+        userBuyerB = UserFactory.createUser(null);
+        buyerB = BuyerFactory.createBuyer(userBuyerB.getId());
 
         sellerWithBuyerFollower = SellerFactory.createSeller(null);
         buyerWithFollowedSeller = BuyerFactory.createBuyer(null);
-
-        buyerWithFollowedSellerDto = BuyerFactory.createBuyerResponseDto(buyerWithFollowedSeller.getId());
+        BuyerResponseDto buyerWithFollowedSellerDto = BuyerFactory.createBuyerResponseDto(buyerWithFollowedSeller.getId());
         sellerWithBuyerFollowerDto = SellerFactory.createSellerResponseDtoFollowers(sellerWithBuyerFollower.getId(), buyerWithFollowedSellerDto);
 
-        sellerWithBuyerDto = SellerFactory.createSellerResponseDto(sellerWithBuyerFollower.getId());
         buyerWithFollowedSellerList = BuyerFactory.createBuyerResponseDtoFollowed(buyerWithFollowedSeller.getId(), sellerWithBuyerFollowerDto);
 
         userRepository.save(UserFactory.createUser(sellerWithBuyerFollower.getId()));
@@ -79,13 +88,13 @@ class FollowControllerTest {
         buyerWithFollowedSeller.addFollowedSeller(sellerWithBuyerFollower);
 
         userSellerWithBuyerFollower = UserFactory.createUser(sellerWithBuyerFollower.getId());
-        userBuyerWithFollowedSeller = UserFactory.createUser(buyerWithFollowedSeller.getId());
-
+        User userBuyerWithFollowedSeller = UserFactory.createUser(buyerWithFollowedSeller.getId());
         sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         userWithFollowers = UserFactory.createUser(sellerWithFollowers.getId());
 
         sellerRepository.save(sellerWithFollowers);
         userRepository.save(userWithFollowers);
+        userRepository.save(userSeller);
         userRepository.save(userSellerWithBuyerFollower);
         userRepository.save(userBuyerWithFollowedSeller);
 
@@ -94,7 +103,77 @@ class FollowControllerTest {
 
         sellerRepository.save(sellerWithBuyerFollower);
         buyerRepository.save(buyerWithFollowedSeller);
+
     }
+    @Test
+    @DisplayName("[SUCCESS] Get sorted followers in ascending order")
+    void testGetSortedFollowersAsc() throws Exception {
+        userSeller.setUserName("C");
+        userBuyerA.setUserName("A");
+        userBuyerB.setUserName("B");
+
+        userRepository.save(userSeller);
+        userRepository.save(userBuyerA);
+        userRepository.save(userBuyerB);
+
+        seller.addFollower(buyerA);
+        seller.addFollower(buyerB);
+
+        String order = "name_asc";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/{sellerId}/followers", seller.getId())
+                        .param("order", order)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followers[0].user_name").value(userBuyerA.getUserName()))
+                .andExpect(jsonPath("$.followers[1].user_name").value(userBuyerB.getUserName()));
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get sorted followers in descending order")
+    void testGetSortedFollowersDesc() throws Exception {
+        userSeller.setUserName("C");
+        userBuyerA.setUserName("A");
+        userBuyerB.setUserName("B");
+
+        userRepository.save(userSeller);
+        userRepository.save(userBuyerA);
+        userRepository.save(userBuyerB);
+
+        seller.addFollower(buyerA);
+        seller.addFollower(buyerB);
+
+        String order = "name_desc";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/{sellerId}/followers", seller.getId())
+                        .param("order", order)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followers[0].user_name").value(userBuyerB.getUserName()))
+                .andExpect(jsonPath("$.followers[1].user_name").value(userBuyerA.getUserName()));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get sorted followers with invalid order")
+    void testGetSortedFollowersInvalidOrder() throws Exception {
+        String invalidOrder = "invalid_order";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/{sellerId}/followers", seller.getId())
+                        .param("order", invalidOrder)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(jsonPath("$.message")
+                .value(ErrorMessagesUtil.invalidSortingParameter(invalidOrder)));
+    }
+
 
     @Test
     @DisplayName("[SUCCESS] Follow a seller")
