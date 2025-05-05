@@ -43,4 +43,8 @@ public class ErrorMessagesUtil {
         return "No purchases found for product " + product;
     }
 
+    public static String userHasNotPosts(UUID sellerId) {
+        return "User " + sellerId + " has no posts.";
+    }
+
 }

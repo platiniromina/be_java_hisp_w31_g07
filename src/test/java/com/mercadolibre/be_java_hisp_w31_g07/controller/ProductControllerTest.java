@@ -2,6 +2,7 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
@@ -20,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -156,6 +159,62 @@ class ProductControllerTest {
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.postNotFound(nonExistentPostId));
     }
 
+    @Test
+    @DisplayName("[SUCCESS] Get user posts average price")
+    void testGetAveragePromoPost() throws Exception {
+        Post post1 = PostFactory.createPost(sellerId, false);
+        Post post2 = PostFactory.createPost(sellerId, true);
+
+        User user = UserFactory.createUser(sellerId);
+        userRepository.save(user);
+
+        sellerRepository.save(SellerFactory.createSeller(sellerId));
+        postRepository.save(post1);
+        postRepository.save(post2);
+
+        BigDecimal price1 = getEffectivePrice(post1);
+        BigDecimal price2 = getEffectivePrice(post2);
+        BigDecimal average = price1.add(price2)
+                .divide(BigDecimal.valueOf(2), 1, RoundingMode.HALF_UP);
+
+        Double averagePrice = average.doubleValue();
+
+        SellerAveragePrice expected = new SellerAveragePrice(
+                user.getId(),
+                user.getUserName(),
+                averagePrice
+        );
+
+        String expectedResponse = JsonUtil.generateFromDto(expected);
+
+        ResultActions resultActions = performGetAveragePrice(sellerId, "/users/{userId}/average-post-price");
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get user posts average price - User has no posts")
+    void testGetAveragePromoPostPostsNotFound() throws Exception {
+        UUID nonExistentSellerId = UUID.randomUUID();
+
+        User user = UserFactory.createUser(nonExistentSellerId);
+        userRepository.save(user);
+        sellerRepository.save(SellerFactory.createSeller(nonExistentSellerId));
+
+        ResultActions resultActions = performGetAveragePrice(user.getId(), "/users/{userId}/average-post-price");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userHasNotPosts(user.getId()));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get user posts average price - User not found")
+    void testGetAveragePromoPostUserNotFound() throws Exception {
+        UUID nonExistentPostId = UUID.randomUUID();
+        ResultActions resultActions = performGetAveragePrice(nonExistentPostId, "/users/{userId}/average-post-price");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentPostId));
+    }
+
+
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(result ->
@@ -199,4 +258,20 @@ class ProductControllerTest {
         ).andDo(print());
     }
 
+    private ResultActions performGetAveragePrice(UUID sellerId, String path) throws Exception {
+        return mockMvc.perform(
+                get(path, sellerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+    }
+
+    private BigDecimal getEffectivePrice(Post post) {
+        BigDecimal price = BigDecimal.valueOf(post.getPrice());
+        if (Boolean.TRUE.equals(post.getHasPromo())) {
+            BigDecimal discount = BigDecimal.valueOf(post.getDiscount())
+                    .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+            return price.multiply(BigDecimal.ONE.subtract(discount));
+        }
+        return price;
+    }
 }
