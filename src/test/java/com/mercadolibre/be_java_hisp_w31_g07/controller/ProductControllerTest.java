@@ -91,15 +91,14 @@ class ProductControllerTest {
     @Test
     @DisplayName("[ERROR] Get promotion posts by seller - Seller has not posts with promo")
     void testGetSellerPromoPostsPostNotFound() throws Exception {
-        UUID nonExistentSellerId = UUID.randomUUID();
-        Post postSaved = PostFactory.createPost(nonExistentSellerId, false);
+        Post postSaved = PostFactory.createPost(sellerId, false);
 
-        userRepository.save(UserFactory.createUser(nonExistentSellerId));
-        sellerRepository.save(SellerFactory.createSeller(nonExistentSellerId));
+        userRepository.save(UserFactory.createUser(sellerId));
+        sellerRepository.save(SellerFactory.createSeller(sellerId));
         postRepository.save(postSaved);
 
-        ResultActions resultActions = performGetPromoPostList(nonExistentSellerId, "/products/promo-post/list");
-        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromotionPostFound(nonExistentSellerId));
+        ResultActions resultActions = performGetPromoPostList(sellerId, "/products/promo-post/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromotionPostFound(sellerId));
     }
 
     @Test
