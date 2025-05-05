@@ -122,10 +122,10 @@ public class PostService implements IPostService {
 
 
     @Override
-    public SellerAveragePrice findPricePerPosts(UUID userId) {
+    public SellerAveragePriceDto findPricePerPosts(UUID userId) {
         Double averagePrice = findAveragePrice(userId);
         UserDto user = postBridgeService.getUserById(userId);
-        return new SellerAveragePrice(
+        return new SellerAveragePriceDto(
                 userId,
                 user.getUserName(),
                 averagePrice);

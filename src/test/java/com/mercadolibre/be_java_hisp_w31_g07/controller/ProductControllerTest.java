@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePrice;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePriceDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
@@ -26,10 +26,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.List;
-import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -241,7 +241,7 @@ class ProductControllerTest {
 
         Double averagePrice = average.doubleValue();
 
-        SellerAveragePrice expected = new SellerAveragePrice(
+        SellerAveragePriceDto expected = new SellerAveragePriceDto(
                 user.getId(),
                 user.getUserName(),
                 averagePrice

@@ -107,5 +107,5 @@ public interface IPostService {
      * @param userId the ID of the seller whose post prices are to be averaged
      * @return a SellerAveragePrice object containing the seller's ID, username, and average post price
      */
-    SellerAveragePrice findPricePerPosts(UUID userId);
+    SellerAveragePriceDto findPricePerPosts(UUID userId);
 }
