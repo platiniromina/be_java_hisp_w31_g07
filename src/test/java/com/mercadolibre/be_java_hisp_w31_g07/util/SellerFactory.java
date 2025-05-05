@@ -1,5 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.util;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 
@@ -10,6 +12,7 @@ import java.util.UUID;
 public class SellerFactory {
 
     private static final int DEFAULT_FOLLOWER_COUNT = 0;
+    private static final String DEFAULT_USER_NAME = "testUser";
 
     public static Seller createSeller(UUID sellerId) {
         Seller seller = new Seller();
@@ -27,6 +30,23 @@ public class SellerFactory {
         return seller;
     }
 
+    public static SellerResponseDto createSellerResponseDto(UUID sellerId) {
+        SellerResponseDto seller = new SellerResponseDto();
+        seller.setId(sellerId);
+        seller.setFollowerCount(0);
+        seller.setFollowers(new ArrayList<>());
+        return seller;
+    }
+
+    public static SellerResponseDto createSellerResponseDtoFollowers(UUID sellerId, BuyerResponseDto follower) {
+        SellerResponseDto seller = new SellerResponseDto();
+        seller.setId(sellerId);
+        seller.setFollowerCount(1);
+        seller.setFollowers(List.of(follower));
+        seller.setUserName(DEFAULT_USER_NAME);
+        return seller;
+    }
+
     // --- Helper Method ---
 
     private static List<Buyer> generateFollowers(int count) {
@@ -37,6 +57,4 @@ public class SellerFactory {
         return followers;
     }
 }
-
-
 
