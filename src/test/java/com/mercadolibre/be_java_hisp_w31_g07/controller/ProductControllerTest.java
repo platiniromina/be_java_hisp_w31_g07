@@ -15,6 +15,7 @@ import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.BuyerRepository;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,6 +51,9 @@ class ProductControllerTest {
     private IPostRepository postRepository;
 
     @Autowired
+    private IPostService postService;
+
+    @Autowired
     private IUserRepository userRepository;
 
     @Autowired
@@ -58,6 +63,7 @@ class ProductControllerTest {
     private BuyerRepository buyerRepository;
 
     private Post post;
+    private Post post2;
     private UUID sellerId;
     private String userName;
     private Buyer buyer;
@@ -71,14 +77,70 @@ class ProductControllerTest {
         sellerWithNoPosts = SellerFactory.createSeller(null);
         sellerWithPosts = SellerFactory.createSeller(null);
         post = PostFactory.createPost(sellerWithPosts.getId(), false);
+        post.setDate(LocalDate.now().minusDays(2));
+        post2 = PostFactory.createPost(sellerWithPosts.getId(), false);
+        post2.setDate(LocalDate.now());
         User user = UserFactory.createUser(sellerWithPosts.getId());
         userName = user.getUserName();
         buyer = BuyerFactory.createBuyer(null);
 
         postRepository.save(post);
+        postRepository.save(post2);
         sellerRepository.save(sellerWithPosts);
         userRepository.save(user);
         buyerRepository.save(buyer);
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get sorted posts from followed sellers - ASC")
+    void testGetSortedPostsFromFollowedSellersAsc() throws Exception {
+        buyer.setFollowed(List.of(sellerWithPosts));
+        buyerRepository.save(buyer);
+
+        String expectedResponse = JsonUtil.generateFromDto(Map.of(
+                "user_id", buyer.getId(),
+                "posts", List.of(post2, post) // orden ascendente: viejo primero
+        ));
+
+        mockMvc.perform(get("/products/followed/{userId}/sorted", buyer.getId())
+                        .param("order", "date_asc")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedResponse));
+    }
+    @Test
+    @DisplayName("[SUCCESS] Get sorted posts from followed sellers - DESC")
+    void testGetSortedPostsFromFollowedSellersDesc() throws Exception {
+        buyer.setFollowed(List.of(sellerWithPosts));
+        buyerRepository.save(buyer);
+
+        String expectedResponse = JsonUtil.generateFromDto(Map.of(
+                "user_id", buyer.getId(),
+                "posts", List.of(post, post2) // orden ascendente: viejo primero
+        ));
+
+        mockMvc.perform(get("/products/followed/{userId}/sorted", buyer.getId())
+                        .param("order", "date_asc")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get sorted posts from followed sellers - Invalid order")
+    void testGetSortedPostsFromFollowedSellersInvalidOrder() throws Exception {
+        buyer.setFollowed(List.of(sellerWithPosts));
+        buyerRepository.save(buyer);
+        String invalidOrder = "invalid_order";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/products/followed/{userId}/sorted", buyer.getId())
+                        .param("order", invalidOrder)  // Parámetro "order" inválido
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
     }
 
     @Test
