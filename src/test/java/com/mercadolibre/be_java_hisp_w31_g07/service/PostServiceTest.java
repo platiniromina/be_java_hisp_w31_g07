@@ -105,7 +105,7 @@ class PostServiceTest {
     @DisplayName("[SUCCESS] Sort post Desc")
     void testSortPostsByDateDesc() {
         when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
-        when(postRepository.findLatestPostsFromSellers(any()))
+        when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
                 .thenReturn(List.of(post, post2));
 
         doReturn(List.of(postResponseDto, postResponseDto2))
