@@ -1,5 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.BuyerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
@@ -24,9 +26,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,11 +47,17 @@ class FollowControllerTest {
     private MockMvc mockMvc;
 
     private Seller seller;
+    private SellerResponseDto sellerWithBuyerFollowerDto;
+    private BuyerResponseDto buyerWithFollowedSellerDto;
     private Buyer buyer;
     private Seller sellerWithFollowers;
     private User userWithFollowers;
     private Seller sellerWithBuyerFollower;
     private Buyer buyerWithFollowedSeller;
+    private User userSellerWithBuyerFollower;
+    private User userBuyerWithFollowedSeller;
+    private BuyerResponseDto buyerWithFollowedSellerList;
+    private SellerResponseDto sellerWithBuyerDto;
 
     @BeforeEach
     void setUp() {
@@ -61,14 +67,27 @@ class FollowControllerTest {
         sellerWithBuyerFollower = SellerFactory.createSeller(null);
         buyerWithFollowedSeller = BuyerFactory.createBuyer(null);
 
+        buyerWithFollowedSellerDto = BuyerFactory.createBuyerResponseDto(buyerWithFollowedSeller.getId());
+        sellerWithBuyerFollowerDto = SellerFactory.createSellerResponseDtoFollowers(sellerWithBuyerFollower.getId(), buyerWithFollowedSellerDto);
+
+        sellerWithBuyerDto = SellerFactory.createSellerResponseDto(sellerWithBuyerFollower.getId());
+        buyerWithFollowedSellerList = BuyerFactory.createBuyerResponseDtoFollowed(buyerWithFollowedSeller.getId(), sellerWithBuyerFollowerDto);
+
+        userRepository.save(UserFactory.createUser(sellerWithBuyerFollower.getId()));
+
         sellerWithBuyerFollower.addFollower(buyerWithFollowedSeller);
         buyerWithFollowedSeller.addFollowedSeller(sellerWithBuyerFollower);
+
+        userSellerWithBuyerFollower = UserFactory.createUser(sellerWithBuyerFollower.getId());
+        userBuyerWithFollowedSeller = UserFactory.createUser(buyerWithFollowedSeller.getId());
 
         sellerWithFollowers = SellerFactory.createSellerWithFollowers(3);
         userWithFollowers = UserFactory.createUser(sellerWithFollowers.getId());
 
         sellerRepository.save(sellerWithFollowers);
         userRepository.save(userWithFollowers);
+        userRepository.save(userSellerWithBuyerFollower);
+        userRepository.save(userBuyerWithFollowedSeller);
 
         sellerRepository.save(seller);
         buyerRepository.save(buyer);
@@ -177,6 +196,70 @@ class FollowControllerTest {
         UUID buyerId = UUID.randomUUID();
         ResultActions resultActions = performUnfollow(buyerId, seller.getId());
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(buyerId));
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get Followers List")
+    void testFindFollowers() throws Exception {
+        UUID sellerId = userSellerWithBuyerFollower.getId();
+
+        ResultActions resultActions = performGet(sellerId, "/users/{userId}/followers/list");
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followers[0].user_id").value(sellerWithBuyerFollower.getFollowers().get(0).getId().toString()))
+                .andExpect(jsonPath("$.followers[0].user_name").value(sellerWithBuyerFollowerDto.getFollowers().get(0).getUserName()))
+                .andExpect(jsonPath("$.user_id").value(sellerId.toString()))
+                .andExpect(jsonPath("$.user_name").value(userWithFollowers.getUserName()));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Followers List - Seller not found")
+    void testFindFollowersSellerNotFound() throws Exception {
+        UUID sellerId = UUID.randomUUID();
+        ResultActions resultActions = performGet(sellerId, "/users/{userId}/followers/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(sellerId));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Followers List - User not found")
+    void testFindFollowersUserNotFound() throws Exception {
+        Seller sellerRandom = SellerFactory.createSeller(UUID.randomUUID());
+        sellerRepository.save(sellerRandom);
+
+        ResultActions resultActions = performGet(sellerRandom.getId(), "/users/{userId}/followers/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(sellerRandom.getId()));
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get Followers List")
+    void testFindFollowed() throws Exception {
+        UUID buyerId = buyerWithFollowedSeller.getId();
+
+        ResultActions resultActions = performGet(buyerId, "/users/{userId}/followed/list");
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followed[0].user_id").value(buyerWithFollowedSeller.getFollowed().get(0).getId().toString()))
+                .andExpect(jsonPath("$.followed[0].user_name").value(buyerWithFollowedSellerList.getFollowed().get(0).getUserName()))
+                .andExpect(jsonPath("$.user_id").value(buyerId.toString()))
+                .andExpect(jsonPath("$.user_name").value(userWithFollowers.getUserName()));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Followers List - Buyer not found")
+    void testFindFollowedBuyerNotFound() throws Exception {
+        UUID buyerId = UUID.randomUUID();
+        ResultActions resultActions = performGet(buyerId, "/users/{userId}/followers/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(buyerId));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get Followed List - User not found")
+    void testFindFollowedsUserNotFound() throws Exception {
+        Buyer buyerRandom = BuyerFactory.createBuyer(UUID.randomUUID());
+        buyerRepository.save(buyerRandom);
+
+        ResultActions resultActions = performGet(buyerRandom.getId(), "/users/{userId}/followed/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(buyerRandom.getId()));
     }
 
     private ResultActions performFollow(UUID buyerId, UUID sellerId) throws Exception {
