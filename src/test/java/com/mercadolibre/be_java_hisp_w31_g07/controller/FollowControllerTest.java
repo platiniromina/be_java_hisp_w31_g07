@@ -48,8 +48,8 @@ class FollowControllerTest {
 
     private Seller seller;
     private SellerResponseDto sellerWithBuyerFollowerDto;
+    private BuyerResponseDto buyerWithFollowedSellerDto;
     private Buyer buyer;
-    private BuyerResponseDto followerDto;
     private Seller sellerWithFollowers;
     private User userWithFollowers;
     private Seller sellerWithBuyerFollower;
@@ -64,7 +64,8 @@ class FollowControllerTest {
 
         sellerWithBuyerFollower = SellerFactory.createSeller(null);
         buyerWithFollowedSeller = BuyerFactory.createBuyer(null);
-        BuyerResponseDto buyerWithFollowedSellerDto = BuyerFactory.createBuyerResponseDto(buyerWithFollowedSeller.getId());
+
+        buyerWithFollowedSellerDto = BuyerFactory.createBuyerResponseDto(buyerWithFollowedSeller.getId());
         sellerWithBuyerFollowerDto = SellerFactory.createSellerResponseDtoFollowers(sellerWithBuyerFollower.getId(), buyerWithFollowedSellerDto);
 
         sellerWithBuyerFollower.addFollower(buyerWithFollowedSeller);
