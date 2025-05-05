@@ -1,5 +1,6 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
@@ -47,15 +48,33 @@ class FollowControllerTest {
 
     private Seller seller;
     private Buyer buyer;
+    private Buyer buyerA;
+    private Buyer buyerB;
     private Seller sellerWithFollowers;
     private User userWithFollowers;
+    private User userBuyer;
+    private User userSeller;
+    private User userBuyerA;
+    private User userBuyerB;
+    private UserDto userBuyerADto;
+    private UserDto userBuyerBDto;
     private Seller sellerWithBuyerFollower;
     private Buyer buyerWithFollowedSeller;
 
     @BeforeEach
     void setUp() {
         seller = SellerFactory.createSeller(null);
+        userSeller = UserFactory.createUser(seller.getId());
+
         buyer = BuyerFactory.createBuyer(null);
+
+        userBuyerA = UserFactory.createUser(null);
+        buyerA = BuyerFactory.createBuyer(userBuyerA.getId());
+        userBuyerADto = UserFactory.createUserDto(userBuyerA.getId());
+
+        userBuyerB = UserFactory.createUser(null);
+        buyerB = BuyerFactory.createBuyer(userBuyerB.getId());
+        userBuyerBDto = UserFactory.createUserDto(userBuyerB.getId());
 
         sellerWithBuyerFollower = SellerFactory.createSeller(null);
         buyerWithFollowedSeller = BuyerFactory.createBuyer(null);
@@ -68,13 +87,84 @@ class FollowControllerTest {
 
         sellerRepository.save(sellerWithFollowers);
         userRepository.save(userWithFollowers);
+        userRepository.save(userSeller);
 
         sellerRepository.save(seller);
         buyerRepository.save(buyer);
 
         sellerRepository.save(sellerWithBuyerFollower);
         buyerRepository.save(buyerWithFollowedSeller);
+
     }
+    @Test
+    @DisplayName("[SUCCESS] Get sorted followers in ascending order")
+    void testGetSortedFollowersAsc() throws Exception {
+        userSeller.setUserName("C");
+        userBuyerA.setUserName("A");
+        userBuyerB.setUserName("B");
+
+        userRepository.save(userSeller);
+        userRepository.save(userBuyerA);
+        userRepository.save(userBuyerB);
+
+        seller.addFollower(buyerA);
+        seller.addFollower(buyerB);
+
+        String order = "name_asc";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/{sellerId}/followers", seller.getId())
+                        .param("order", order)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followers[0].user_name").value("A"))
+                .andExpect(jsonPath("$.followers[1].user_name").value("B"));
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] Get sorted followers in descending order")
+    void testGetSortedFollowersDesc() throws Exception {
+        userSeller.setUserName("C");
+        userBuyerA.setUserName("A");
+        userBuyerB.setUserName("B");
+
+        userRepository.save(userSeller);
+        userRepository.save(userBuyerA);
+        userRepository.save(userBuyerB);
+
+        seller.addFollower(buyerA);
+        seller.addFollower(buyerB);
+
+        String order = "name_desc";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/{sellerId}/followers", seller.getId())
+                        .param("order", order)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.followers[0].user_name").value("B"))
+                .andExpect(jsonPath("$.followers[1].user_name").value("A"));
+    }
+    @Test
+    @DisplayName("[ERROR] Get sorted followers with invalid order")
+    void testGetSortedFollowersInvalidOrder() throws Exception {
+        String invalidOrder = "invalid_order";
+
+        ResultActions resultActions = mockMvc.perform(
+                get("/{sellerId}/followers", seller.getId())
+                        .param("order", invalidOrder)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isBadRequest())
+                // Aquí cambiamos el mensaje esperado para que coincida con el que realmente devuelve el GlobalExceptionHandler
+                .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
+    }
+
 
     @Test
     @DisplayName("[SUCCESS] Follow a seller")
