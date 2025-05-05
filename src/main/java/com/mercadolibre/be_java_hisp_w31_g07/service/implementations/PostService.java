@@ -148,13 +148,13 @@ public class PostService implements IPostService {
 
     private List<UUID> getFollowedSellerIdsOrThrow(UUID buyerId) {
         List<Seller> sellers = postBridgeService.getFollowed(buyerId);
-        throwIfEmpty(sellers, "The buyer is not following any sellers");
+        throwIfEmpty(sellers, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyerId));
         return sellers.stream().map(Seller::getId).toList();
     }
 
     private List<Post> getPromoPostsOrThrow(UUID userId) {
         List<Post> posts = postRepository.findHasPromo(userId);
-        throwIfEmpty(posts, "No promotional posts found for user: " + userId);
+        throwIfEmpty(posts, ErrorMessagesUtil.noPromotionPostFound(userId));
         return posts;
     }
 
