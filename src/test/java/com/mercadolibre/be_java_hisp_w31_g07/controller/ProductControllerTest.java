@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Buyer;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
@@ -73,6 +74,52 @@ class ProductControllerTest {
         userRepository.save(user);
         buyerRepository.save(buyer);
     }
+
+    @Test
+    @DisplayName("[SUCCESS] Get promotion posts by seller")
+    void testGetSellerPromoPostsSuccess() throws Exception {
+        Post postSaved = PostFactory.createPost(sellerId, true);
+
+        userRepository.save(UserFactory.createUser(sellerId));
+        sellerRepository.save(SellerFactory.createSeller(sellerId));
+        postRepository.save(postSaved);
+
+        PostResponseDto postResponseDto = PostFactory.createPostResponseDto(
+                postSaved.getSellerId(), postSaved.getId(), true
+        );
+
+        UserPostResponseDto expectedDto = UserFactory.createUserPostResponseDto(sellerId);
+        expectedDto.setPostList(List.of(postResponseDto));
+
+        String expectedResponse = JsonUtil.generateFromDto(expectedDto);
+
+        ResultActions resultActions = performGetPromoPostList(sellerId, "/products/promo-post/list");
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get promotion posts by seller - Seller has not posts with promo")
+    void testGetSellerPromoPostsPostNotFound() throws Exception {
+        Post postSaved = PostFactory.createPost(sellerId, false);
+
+        userRepository.save(UserFactory.createUser(sellerId));
+        sellerRepository.save(SellerFactory.createSeller(sellerId));
+        postRepository.save(postSaved);
+
+        ResultActions resultActions = performGetPromoPostList(sellerId, "/products/promo-post/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromotionPostFound(sellerId));
+    }
+
+    @Test
+    @DisplayName("[ERROR] Get promotion posts by seller - Seller not found")
+    void testGetSellerPromoPostsSellerNotFound() throws Exception {
+        UUID nonExistentSellerId = UUID.randomUUID();
+        ResultActions resultActions = performGetPromoPostList(nonExistentSellerId, "/products/promo-post/list");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
+    }
+
 
     @Test
     @DisplayName("[SUCCESS] Get user promo posts count")
@@ -212,7 +259,7 @@ class ProductControllerTest {
         ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyer.getId()));
     }
-
+  
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(result ->
@@ -253,6 +300,14 @@ class ProductControllerTest {
                 post(path)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.generateFromDto(postDto))
+        ).andDo(print());
+    }
+
+    private ResultActions performGetPromoPostList(UUID sellerId, String path) throws Exception {
+        return mockMvc.perform(
+                get(path)
+                        .param("user_id", sellerId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
     }
 
