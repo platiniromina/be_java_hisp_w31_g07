@@ -88,35 +88,36 @@ class PostServiceTest {
         when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
         when(postRepository.findLatestPostsFromSellers(List.of(sellerId)))
                 .thenReturn(List.of(post2, post));
-        when(mapper.fromPostListToPostResponseDtoList(any()))
-                .thenReturn(List.of(postResponseDto2, postResponseDto));
+
+        doReturn(List.of(postResponseDto2, postResponseDto))
+                .when(mapper).fromPostListToPostResponseDtoList(List.of(post2, post)); // Mantén el mismo orden
 
         FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
 
         assertEquals(List.of(postResponseDto2, postResponseDto), result.getPosts());
 
         verify(postBridgeService).getFollowed(buyerId);
-        verify(postRepository).findLatestPostsFromSellers(any());
-        verify(mapper).fromPostListToPostResponseDtoList(any());
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerId));
+        verify(mapper).fromPostListToPostResponseDtoList(List.of(post2, post));
         verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
     }
-
     @Test
     @DisplayName("[SUCCESS] Sort post Desc")
     void testSortPostsByDateDesc() {
         when(postBridgeService.getFollowed(buyerId)).thenReturn(List.of(seller));
         when(postRepository.findLatestPostsFromSellers(any()))
                 .thenReturn(List.of(post, post2));
-        when(mapper.fromPostListToPostResponseDtoList(any()))
-                .thenReturn(List.of(postResponseDto, postResponseDto2));
 
-        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_asc");
+        doReturn(List.of(postResponseDto, postResponseDto2))
+                .when(mapper).fromPostListToPostResponseDtoList(List.of(post, post2));
+
+        FollowersPostsResponseDto result = postService.sortPostsByDate(buyerId, "date_desc");
 
         assertEquals(List.of(postResponseDto, postResponseDto2), result.getPosts());
 
         verify(postBridgeService).getFollowed(buyerId);
-        verify(postRepository).findLatestPostsFromSellers(any());
-        verify(mapper).fromPostListToPostResponseDtoList(any());
+        verify(postRepository).findLatestPostsFromSellers(List.of(sellerId));
+        verify(mapper).fromPostListToPostResponseDtoList(List.of(post, post2));
         verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
     }
 
