@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class PostFactory {
 
-    private static final String FIXED_DATE = "30-04-2025";
+    private static final String FIXED_DATE = "30-01-2025";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final LocalDate DEFAULT_DATE = LocalDate.parse(FIXED_DATE, DATE_FORMATTER);
     private static final int DEFAULT_CATEGORY = 1;

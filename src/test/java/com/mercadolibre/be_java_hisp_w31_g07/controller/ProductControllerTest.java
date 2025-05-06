@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +63,8 @@ class ProductControllerTest {
     private BuyerRepository buyerRepository;
 
     private Post post;
-    private Post post2;
+    private Post latestPost1;
+    private Post latestPost2;
     private UUID sellerId;
     private String userName;
     private Buyer buyer;
@@ -76,13 +78,17 @@ class ProductControllerTest {
         sellerWithNoPosts = SellerFactory.createSeller(null);
         sellerWithPosts = SellerFactory.createSeller(null);
         post = PostFactory.createPost(sellerWithPosts.getId(), false);
-        post2 = PostFactory.createPost(sellerWithPosts.getId(), false);
+        latestPost1 = PostFactory.createPost(sellerWithPosts.getId(), false);
+        latestPost1.setDate(LocalDate.now().minusDays(2));
+        latestPost2 = PostFactory.createPost(sellerWithPosts.getId(), false);
+        latestPost2.setDate(LocalDate.now());
         User user = UserFactory.createUser(sellerWithPosts.getId());
         userName = user.getUserName();
         buyer = BuyerFactory.createBuyer(null);
 
         postRepository.save(post);
-        postRepository.save(post2);
+        postRepository.save(latestPost1);
+        postRepository.save(latestPost2);
         sellerRepository.save(sellerWithPosts);
         userRepository.save(user);
         buyerRepository.save(buyer);
@@ -96,7 +102,7 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(Map.of(
                 "user_id", buyer.getId(),
-                "posts", List.of(post2, post)
+                "posts", List.of(latestPost2, latestPost1)
         ));
 
         ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", "date_asc");
@@ -112,7 +118,7 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(Map.of(
                 "user_id", buyer.getId(),
-                "posts", List.of(post, post2)
+                "posts", List.of(latestPost1, latestPost2)
         ));
 
         ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", "date_desc");
@@ -129,6 +135,9 @@ class ProductControllerTest {
         String invalidOrder = "invalid_order";
 
         ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", invalidOrder);
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
     }
 
         @Test
@@ -338,7 +347,7 @@ class ProductControllerTest {
         mapper.registerModule(new JavaTimeModule());
         String expected = mapper.writeValueAsString(Map.of(
                 "user_id", buyer.getId(),
-                "posts", List.of(post, post2)
+                "posts", List.of(latestPost1, latestPost2)
         ));
 
         ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
