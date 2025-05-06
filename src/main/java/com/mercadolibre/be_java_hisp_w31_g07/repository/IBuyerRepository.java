@@ -14,7 +14,7 @@ public interface IBuyerRepository {
      * @return an Optional containing the Buyer if found, or an empty Optional if no
      * match is found
      */
-    public Optional<Buyer> findBuyerById(UUID userId);
+    Optional<Buyer> findBuyerById(UUID userId);
 
     /**
      * Adds the given seller to the buyer's list of followed sellers.
@@ -25,7 +25,7 @@ public interface IBuyerRepository {
      * Optional if no
      * match is found
      */
-    public Optional<Buyer> addSellerToFollowedList(Seller seller, UUID buyerId);
+    Optional<Buyer> addSellerToFollowedList(Seller seller, UUID buyerId);
 
     /**
      * Checks if a buyer is following a specific seller.
@@ -35,7 +35,7 @@ public interface IBuyerRepository {
      * @return {@code true} if the buyer is following the seller, {@code false}
      * otherwise.
      */
-    public boolean buyerIsFollowingSeller(Seller seller, UUID buyerId);
+    boolean buyerIsFollowingSeller(Seller seller, UUID buyerId);
 
     /**
      * Removes the seller from the buyer's followed list.
@@ -43,5 +43,12 @@ public interface IBuyerRepository {
      * @param seller  The seller to be removed from the buyer's followed list.
      * @param buyerId The unique identifier of the buyer.
      */
-    public void removeSellerFromFollowedList(Seller seller, UUID buyerId);
+    void removeSellerFromFollowedList(Seller seller, UUID buyerId);
+
+    /**
+     * Save a buyer in the repository.
+     *
+     * @param buyer buyer to save.
+     */
+    void save(Buyer buyer);
 }

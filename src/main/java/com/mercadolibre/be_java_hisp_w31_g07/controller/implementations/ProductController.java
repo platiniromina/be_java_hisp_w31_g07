@@ -2,12 +2,8 @@ package com.mercadolibre.be_java_hisp_w31_g07.controller.implementations;
 
 import com.mercadolibre.be_java_hisp_w31_g07.controller.IProductController;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
 import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +15,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductController implements IProductController {
 
-    private final IProductService productService;
     private final IPostService postService;
 
     @Override
     public ResponseEntity<UserPostResponseDto> getUserPromoPosts(UUID userId) {
-        return new ResponseEntity<>(productService.getSellerPromoPosts(userId), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getSellerPromoPosts(userId), HttpStatus.OK);
     }
 
     @Override
@@ -55,5 +50,10 @@ public class ProductController implements IProductController {
     @Override
     public ResponseEntity<PostResponseDto> getPost(UUID postId) {
         return new ResponseEntity<>(postService.findPost(postId), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<SellerAveragePriceDto> getAveragePrice(UUID userId) {
+        return new ResponseEntity<>(postService.findPricePerPosts(userId), HttpStatus.OK);
     }
 }

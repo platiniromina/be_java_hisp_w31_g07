@@ -13,8 +13,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellerFollowersCountResponseDto {
-    private UUID user_id;
-    private String user_name;
+    @JsonProperty("user_id")
+    private UUID userId;
+    @JsonProperty("user_name")
+    private String userName;
     @JsonProperty("followers_count")
     private Integer followersCount;
 }

@@ -1,33 +1,34 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
+import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.*;
-import com.mercadolibre.be_java_hisp_w31_g07.util.GenericObjectMapper;
-import com.mercadolibre.be_java_hisp_w31_g07.util.IdUtils;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostBridgeService;
+import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
+import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
+import com.mercadolibre.be_java_hisp_w31_g07.util.PostMapper;
+import com.mercadolibre.be_java_hisp_w31_g07.util.SortUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
+
+import static com.mercadolibre.be_java_hisp_w31_g07.util.ValidationUtil.throwIfEmpty;
 
 @Service
 @RequiredArgsConstructor
 public class PostService implements IPostService {
+
     private final IPostRepository postRepository;
-    private final ObjectProvider<ISellerService> sellerServiceProvider;
-    private final ObjectProvider<IProductService> productServiceProvider;
-    private final ObjectProvider<IBuyerService> buyerServiceProvider;
-    private final IUserService userService;
-    private final GenericObjectMapper mapper;
+    private final IPostBridgeService postBridgeService;
+    private final PostMapper postMapper;
 
     // ------------------------------
     // Public methods
@@ -35,44 +36,60 @@ public class PostService implements IPostService {
 
     @Override
     public PostResponseDto createPost(PostDto newPost) {
-        Post post = buildPostFromDto(newPost);
+        postBridgeService.validateSellerExists(newPost.getSellerId());
+        Post post = postMapper.fromPostDtoToPost(newPost);
         savePostAndProduct(post);
-        return mapper.map(post, PostResponseDto.class);
+        return postMapper.fromPostToPostResponseDto(post);
     }
 
     @Override
     public PostResponseDto findPost(UUID postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BadRequest("Post " + postId + " not found"));
-
-        return mapper.map(post, PostResponseDto.class);
+                .orElseThrow(() -> new BadRequest(ErrorMessagesUtil.postNotFound(postId)));
+        return postMapper.fromPostToPostResponseDto(post);
     }
 
     @Override
     public List<PostResponseDto> findUserPromoPosts(UUID userId) {
-        validateExistingSeller(userId);
-        List<Post> postList = getPromoPostsOrThrow(userId);
-        return mapPostsToDto(postList);
+        postBridgeService.validateSellerExists(userId);
+        return postMapper.fromPostListToPostResponseDtoList(getPromoPostsOrThrow(userId));
     }
 
     @Override
-    public Double findAveragePrice(UUID userId) {
-        return postRepository.findPostsBySellerId(userId).stream().map(post -> {
-                    double finalPrice = post.getPrice();
-                    if ((post.getHasPromo())) {
-                        post.setPrice(finalPrice * (1 - post.getDiscount() / 100.0));
-                    }
-                    return post;
-                })
-                .mapToDouble(Post::getPrice)
-                .average().orElseThrow(() -> new BadRequest("User " + userId + " has no posts."));
+    public UserPostResponseDto getSellerPromoPosts(UUID sellerId) {
+        List<PostResponseDto> userPromoPosts = findUserPromoPosts(sellerId);
+        UserDto user = postBridgeService.getUserById(sellerId);
+
+        return new UserPostResponseDto(
+                user.getId(),
+                user.getUserName(),
+                userPromoPosts);
     }
+
+    @Override
+    public Double findAveragePrice(UUID sellerId) {
+        postBridgeService.validateSellerExists(sellerId);
+
+        List<Post> posts = postRepository.findPostsBySellerId(sellerId);
+        throwIfEmpty(posts, ErrorMessagesUtil.userHasNotPosts(sellerId));
+
+        double average = posts.stream()
+                .mapToDouble(this::getEffectivePrice)
+                .average()
+                .orElseThrow(() -> new BadRequest(ErrorMessagesUtil.noPurchasesForProduct(sellerId.toString())));
+
+        BigDecimal roundedAverage = BigDecimal.valueOf(average)
+                .setScale(1, RoundingMode.HALF_UP);
+
+        return roundedAverage.doubleValue();
+    }
+
 
     @Override
     public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId) {
-        validateExistingSeller(sellerId);
+        postBridgeService.validateSellerExists(sellerId);
         Integer promoPostsCount = postRepository.findHasPromo(sellerId).size();
-        String sellerName = userService.findById(sellerId).getUserName();
+        String sellerName = postBridgeService.getUserName(sellerId);
 
         return new SellerPromoPostsCountResponseDto(
                 sellerId,
@@ -84,22 +101,25 @@ public class PostService implements IPostService {
     public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId) {
         List<UUID> followedSellerIds = getFollowedSellerIdsOrThrow(buyerId);
         List<Post> posts = postRepository.findLatestPostsFromSellers(followedSellerIds);
-        List<PostResponseDto> postDtos = mapPostsToDto(posts);
-        return new FollowersPostsResponseDto(buyerId, postDtos);
+        List<PostResponseDto> postDto = postMapper.fromPostListToPostResponseDtoList(posts);
+        return new FollowersPostsResponseDto(buyerId, postDto);
     }
 
     @Override
     public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order) {
         FollowersPostsResponseDto postsResponse = getLatestPostsFromSellers(buyerId);
-        List<PostResponseDto> sortedPosts = sortPosts(postsResponse.getPosts(), order);
+        List<PostResponseDto> sortedPosts = SortUtil.sortByDate(postsResponse.getPosts(), order);
         return new FollowersPostsResponseDto(buyerId, sortedPosts);
     }
 
     @Override
-    public PostDto findProductByPurchase(String product) {
-        Post post = postRepository.findProductByPurchase(product)
-                .orElseThrow(() -> new BadRequest("No purchase found for product: " + product));
-        return mapper.map(post, PostDto.class);
+    public SellerAveragePriceDto findPricePerPosts(UUID userId) {
+        Double averagePrice = findAveragePrice(userId);
+        UserDto user = postBridgeService.getUserById(userId);
+        return new SellerAveragePriceDto(
+                userId,
+                user.getUserName(),
+                averagePrice);
     }
 
     // ------------------------------
@@ -107,68 +127,26 @@ public class PostService implements IPostService {
     // ------------------------------
 
     private void savePostAndProduct(Post post) {
-        productServiceProvider.getObject().createProduct(post.getProduct());
+        postBridgeService.createProduct(post.getProduct());
         postRepository.createPost(post);
     }
 
-    private List<PostResponseDto> sortPosts(List<PostResponseDto> posts, String order) {
-        return switch (order.toLowerCase()) {
-            case "date_desc" -> posts.stream()
-                    .sorted(Comparator.comparing(PostResponseDto::getDate).reversed())
-                    .toList();
-            case "date_asc" -> posts.stream()
-                    .sorted(Comparator.comparing(PostResponseDto::getDate))
-                    .toList();
-            default -> throw new BadRequest("Invalid sorting parameter: " + order +
-                    ". Please use 'date_asc' or 'date_desc'.");
-        };
+    private double getEffectivePrice(Post post) {
+        return Boolean.TRUE.equals(post.getHasPromo())
+                ? post.getPrice() * (1 - post.getDiscount() / 100.0)
+                : post.getPrice();
     }
-
-    // ------------------------------
-    // Validation Methods
-    // ------------------------------
-
-    private void validateExistingSeller(UUID sellerId) {
-        sellerServiceProvider.getObject().findSellerById(sellerId);
-    }
-
-    // ------------------------------
-    // Data Fetching Methods
-    // ------------------------------
 
     private List<UUID> getFollowedSellerIdsOrThrow(UUID buyerId) {
-        List<SellerResponseDto> sellers = buyerServiceProvider.getObject().findFollowed(buyerId).getFollowed();
-
-        if (sellers.isEmpty()) {
-            throw new BadRequest("The buyer is not following any sellers");
-        }
-
-        return sellers.stream()
-                .map(SellerResponseDto::getId)
-                .toList();
+        List<Seller> sellers = postBridgeService.getFollowed(buyerId);
+        throwIfEmpty(sellers, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyerId));
+        return sellers.stream().map(Seller::getId).toList();
     }
 
     private List<Post> getPromoPostsOrThrow(UUID userId) {
         List<Post> posts = postRepository.findHasPromo(userId);
-
-        if (posts.isEmpty()) {
-            throw new BadRequest("No promotional posts found for user: " + userId);
-        }
+        throwIfEmpty(posts, ErrorMessagesUtil.noPromotionPostFound(userId));
         return posts;
     }
 
-    // ------------------------------
-    // Data Transformation Methods
-    // ------------------------------
-
-    private Post buildPostFromDto(PostDto dto) {
-        validateExistingSeller(dto.getSellerId());
-        Post post = mapper.map(dto, Post.class);
-        post.setGeneratedId(IdUtils.generateId());
-        return post;
-    }
-
-    private List<PostResponseDto> mapPostsToDto(List<Post> posts) {
-        return mapper.mapList(posts, PostResponseDto.class);
-    }
 }

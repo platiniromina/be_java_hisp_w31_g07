@@ -1,9 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.FollowersPostsResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
-import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerPromoPostsCountResponseDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
 import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 
 import java.util.List;
@@ -19,7 +17,7 @@ public interface IPostService {
      * @throws BadRequest if the seller trying to create the post
      *                    does not exist
      */
-    public PostResponseDto createPost(PostDto newPost);
+    PostResponseDto createPost(PostDto newPost);
 
     /**
      * Find the user's promo posts
@@ -28,7 +26,7 @@ public interface IPostService {
      * @return list of Posts related with a user
      * @throws BadRequest if the seller doesn't have a post with discount
      */
-    public List<PostResponseDto> findUserPromoPosts(UUID userId);
+    List<PostResponseDto> findUserPromoPosts(UUID userId);
 
     /**
      * Find average price of a user's post
@@ -37,7 +35,7 @@ public interface IPostService {
      * @return average price related with a user.
      * @throws BadRequest if the seller doesn't have a post.
      */
-    public Double findAveragePrice(UUID userId);
+    Double findAveragePrice(UUID userId);
 
     /**
      * Returns the most recent posts from sellers followed by the given buyer.
@@ -45,7 +43,7 @@ public interface IPostService {
      *
      * @param buyerId the unique identifier of the buyer.
      */
-    public FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
+    FollowersPostsResponseDto getLatestPostsFromSellers(UUID buyerId);
 
     /**
      * Retrieves the count of promotional posts for a given seller.
@@ -56,7 +54,7 @@ public interface IPostService {
      * ID, username, and the count of promotional posts for the seller.
      * @throws BadRequest if the seller cannot be found.
      */
-    public SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
+    SellerPromoPostsCountResponseDto getPromoPostsCount(UUID sellerId);
 
     /**
      * Retrieves a post by its unique identifier.
@@ -65,7 +63,7 @@ public interface IPostService {
      * @return a {@link PostResponseDto} containing the post's details.
      * @throws BadRequest if the post with the given ID cannot be found.
      */
-    public PostResponseDto findPost(UUID postId);
+    PostResponseDto findPost(UUID postId);
 
     /**
      * Returns the posts from sellers followed by the given buyer, sorted by the
@@ -82,13 +80,23 @@ public interface IPostService {
      * followed by the buyer.
      * @throws IllegalArgumentException if the provided order is invalid.
      */
-    public FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
+    FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
+    
+    /**
+     * Retrieves a seller with a list of post with discount.
+     *
+     * @param userId the unique identifier of the seller to be retrieved
+     * @return a UserPostReponseObject object containing the seller's information
+     * and post.
+     * @throws BadRequest if the seller cannot be found
+     */
+    UserPostResponseDto getSellerPromoPosts(UUID userId);
 
     /**
-     * Retrieves purchase matching the products.
+     * Calculates the average price of posts made by a specific seller and returns it along with basic user information.
      *
-     * @param product product name that matches with a userProduct in a post.
-     * @return a PostDto.
+     * @param userId the ID of the seller whose post prices are to be averaged
+     * @return a SellerAveragePrice object containing the seller's ID, username, and average post price
      */
-    public PostDto findProductByPurchase(String product);
+    SellerAveragePriceDto findPricePerPosts(UUID userId);
 }

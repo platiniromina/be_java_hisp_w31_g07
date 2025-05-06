@@ -15,17 +15,15 @@ public interface ISellerRepository {
      * no
      * match is found
      */
-    public Optional<Seller> findSellerById(UUID userId);
+    Optional<Seller> findSellerById(UUID userId);
 
     /**
      * Adds the given buyer to the seller's list of followers.
      *
      * @param buyer    the buyer who wants to follow the seller
      * @param sellerId the ID of the seller to be followed
-     * @return an Optional containing the updated Seller if found, or empty if no
-     * seller with the given ID exists
      */
-    public Optional<Seller> addBuyerToFollowersList(Buyer buyer, UUID sellerId);
+    void addBuyerToFollowersList(Buyer buyer, UUID sellerId);
 
     /**
      * Checks if a given seller is being followed by a specific buyer.
@@ -35,7 +33,7 @@ public interface ISellerRepository {
      * @return {@code true} if the seller is being followed by the buyer,
      * {@code false} otherwise.
      */
-    public boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId);
+    boolean sellerIsBeingFollowedByBuyer(Buyer buyer, UUID sellerId);
 
     /**
      * Removes the buyer from the seller's list of followers.
@@ -43,5 +41,12 @@ public interface ISellerRepository {
      * @param buyer    The buyer to be removed from the seller's list of followers.
      * @param sellerId The unique identifier of the seller.
      */
-    public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId);
+    void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId);
+
+    /**
+     * Save a seller in the repository.
+     *
+     * @param seller seller to save.
+     */
+    void save(Seller seller);
 }
