@@ -1,7 +1,5 @@
 package com.mercadolibre.be_java_hisp_w31_g07.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.PostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.SellerAveragePriceDto;
@@ -22,10 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,9 +32,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -68,6 +61,8 @@ class ProductControllerTest {
     @Autowired
     private BuyerRepository buyerRepository;
 
+    private MockMvcUtil mockMvcUtil;
+
     private Post post;
     private Post latestPost1;
     private Post latestPost2;
@@ -76,12 +71,13 @@ class ProductControllerTest {
     private String userName;
 
     private Buyer buyer;
-    
+
     private Seller sellerWithPosts;
     private Seller sellerWithNoPosts;
 
     @BeforeEach
     void setUp() {
+        mockMvcUtil = new MockMvcUtil(mockMvc);
         Seller seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
         sellerWithNoPosts = SellerFactory.createSeller(null);
@@ -120,7 +116,11 @@ class ProductControllerTest {
                 "posts", List.of(latestPost2, latestPost1)
         ));
 
-        ResultActions resultActions = performGetWithParam(buyer.getId(), "date_asc");
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_SORTED_LIST,
+                Map.of("userId", buyer.getId().toString()),
+                Map.of("order", "date_asc")
+        );
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -137,7 +137,11 @@ class ProductControllerTest {
                 "posts", List.of(latestPost1, latestPost2)
         ));
 
-        ResultActions resultActions = performGetWithParam(buyer.getId(), "date_desc");
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_SORTED_LIST,
+                Map.of("userId", buyer.getId().toString()),
+                Map.of("order", "date_desc")
+        );
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -150,7 +154,11 @@ class ProductControllerTest {
         buyerRepository.save(buyer);
         String invalidOrder = "invalid_order";
 
-        ResultActions resultActions = performGetWithParam(buyer.getId(), invalidOrder);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_SORTED_LIST,
+                Map.of("userId", buyer.getId().toString()),
+                Map.of("order", invalidOrder)
+        );
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
@@ -174,7 +182,11 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(expectedDto);
 
-        ResultActions resultActions = performGetPromoPostList(sellerId);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_PROMO_POST_LIST,
+                Map.of(),
+                Map.of("user_id", sellerId.toString())
+        );
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -189,7 +201,12 @@ class ProductControllerTest {
         sellerRepository.save(SellerFactory.createSeller(sellerId));
         postRepository.save(postSaved);
 
-        ResultActions resultActions = performGetPromoPostList(sellerId);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_PROMO_POST_LIST,
+                Map.of(),
+                Map.of("user_id", sellerId.toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromotionPostFound(sellerId));
     }
 
@@ -197,7 +214,13 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get promotion posts by seller - Seller not found")
     void testGetSellerPromoPostsSellerNotFound() throws Exception {
         UUID nonExistentSellerId = UUID.randomUUID();
-        ResultActions resultActions = performGetPromoPostList(nonExistentSellerId);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_PROMO_POST_LIST,
+                Map.of(),
+                Map.of("user_id", nonExistentSellerId.toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
@@ -211,7 +234,11 @@ class ProductControllerTest {
                 new SellerPromoPostsCountResponseDto(sellerWithPosts.getId(), userName, 1)
         );
 
-        ResultActions resultActions = performGetPromoPostCount(sellerWithPosts.getId());
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_PROMO_POST_COUNT,
+                Map.of(),
+                Map.of("user_id", sellerWithPosts.getId().toString())
+        );
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -221,7 +248,13 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get user promo posts count - Seller not found")
     void testGetUserPromoPostsCountSellerNotFound() throws Exception {
         UUID nonExistentSellerId = UUID.randomUUID();
-        ResultActions resultActions = performGetPromoPostCount(nonExistentSellerId);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_PROMO_POST_COUNT,
+                Map.of(),
+                Map.of("user_id", nonExistentSellerId.toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
@@ -236,6 +269,7 @@ class ProductControllerTest {
         PostResponseDto response = JsonUtil
                 .fromJsonToDto(resultActions
                         .andReturn().getResponse().getContentAsString(), PostResponseDto.class);
+
         resultActions.andExpect(status().isOk());
         assertCreatedPost(response, postDto, postRepositorySizeBefore);
 
@@ -263,6 +297,7 @@ class ProductControllerTest {
         PostResponseDto response = JsonUtil
                 .fromJsonToDto(resultActions
                         .andReturn().getResponse().getContentAsString(), PostResponseDto.class);
+
         resultActions.andExpect(status().isOk());
         assertCreatedPost(response, postDto, postRepositorySizeBefore);
 
@@ -283,7 +318,12 @@ class ProductControllerTest {
     @DisplayName("[SUCCESS] Find post by ID")
     void testFindPostSuccess() throws Exception {
         String expectedResponse = JsonUtil.generateFromDto(PostFactory.createPostResponseDto(sellerWithPosts.getId(), post.getId(), false));
-        ResultActions resultActions = performGet(post.getId(), GET_POST_BY_ID);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_POST_BY_ID,
+                Map.of("postId", post.getId().toString())
+        );
+
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
@@ -292,7 +332,12 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Find post by ID - Post not found")
     void testFindPostNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
-        ResultActions resultActions = performGet(nonExistentPostId, GET_POST_BY_ID);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_POST_BY_ID,
+                Map.of("postId", nonExistentPostId.toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.postNotFound(nonExistentPostId));
     }
 
@@ -324,7 +369,10 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(expected);
 
-        ResultActions resultActions = performGet(sellerId, GET_USER_AVERAGE_PRICE);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_USER_AVERAGE_PRICE,
+                Map.of("userId", user.getId().toString())
+        );
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -339,7 +387,11 @@ class ProductControllerTest {
         userRepository.save(user);
         sellerRepository.save(SellerFactory.createSeller(nonExistentSellerId));
 
-        ResultActions resultActions = performGet(user.getId(), GET_USER_AVERAGE_PRICE);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_USER_AVERAGE_PRICE,
+                Map.of("userId", user.getId().toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userHasNotPosts(user.getId()));
     }
 
@@ -347,7 +399,12 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get user posts average price - User not found")
     void testGetAveragePromoPostUserNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
-        ResultActions resultActions = performGet(nonExistentPostId, GET_USER_AVERAGE_PRICE);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_USER_AVERAGE_PRICE,
+                Map.of("userId", nonExistentPostId.toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentPostId));
     }
 
@@ -359,14 +416,16 @@ class ProductControllerTest {
         sellerWithPosts.setFollowers(List.of(buyer));
         sellerWithPosts.incrementFollowerCount();
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        String expected = mapper.writeValueAsString(Map.of(
+        String expected = JsonUtil.generateFromDto(Map.of(
                 "user_id", buyer.getId(),
                 "posts", List.of(latestPost1, latestPost2)
         ));
 
-        ResultActions resultActions = performGet(buyer.getId(), GET_FOLLOWED_LIST);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_LIST,
+                Map.of("userId", buyer.getId().toString())
+        );
+
         resultActions.andExpect(status().isOk()).andExpect(content().json(expected));
     }
 
@@ -376,7 +435,12 @@ class ProductControllerTest {
         buyer.setFollowed(List.of(sellerWithNoPosts));
         sellerWithNoPosts.setFollowers(List.of(buyer));
         sellerWithNoPosts.incrementFollowerCount();
-        ResultActions resultActions = performGet(buyer.getId(), GET_FOLLOWED_LIST);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_LIST,
+                Map.of("userId", buyer.getId().toString())
+        );
+
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.user_id").value(buyer.getId().toString()))
                 .andExpect(jsonPath("$.posts").isEmpty());
@@ -386,14 +450,23 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
     void testGetLatestPostsFromSellersBuyerNotFound() throws Exception {
         UUID nonExistentBuyerId = UUID.randomUUID();
-        ResultActions resultActions = performGet(nonExistentBuyerId, GET_FOLLOWED_LIST);
+
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_LIST,
+                Map.of("userId", nonExistentBuyerId.toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(nonExistentBuyerId));
     }
 
     @Test
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
     void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() throws Exception {
-        ResultActions resultActions = performGet(buyer.getId(), GET_FOLLOWED_LIST);
+        ResultActions resultActions = mockMvcUtil.performGet(
+                GET_FOLLOWED_LIST,
+                Map.of("userId", buyer.getId().toString())
+        );
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyer.getId()));
     }
 
@@ -417,34 +490,9 @@ class ProductControllerTest {
         );
     }
 
-    private ResultActions performGet(UUID id, String path) throws Exception {
-        return performGetRequest(get(path, id));
-    }
-
-    private ResultActions performGetWithParam(UUID id, String paramValue) throws Exception {
-        return performGetRequest(get(GET_FOLLOWED_SORTED_LIST, id).param("order", paramValue));
-    }
-
-    private ResultActions performGetPromoPostCount(UUID sellerId) throws Exception {
-        return performGetRequest(get(GET_PROMO_POST_COUNT, post.getId()).param("user_id", sellerId.toString()));
-    }
-
-    private ResultActions performGetPromoPostList(UUID sellerId) throws Exception {
-        return performGetRequest(get(GET_PROMO_POST_LIST).param("user_id", sellerId.toString()));
-    }
 
     private ResultActions performPost(PostDto postDto, String path) throws Exception {
-        return mockMvc.perform(
-                post(path)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.generateFromDto(postDto))
-        ).andDo(print());
-    }
-
-    private ResultActions performGetRequest(MockHttpServletRequestBuilder builder) throws Exception {
-        return mockMvc.perform(
-                builder.contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        return mockMvcUtil.performPostRequest(path, Map.of(), postDto);
     }
 
     private BigDecimal getEffectivePrice(Post post) {

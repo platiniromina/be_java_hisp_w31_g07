@@ -8,31 +8,29 @@ import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IBuyerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.util.BuyerFactory;
-import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
-import com.mercadolibre.be_java_hisp_w31_g07.util.SellerFactory;
-import com.mercadolibre.be_java_hisp_w31_g07.util.UserFactory;
+import com.mercadolibre.be_java_hisp_w31_g07.util.*;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@RequiredArgsConstructor
 class FollowControllerTest {
     public static final String GET_SELLER_FOLLOWERS = "/{sellerId}/followers";
     public static final String GET_USER_FOLLOWERS_COUNT = "/users/{userId}/followers/count";
@@ -41,7 +39,7 @@ class FollowControllerTest {
 
     @Autowired
     private ISellerRepository sellerRepository;
-    
+
     @Autowired
     private IBuyerRepository buyerRepository;
 
@@ -50,6 +48,8 @@ class FollowControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    private MockMvcUtil mockMvcUtil;
 
     private Seller seller;
     private Seller sellerWithBuyerFollower;
@@ -72,6 +72,8 @@ class FollowControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvcUtil = new MockMvcUtil(mockMvc);
+
         seller = SellerFactory.createSeller(null);
         userSeller = UserFactory.createUser(seller.getId());
 
@@ -129,13 +131,11 @@ class FollowControllerTest {
 
         String order = "name_asc";
 
-        ResultActions resultActions = mockMvc.perform(
-                get(GET_SELLER_FOLLOWERS, seller.getId())
-                        .param("order", order)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        ResultActions result = mockMvcUtil.performGet(GET_SELLER_FOLLOWERS,
+                Map.of("sellerId", seller.getId().toString()),
+                Map.of("order", order));
 
-        resultActions.andExpect(status().isOk())
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.followers[0].user_name").value(userBuyerA.getUserName()))
                 .andExpect(jsonPath("$.followers[1].user_name").value(userBuyerB.getUserName()));
     }
@@ -156,13 +156,11 @@ class FollowControllerTest {
 
         String order = "name_desc";
 
-        ResultActions resultActions = mockMvc.perform(
-                get(GET_SELLER_FOLLOWERS, seller.getId())
-                        .param("order", order)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        ResultActions result = mockMvcUtil.performGet(GET_SELLER_FOLLOWERS,
+                Map.of("sellerId", seller.getId().toString()),
+                Map.of("order", order));
 
-        resultActions.andExpect(status().isOk())
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.followers[0].user_name").value(userBuyerB.getUserName()))
                 .andExpect(jsonPath("$.followers[1].user_name").value(userBuyerA.getUserName()));
     }
@@ -172,14 +170,11 @@ class FollowControllerTest {
     void testGetSortedFollowersInvalidOrder() throws Exception {
         String invalidOrder = "invalid_order";
 
-        ResultActions resultActions = mockMvc.perform(
-                get(GET_SELLER_FOLLOWERS, seller.getId())
-                        .param("order", invalidOrder)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        ResultActions result = mockMvcUtil.performGet(GET_SELLER_FOLLOWERS,
+                Map.of("sellerId", seller.getId().toString()),
+                Map.of("order", invalidOrder));
 
-        resultActions.andExpect(jsonPath("$.message")
-                .value(ErrorMessagesUtil.invalidSortingParameter(invalidOrder)));
+        assertBadRequestWithMessage(result, ErrorMessagesUtil.invalidSortingParameter(invalidOrder));
     }
 
 
@@ -228,7 +223,8 @@ class FollowControllerTest {
     void testGetFollowersCountSuccess() throws Exception {
         UUID sellerId = sellerWithFollowers.getId();
 
-        ResultActions resultActions = performGet(sellerId, GET_USER_FOLLOWERS_COUNT);
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWERS_COUNT,
+                Map.of("userId", sellerId.toString()));
 
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.followers_count").value(sellerWithFollowers.getFollowerCount()))
@@ -242,17 +238,10 @@ class FollowControllerTest {
     void testGetFollowersCountUserNotFound() throws Exception {
         UUID userId = UUID.randomUUID();
 
-        ResultActions resultActions = performGet(userId, GET_USER_FOLLOWERS_COUNT);
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWERS_COUNT,
+                Map.of("userId", userId.toString()));
 
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.sellerNotFound(userId)));
-    }
-
-    private ResultActions performGet(UUID userId, String path) throws Exception {
-        return mockMvc.perform(
-                get(path, userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(userId));
     }
 
     @Test
@@ -290,7 +279,8 @@ class FollowControllerTest {
     void testFindFollowers() throws Exception {
         UUID sellerId = userSellerWithBuyerFollower.getId();
 
-        ResultActions resultActions = performGet(sellerId, GET_USER_FOLLOWERS_LIST);
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWERS_LIST,
+                Map.of("userId", sellerId.toString()));
 
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.followers[0].user_id").value(sellerWithBuyerFollower.getFollowers().get(0).getId().toString()))
@@ -303,7 +293,10 @@ class FollowControllerTest {
     @DisplayName("[ERROR] Get Followers List - Seller not found")
     void testFindFollowersSellerNotFound() throws Exception {
         UUID sellerId = UUID.randomUUID();
-        ResultActions resultActions = performGet(sellerId, GET_USER_FOLLOWERS_LIST);
+
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWERS_LIST,
+                Map.of("userId", sellerId.toString()));
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(sellerId));
     }
 
@@ -313,7 +306,9 @@ class FollowControllerTest {
         Seller sellerRandom = SellerFactory.createSeller(UUID.randomUUID());
         sellerRepository.save(sellerRandom);
 
-        ResultActions resultActions = performGet(sellerRandom.getId(), GET_USER_FOLLOWERS_LIST);
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWERS_LIST,
+                Map.of("userId", sellerRandom.getId().toString()));
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(sellerRandom.getId()));
     }
 
@@ -322,7 +317,8 @@ class FollowControllerTest {
     void testFindFollowed() throws Exception {
         UUID buyerId = buyerWithFollowedSeller.getId();
 
-        ResultActions resultActions = performGet(buyerId, GET_USER_FOLLOWED_LIST);
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWED_LIST,
+                Map.of("userId", buyerId.toString()));
 
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.followed[0].user_id").value(buyerWithFollowedSeller.getFollowed().get(0).getId().toString()))
@@ -335,8 +331,11 @@ class FollowControllerTest {
     @DisplayName("[ERROR] Get Followers List - Buyer not found")
     void testFindFollowedBuyerNotFound() throws Exception {
         UUID buyerId = UUID.randomUUID();
-        ResultActions resultActions = performGet(buyerId, GET_USER_FOLLOWERS_LIST);
-        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(buyerId));
+
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWED_LIST,
+                Map.of("userId", buyerId.toString()));
+
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(buyerId));
     }
 
     @Test
@@ -345,22 +344,26 @@ class FollowControllerTest {
         Buyer buyerRandom = BuyerFactory.createBuyer(UUID.randomUUID());
         buyerRepository.save(buyerRandom);
 
-        ResultActions resultActions = performGet(buyerRandom.getId(), GET_USER_FOLLOWED_LIST);
+        ResultActions resultActions = mockMvcUtil.performGet(GET_USER_FOLLOWED_LIST,
+                Map.of("userId", buyerRandom.getId().toString()));
+
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(buyerRandom.getId()));
     }
 
     private ResultActions performFollow(UUID buyerId, UUID sellerId) throws Exception {
-        return mockMvc.perform(
-                post("/users/{buyerId}/follow/{sellerId}", buyerId, sellerId)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        Map<String, String> pathVars = new HashMap<>();
+        pathVars.put("buyerId", buyerId.toString());
+        pathVars.put("sellerId", sellerId.toString());
+
+        return mockMvcUtil.performPostRequest("/users/{buyerId}/follow/{sellerId}", pathVars, null);
     }
 
     private ResultActions performUnfollow(UUID buyerId, UUID sellerId) throws Exception {
-        return mockMvc.perform(
-                put("/users/{userId}/unfollow/{userIdToUnfollow}", buyerId, sellerId)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        Map<String, String> pathVars = new HashMap<>();
+        pathVars.put("userId", buyerId.toString());
+        pathVars.put("userIdToUnfollow", sellerId.toString());
+
+        return mockMvcUtil.performPutRequest("/users/{userId}/unfollow/{userIdToUnfollow}", pathVars, null);
     }
 
     private void assertBadRequestWithMessage(ResultActions resultActions, String expectedMessage) throws Exception {
