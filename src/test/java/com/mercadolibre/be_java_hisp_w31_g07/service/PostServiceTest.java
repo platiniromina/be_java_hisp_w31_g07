@@ -45,7 +45,6 @@ class PostServiceTest {
     private UUID sellerId;
     private UUID buyerId;
     private UUID postId;
-    private UUID postId2;
     private UUID userPostRespDtoId;
 
     private Seller seller;
@@ -53,6 +52,7 @@ class PostServiceTest {
 
     private Post post;
     private Post post2;
+
     private PostDto postDto;
     private PostResponseDto postResponseDto;
     private PostResponseDto postResponseDto2;
@@ -85,12 +85,13 @@ class PostServiceTest {
 
         post2 = PostFactory.createPost(sellerId, false);
         post2.setPrice(150.0);
-        postId2 = post2.getId();
 
         postDto = PostFactory.createPostDto(sellerId, false);
         postResponseDto = PostFactory.createPostResponseDto(sellerId, postId, false);
-        postResponseDto2 = PostFactory.createPostResponseDto(sellerId, postId2, false);
+        postResponseDto2 = PostFactory.createPostResponseDto(sellerId, post2.getId(), false);
     }
+
+
     @Test
     @DisplayName("[SUCCESS] Sort post Asc")
     void testSortPostsByDatAsc() {
@@ -110,6 +111,7 @@ class PostServiceTest {
         verify(mapper).fromPostListToPostResponseDtoList(List.of(post2, post));
         verifyNoMoreInteractions(postBridgeService, postRepository, mapper);
     }
+
     @Test
     @DisplayName("[SUCCESS] Sort post Desc")
     void testSortPostsByDateDesc() {
@@ -495,6 +497,5 @@ class PostServiceTest {
         verify(postBridgeService).getUserById(sellerId);
         verifyNoMoreInteractions(postBridgeService, postRepository);
     }
-
 
 }

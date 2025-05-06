@@ -26,7 +26,7 @@ public class ProductRepository implements IProductRepository {
         List<Product> products;
 
         file = ResourceUtils.getFile("classpath:product.json");
-        products = objectMapper.readValue(file, new TypeReference<List<Product>>() {
+        products = objectMapper.readValue(file, new TypeReference<>() {
         });
 
         productList = products;

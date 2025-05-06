@@ -50,36 +50,31 @@ class FollowerServiceTest {
     private Seller seller;
     private UUID sellerId;
     private UserDto userSellerDto;
+
     private Buyer buyer;
     private UUID buyerId;
     private User userBuyer;
+    private UserDto userBuyerDto;
+
     private Buyer buyer2;
     private User userBuyer2;
-    private UserDto userBuyerDto;
     private UserDto userBuyer2Dto;
-
 
     @BeforeEach
     void setUp() {
         User userSeller = UserFactory.createUser(null);
-        UUID userSellerId = userSeller.getId();
-
-        seller = SellerFactory.createSeller(userSellerId);
+        userSellerDto = UserFactory.createUserDto(userSeller.getId());
+        seller = SellerFactory.createSeller(userSeller.getId());
         sellerId = seller.getId();
 
         userBuyer = UserFactory.createUser(null);
-        UUID userBuyerId = userBuyer.getId();
-
-        userBuyerDto = UserFactory.createUserDto(userBuyerId);
-
-        buyer = BuyerFactory.createBuyer(userBuyerId);
+        userBuyerDto = UserFactory.createUserDto(userBuyer.getId());
+        buyer = BuyerFactory.createBuyer(userBuyer.getId());
         buyerId = buyer.getId();
 
         userBuyer2 = UserFactory.createUser(null);
-        buyer2 = BuyerFactory.createBuyer(userBuyer2.getId());
         userBuyer2Dto = UserFactory.createUserDto(userBuyer2.getId());
-
-        userSellerDto = UserFactory.createUserDto(userSellerId);
+        buyer2 = BuyerFactory.createBuyer(userBuyer2.getId());
     }
 
     @Test
@@ -270,8 +265,8 @@ class FollowerServiceTest {
         SellerFollowersCountResponseDto result = followService.findFollowersCount(sellerId);
 
         assertAll(
-                () -> assertEquals(sellerId, result.getUser_id()),
-                () -> assertEquals(userSellerDto.getUserName(), result.getUser_name()),
+                () -> assertEquals(sellerId, result.getUserId()),
+                () -> assertEquals(userSellerDto.getUserName(), result.getUserName()),
                 () -> assertEquals(sellerWithFollowers.getFollowers().size(), result.getFollowersCount()));
         verify(sellerService).findSellerById(sellerId);
         verify(userService).findById(sellerId);

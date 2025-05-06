@@ -25,7 +25,7 @@ public class UserRepository implements IUserRepository {
         List<User> users;
 
         file = ResourceUtils.getFile("classpath:user.json");
-        users = objectMapper.readValue(file, new TypeReference<List<User>>() {
+        users = objectMapper.readValue(file, new TypeReference<>() {
         });
 
         userList = users;
@@ -51,5 +51,5 @@ public class UserRepository implements IUserRepository {
                 .map(Optional::get)
                 .toList();
     }
-    
+
 }

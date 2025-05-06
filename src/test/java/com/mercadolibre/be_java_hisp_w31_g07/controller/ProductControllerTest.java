@@ -15,7 +15,6 @@ import com.mercadolibre.be_java_hisp_w31_g07.repository.IPostRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.ISellerRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.IUserRepository;
 import com.mercadolibre.be_java_hisp_w31_g07.repository.implementations.BuyerRepository;
-import com.mercadolibre.be_java_hisp_w31_g07.service.IPostService;
 import com.mercadolibre.be_java_hisp_w31_g07.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,14 +44,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class ProductControllerTest {
+    public static final String GET_POSTS = "/products/post";
+    public static final String GET_PROMO_POSTS = "/products/promo-post";
+    public static final String GET_PROMO_POST_COUNT = "/products/promo-post/count";
+    public static final String GET_PROMO_POST_LIST = "/products/promo-post/list";
+    public static final String GET_FOLLOWED_LIST = "/products/followed/{userId}/list";
+    public static final String GET_FOLLOWED_SORTED_LIST = "/products/followed/{userId}/sorted";
+    public static final String GET_POST_BY_ID = "/products/post/{postId}";
+    public static final String GET_USER_AVERAGE_PRICE = "/users/{userId}/average-post-price";
+
     @Autowired
     private ISellerRepository sellerRepository;
 
     @Autowired
     private IPostRepository postRepository;
-
-    @Autowired
-    private IPostService postService;
 
     @Autowired
     private IUserRepository userRepository;
@@ -65,9 +71,12 @@ class ProductControllerTest {
     private Post post;
     private Post latestPost1;
     private Post latestPost2;
+
     private UUID sellerId;
     private String userName;
+
     private Buyer buyer;
+    
     private Seller sellerWithPosts;
     private Seller sellerWithNoPosts;
 
@@ -77,13 +86,18 @@ class ProductControllerTest {
         sellerId = seller.getId();
         sellerWithNoPosts = SellerFactory.createSeller(null);
         sellerWithPosts = SellerFactory.createSeller(null);
+
         post = PostFactory.createPost(sellerWithPosts.getId(), false);
+
         latestPost1 = PostFactory.createPost(sellerWithPosts.getId(), false);
         latestPost1.setDate(LocalDate.now().minusDays(2));
+
         latestPost2 = PostFactory.createPost(sellerWithPosts.getId(), false);
         latestPost2.setDate(LocalDate.now());
+
         User user = UserFactory.createUser(sellerWithPosts.getId());
         userName = user.getUserName();
+
         buyer = BuyerFactory.createBuyer(null);
 
         postRepository.save(post);
@@ -93,6 +107,7 @@ class ProductControllerTest {
         userRepository.save(user);
         buyerRepository.save(buyer);
     }
+
 
     @Test
     @DisplayName("[SUCCESS] Get sorted posts from followed sellers - ASC")
@@ -105,11 +120,12 @@ class ProductControllerTest {
                 "posts", List.of(latestPost2, latestPost1)
         ));
 
-        ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", "date_asc");
+        ResultActions resultActions = performGetWithParam(buyer.getId(), "date_asc");
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
+
     @Test
     @DisplayName("[SUCCESS] Get sorted posts from followed sellers - DESC")
     void testGetSortedPostsFromFollowedSellersDesc() throws Exception {
@@ -121,7 +137,7 @@ class ProductControllerTest {
                 "posts", List.of(latestPost1, latestPost2)
         ));
 
-        ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", "date_desc");
+        ResultActions resultActions = performGetWithParam(buyer.getId(), "date_desc");
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -134,13 +150,13 @@ class ProductControllerTest {
         buyerRepository.save(buyer);
         String invalidOrder = "invalid_order";
 
-        ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", invalidOrder);
+        ResultActions resultActions = performGetWithParam(buyer.getId(), invalidOrder);
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
     }
 
-        @Test
+    @Test
     @DisplayName("[SUCCESS] Get promotion posts by seller")
     void testGetSellerPromoPostsSuccess() throws Exception {
         Post postSaved = PostFactory.createPost(sellerId, true);
@@ -158,7 +174,7 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(expectedDto);
 
-        ResultActions resultActions = performGetPromoPostList(sellerId, "/products/promo-post/list");
+        ResultActions resultActions = performGetPromoPostList(sellerId);
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -173,7 +189,7 @@ class ProductControllerTest {
         sellerRepository.save(SellerFactory.createSeller(sellerId));
         postRepository.save(postSaved);
 
-        ResultActions resultActions = performGetPromoPostList(sellerId, "/products/promo-post/list");
+        ResultActions resultActions = performGetPromoPostList(sellerId);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromotionPostFound(sellerId));
     }
 
@@ -181,7 +197,7 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get promotion posts by seller - Seller not found")
     void testGetSellerPromoPostsSellerNotFound() throws Exception {
         UUID nonExistentSellerId = UUID.randomUUID();
-        ResultActions resultActions = performGetPromoPostList(nonExistentSellerId, "/products/promo-post/list");
+        ResultActions resultActions = performGetPromoPostList(nonExistentSellerId);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
@@ -195,7 +211,7 @@ class ProductControllerTest {
                 new SellerPromoPostsCountResponseDto(sellerWithPosts.getId(), userName, 1)
         );
 
-        ResultActions resultActions = performGetPromoPostCount(sellerWithPosts.getId(), "/products/promo-post/count");
+        ResultActions resultActions = performGetPromoPostCount(sellerWithPosts.getId());
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -205,7 +221,7 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get user promo posts count - Seller not found")
     void testGetUserPromoPostsCountSellerNotFound() throws Exception {
         UUID nonExistentSellerId = UUID.randomUUID();
-        ResultActions resultActions = performGetPromoPostCount(nonExistentSellerId, "/products/promo-post/count");
+        ResultActions resultActions = performGetPromoPostCount(nonExistentSellerId);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
@@ -215,7 +231,7 @@ class ProductControllerTest {
         PostDto postDto = PostFactory.createPostDto(sellerWithPosts.getId(), false);
         int postRepositorySizeBefore = postRepository.findAll().size();
 
-        ResultActions resultActions = performPost(postDto, "/products/post");
+        ResultActions resultActions = performPost(postDto, GET_POSTS);
 
         PostResponseDto response = JsonUtil
                 .fromJsonToDto(resultActions
@@ -231,9 +247,9 @@ class ProductControllerTest {
         UUID nonExistentSellerId = UUID.randomUUID();
         PostDto postDto = PostFactory.createPostDto(nonExistentSellerId, false);
 
-        ResultActions resultActions = performPost(postDto, "/products/post");
+        ResultActions resultActions = performPost(postDto, GET_POSTS);
 
-        assertBadRequestWithMessage(resultActions, "Seller " + nonExistentSellerId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
     @Test
@@ -242,7 +258,7 @@ class ProductControllerTest {
         PostDto postDto = PostFactory.createPostDto(sellerWithPosts.getId(), true);
         int postRepositorySizeBefore = postRepository.findAll().size();
 
-        ResultActions resultActions = performPost(postDto, "/products/promo-post");
+        ResultActions resultActions = performPost(postDto, GET_PROMO_POSTS);
 
         PostResponseDto response = JsonUtil
                 .fromJsonToDto(resultActions
@@ -258,16 +274,16 @@ class ProductControllerTest {
         UUID nonExistentSellerId = UUID.randomUUID();
         PostDto postDto = PostFactory.createPostDto(nonExistentSellerId, true);
 
-        ResultActions resultActions = performPost(postDto, "/products/promo-post");
+        ResultActions resultActions = performPost(postDto, GET_PROMO_POSTS);
 
-        assertBadRequestWithMessage(resultActions, "Seller " + nonExistentSellerId + " not found");
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
     }
 
     @Test
     @DisplayName("[SUCCESS] Find post by ID")
     void testFindPostSuccess() throws Exception {
         String expectedResponse = JsonUtil.generateFromDto(PostFactory.createPostResponseDto(sellerWithPosts.getId(), post.getId(), false));
-        ResultActions resultActions = performGet(post.getId(), "/products/post/{postId}");
+        ResultActions resultActions = performGet(post.getId(), GET_POST_BY_ID);
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
@@ -276,7 +292,7 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Find post by ID - Post not found")
     void testFindPostNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
-        ResultActions resultActions = performGet(nonExistentPostId, "/products/post/{postId}");
+        ResultActions resultActions = performGet(nonExistentPostId, GET_POST_BY_ID);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.postNotFound(nonExistentPostId));
     }
 
@@ -308,7 +324,7 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(expected);
 
-        ResultActions resultActions = performGet(sellerId, "/users/{userId}/average-post-price");
+        ResultActions resultActions = performGet(sellerId, GET_USER_AVERAGE_PRICE);
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
@@ -323,7 +339,7 @@ class ProductControllerTest {
         userRepository.save(user);
         sellerRepository.save(SellerFactory.createSeller(nonExistentSellerId));
 
-        ResultActions resultActions = performGet(user.getId(), "/users/{userId}/average-post-price");
+        ResultActions resultActions = performGet(user.getId(), GET_USER_AVERAGE_PRICE);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userHasNotPosts(user.getId()));
     }
 
@@ -331,7 +347,7 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get user posts average price - User not found")
     void testGetAveragePromoPostUserNotFound() throws Exception {
         UUID nonExistentPostId = UUID.randomUUID();
-        ResultActions resultActions = performGet(nonExistentPostId, "/users/{userId}/average-post-price");
+        ResultActions resultActions = performGet(nonExistentPostId, GET_USER_AVERAGE_PRICE);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentPostId));
     }
 
@@ -350,7 +366,7 @@ class ProductControllerTest {
                 "posts", List.of(latestPost1, latestPost2)
         ));
 
-        ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
+        ResultActions resultActions = performGet(buyer.getId(), GET_FOLLOWED_LIST);
         resultActions.andExpect(status().isOk()).andExpect(content().json(expected));
     }
 
@@ -360,7 +376,7 @@ class ProductControllerTest {
         buyer.setFollowed(List.of(sellerWithNoPosts));
         sellerWithNoPosts.setFollowers(List.of(buyer));
         sellerWithNoPosts.incrementFollowerCount();
-        ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
+        ResultActions resultActions = performGet(buyer.getId(), GET_FOLLOWED_LIST);
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.user_id").value(buyer.getId().toString()))
                 .andExpect(jsonPath("$.posts").isEmpty());
@@ -370,14 +386,14 @@ class ProductControllerTest {
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer not found")
     void testGetLatestPostsFromSellersBuyerNotFound() throws Exception {
         UUID nonExistentBuyerId = UUID.randomUUID();
-        ResultActions resultActions = performGet(nonExistentBuyerId, "/products/followed/{userId}/list");
+        ResultActions resultActions = performGet(nonExistentBuyerId, GET_FOLLOWED_LIST);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerNotFound(nonExistentBuyerId));
     }
 
     @Test
     @DisplayName("[ERROR] Get latest posts from from sellers - Buyer is not following anyone")
     void testGetLatestPostsFromSellersBuyerNotFollowingAnyone() throws Exception {
-        ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
+        ResultActions resultActions = performGet(buyer.getId(), GET_FOLLOWED_LIST);
         assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.buyerIsNotFollowingAnySellers(buyer.getId()));
     }
 
@@ -402,25 +418,19 @@ class ProductControllerTest {
     }
 
     private ResultActions performGet(UUID id, String path) throws Exception {
-        return mockMvc.perform(
-                get(path, id)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
-    }
-    private ResultActions performGetWithParam(UUID id, String path, String paramName, String paramValue) throws Exception {
-        return mockMvc.perform(
-                get(path, id)
-                        .param(paramName, paramValue)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+        return performGetRequest(get(path, id));
     }
 
-    private ResultActions performGetPromoPostCount(UUID sellerId, String path) throws Exception {
-        return mockMvc.perform(
-                get(path, post.getId())
-                        .param("user_id", sellerId.toString())
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
+    private ResultActions performGetWithParam(UUID id, String paramValue) throws Exception {
+        return performGetRequest(get(GET_FOLLOWED_SORTED_LIST, id).param("order", paramValue));
+    }
+
+    private ResultActions performGetPromoPostCount(UUID sellerId) throws Exception {
+        return performGetRequest(get(GET_PROMO_POST_COUNT, post.getId()).param("user_id", sellerId.toString()));
+    }
+
+    private ResultActions performGetPromoPostList(UUID sellerId) throws Exception {
+        return performGetRequest(get(GET_PROMO_POST_LIST).param("user_id", sellerId.toString()));
     }
 
     private ResultActions performPost(PostDto postDto, String path) throws Exception {
@@ -431,11 +441,9 @@ class ProductControllerTest {
         ).andDo(print());
     }
 
-    private ResultActions performGetPromoPostList(UUID sellerId, String path) throws Exception {
+    private ResultActions performGetRequest(MockHttpServletRequestBuilder builder) throws Exception {
         return mockMvc.perform(
-                get(path)
-                        .param("user_id", sellerId.toString())
-                        .contentType(MediaType.APPLICATION_JSON)
+                builder.contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
     }
 

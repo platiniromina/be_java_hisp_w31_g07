@@ -28,7 +28,7 @@ public class PostRepository implements IPostRepository {
         List<Post> posts;
 
         file = ResourceUtils.getFile("classpath:post.json");
-        posts = objectMapper.readValue(file, new TypeReference<List<Post>>() {
+        posts = objectMapper.readValue(file, new TypeReference<>() {
         });
 
         postList = posts;
@@ -82,10 +82,5 @@ public class PostRepository implements IPostRepository {
                 .filter(post -> post.getSellerId().equals(userId))
                 .toList();
     }
-
-    @Override
-    public Optional<Post> findProductByPurchase(String product) {
-        return postList.stream().filter(post -> post.getProduct().getProductName().equalsIgnoreCase(product))
-                .findFirst();
-    }
+    
 }
