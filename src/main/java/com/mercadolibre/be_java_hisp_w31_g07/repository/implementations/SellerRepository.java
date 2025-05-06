@@ -29,7 +29,7 @@ public class SellerRepository implements ISellerRepository {
         List<Seller> sellers;
 
         file = ResourceUtils.getFile("classpath:seller.json");
-        sellers = objectMapper.readValue(file, new TypeReference<List<Seller>>() {
+        sellers = objectMapper.readValue(file, new TypeReference<>() {
         });
 
         sellerList = sellers;
@@ -43,10 +43,9 @@ public class SellerRepository implements ISellerRepository {
     @Override
     public void addBuyerToFollowersList(Buyer buyer, UUID sellerId) {
         findSellerById(sellerId)
-                .map(seller -> {
+                .ifPresent(seller -> {
                     seller.addFollower(buyer);
                     seller.incrementFollowerCount();
-                    return seller;
                 });
     }
 
@@ -67,10 +66,9 @@ public class SellerRepository implements ISellerRepository {
 
     @Override
     public void removeBuyerFromFollowersList(Buyer buyer, UUID sellerId) {
-        this.findSellerById(sellerId).map(seller -> {
+        findSellerById(sellerId).ifPresent(seller -> {
             seller.removeFollower(buyer);
             seller.decrementFollowerCount();
-            return seller;
         });
     }
 }

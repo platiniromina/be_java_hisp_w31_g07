@@ -112,15 +112,6 @@ public class PostService implements IPostService {
         return new FollowersPostsResponseDto(buyerId, sortedPosts);
     }
 
-
-    @Override
-    public PostDto findProductByPurchase(String product) {
-        Post post = postRepository.findProductByPurchase(product)
-                .orElseThrow(() -> new BadRequest(ErrorMessagesUtil.noPurchasesForProduct(product)));
-        return postMapper.fromPostToPostDto(post);
-    }
-
-
     @Override
     public SellerAveragePriceDto findPricePerPosts(UUID userId) {
         Double averagePrice = findAveragePrice(userId);

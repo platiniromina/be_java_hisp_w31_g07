@@ -81,16 +81,7 @@ public interface IPostService {
      * @throws IllegalArgumentException if the provided order is invalid.
      */
     FollowersPostsResponseDto sortPostsByDate(UUID buyerId, String order);
-
-    /**
-     * Retrieves purchase matching the products.
-     *
-     * @param product product name that matches with a userProduct in a post.
-     * @return a PostDto.
-     */
-    PostDto findProductByPurchase(String product);
-
-
+    
     /**
      * Retrieves a seller with a list of post with discount.
      *

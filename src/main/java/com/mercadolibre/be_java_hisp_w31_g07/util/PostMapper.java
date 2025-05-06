@@ -20,10 +20,6 @@ public class PostMapper {
         return post;
     }
 
-    public PostDto fromPostToPostDto(Post post) {
-        return mapper.map(post, PostDto.class);
-    }
-
     public PostResponseDto fromPostToPostResponseDto(Post post) {
         return mapper.map(post, PostResponseDto.class);
     }

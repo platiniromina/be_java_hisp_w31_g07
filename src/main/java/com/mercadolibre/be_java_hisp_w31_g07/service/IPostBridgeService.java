@@ -1,6 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.service;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 

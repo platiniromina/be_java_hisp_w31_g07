@@ -67,15 +67,6 @@ public interface IPostRepository {
     List<Post> findPostsBySellerId(UUID userId);
 
     /**
-     * Finds a post containing a product by its name.
-     *
-     * @param product the name of the product to search for (case-insensitive).
-     * @return an {@link Optional} containing the {@link Post} if a match is found,
-     * or an empty {@link Optional} if no match is found.
-     */
-    Optional<Post> findProductByPurchase(String product);
-
-    /**
      * Saves a post to the repository.
      *
      * @param post the {@link Post} instance to be saved.

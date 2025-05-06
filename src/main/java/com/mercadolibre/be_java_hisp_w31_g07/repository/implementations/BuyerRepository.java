@@ -29,7 +29,7 @@ public class BuyerRepository implements IBuyerRepository {
         List<Buyer> buyers;
 
         file = ResourceUtils.getFile("classpath:buyer.json");
-        buyers = objectMapper.readValue(file, new TypeReference<List<Buyer>>() {
+        buyers = objectMapper.readValue(file, new TypeReference<>() {
         });
 
         buyerList = buyers;
@@ -61,10 +61,7 @@ public class BuyerRepository implements IBuyerRepository {
 
     @Override
     public void removeSellerFromFollowedList(Seller seller, UUID buyerId) {
-        this.findBuyerById(buyerId).map(buyer -> {
-            buyer.removeFollowedSeller(seller);
-            return buyer;
-        });
+        findBuyerById(buyerId).ifPresent(buyer -> buyer.removeFollowedSeller(seller));
     }
 
     @Override
