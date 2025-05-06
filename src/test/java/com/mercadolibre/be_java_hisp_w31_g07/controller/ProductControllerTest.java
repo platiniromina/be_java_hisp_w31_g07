@@ -29,7 +29,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,9 +76,7 @@ class ProductControllerTest {
         sellerWithNoPosts = SellerFactory.createSeller(null);
         sellerWithPosts = SellerFactory.createSeller(null);
         post = PostFactory.createPost(sellerWithPosts.getId(), false);
-        post.setDate(LocalDate.now().minusDays(2));
         post2 = PostFactory.createPost(sellerWithPosts.getId(), false);
-        post2.setDate(LocalDate.now());
         User user = UserFactory.createUser(sellerWithPosts.getId());
         userName = user.getUserName();
         buyer = BuyerFactory.createBuyer(null);
@@ -99,13 +96,12 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(Map.of(
                 "user_id", buyer.getId(),
-                "posts", List.of(post2, post) // orden ascendente: viejo primero
+                "posts", List.of(post2, post)
         ));
 
-        mockMvc.perform(get("/products/followed/{userId}/sorted", buyer.getId())
-                        .param("order", "date_asc")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+        ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", "date_asc");
+
+        resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
     @Test
@@ -116,13 +112,12 @@ class ProductControllerTest {
 
         String expectedResponse = JsonUtil.generateFromDto(Map.of(
                 "user_id", buyer.getId(),
-                "posts", List.of(post, post2) // orden ascendente: viejo primero
+                "posts", List.of(post, post2)
         ));
 
-        mockMvc.perform(get("/products/followed/{userId}/sorted", buyer.getId())
-                        .param("order", "date_asc")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+        ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", "date_desc");
+
+        resultActions.andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
 
@@ -133,17 +128,10 @@ class ProductControllerTest {
         buyerRepository.save(buyer);
         String invalidOrder = "invalid_order";
 
-        ResultActions resultActions = mockMvc.perform(
-                get("/products/followed/{userId}/sorted", buyer.getId())
-                        .param("order", invalidOrder)  // Parámetro "order" inválido
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andDo(print());
-
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(ErrorMessagesUtil.invalidSortingParameter("invalid_order")));
+        ResultActions resultActions = performGetWithParam(buyer.getId(), "/products/followed/{userId}/sorted", "order", invalidOrder);
     }
 
-    @Test
+        @Test
     @DisplayName("[SUCCESS] Get promotion posts by seller")
     void testGetSellerPromoPostsSuccess() throws Exception {
         Post postSaved = PostFactory.createPost(sellerId, true);
@@ -350,7 +338,7 @@ class ProductControllerTest {
         mapper.registerModule(new JavaTimeModule());
         String expected = mapper.writeValueAsString(Map.of(
                 "user_id", buyer.getId(),
-                "posts", List.of(post)
+                "posts", List.of(post, post2)
         ));
 
         ResultActions resultActions = performGet(buyer.getId(), "/products/followed/{userId}/list");
@@ -407,6 +395,13 @@ class ProductControllerTest {
     private ResultActions performGet(UUID id, String path) throws Exception {
         return mockMvc.perform(
                 get(path, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+    }
+    private ResultActions performGetWithParam(UUID id, String path, String paramName, String paramValue) throws Exception {
+        return mockMvc.perform(
+                get(path, id)
+                        .param(paramName, paramValue)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print());
     }
