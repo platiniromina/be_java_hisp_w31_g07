@@ -1,6 +1,7 @@
 package com.mercadolibre.be_java_hisp_w31_g07.util;
 
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
+import com.mercadolibre.be_java_hisp_w31_g07.dto.response.UserPostResponseDto;
 import com.mercadolibre.be_java_hisp_w31_g07.model.User;
 
 import java.util.UUID;
@@ -26,6 +27,13 @@ public class UserFactory {
         return user;
     }
 
+    public static UserPostResponseDto createUserPostResponseDto(UUID id) {
+        UserPostResponseDto userPostResponseDto = new UserPostResponseDto();
+        userPostResponseDto.setUserId(id != null ? id : UUID.randomUUID());
+        populateUserFields(userPostResponseDto);
+        return userPostResponseDto;
+    }
+
     // --- Populate Method ---
 
     private static void populateUserFields(Object target) {
@@ -39,6 +47,8 @@ public class UserFactory {
             userDto.setEmail(DEFAULT_EMAIL);
             userDto.setFirstName(DEFAULT_FIRST_NAME);
             userDto.setLastName(DEFAULT_LAST_NAME);
+        } else if (target instanceof UserPostResponseDto userPostResponseDto) {
+            userPostResponseDto.setUserName(DEFAULT_USERNAME);
         }
     }
 }

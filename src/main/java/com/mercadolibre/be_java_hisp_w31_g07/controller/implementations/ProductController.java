@@ -53,7 +53,7 @@ public class ProductController implements IProductController {
     }
 
     @Override
-    public ResponseEntity<SellerAveragePrice> getAveragePricePerPostsBySellerId(UUID userId) {
+    public ResponseEntity<SellerAveragePriceDto> getAveragePrice(UUID userId) {
         return new ResponseEntity<>(postOrchestrator.findPricePerPostsBySellerId(userId), HttpStatus.OK);
     }
 }

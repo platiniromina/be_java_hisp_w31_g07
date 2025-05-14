@@ -11,8 +11,8 @@ public interface IBuyerService {
     /**
      * Adds a seller to the followed list of a buyer.
      *
-     * @param seller  The seller to be added to the buyer's followed list.
-     * @param buyerId The unique identifier of the buyer.
+     * @param seller The seller to be added to the buyer's followed list.
+     * @param buyer  The buyer who wants to follow the seller.
      * @throws BadRequest If the buyer with the specified ID is not found.
      */
     void addSellerToFollowed(Seller seller, Buyer buyer);

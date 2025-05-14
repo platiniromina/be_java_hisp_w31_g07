@@ -27,15 +27,16 @@ class UserServiceTest {
 
     @Mock
     GenericObjectMapper mapper;
+
     @Mock
     IUserRepository userRepository;
+    
     @InjectMocks
     private UserService userService;
 
     private User user;
     private UUID userId;
     private UserDto userDto;
-
 
     @BeforeEach
     void setUp() {

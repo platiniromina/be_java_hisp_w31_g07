@@ -54,5 +54,11 @@ public interface IPostRepository {
      * @return a list of posts by the seller
      */
     List<Post> findPostsBySellerId(UUID userId);
-}
 
+    /**
+     * Retrieves all posts from the repository.
+     *
+     * @return a list of all {@link Post} instances stored in the repository.
+     */
+    List<Post> findAll();
+}

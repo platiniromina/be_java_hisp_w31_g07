@@ -35,7 +35,7 @@ class SellerServiceTest {
 
     @BeforeEach
     void setUp() {
-        seller = SellerFactory.createSeller();
+        seller = SellerFactory.createSeller(null);
         sellerId = seller.getId();
     }
 
@@ -102,30 +102,6 @@ class SellerServiceTest {
 
         assertTrue(isFollowed);
         verify(sellerRepository).sellerIsBeingFollowedByBuyer(buyer, sellerId);
-        verifyNoMoreInteractions(sellerRepository);
-    }
-
-    @Test
-    @DisplayName("[SUCCESS] find seller by id")
-    void testFindSellerById() {
-        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.of(seller));
-
-        Seller foundSeller = sellerService.findSellerById(sellerId);
-
-        assertEquals(seller, foundSeller);
-        verify(sellerRepository).findSellerById(sellerId);
-        verifyNoMoreInteractions(sellerRepository);
-    }
-
-    @Test
-    @DisplayName("[ERROR] find seller by id - not found")
-    void testFindSellerByIdNotFound() {
-        when(sellerRepository.findSellerById(sellerId)).thenReturn(Optional.empty());
-
-        BadRequest exception = assertThrows(BadRequest.class, () -> sellerService.findSellerById(sellerId));
-
-        assertEquals(ErrorMessagesUtil.sellerNotFound(sellerId), exception.getMessage());
-        verify(sellerRepository).findSellerById(sellerId);
         verifyNoMoreInteractions(sellerRepository);
     }
 

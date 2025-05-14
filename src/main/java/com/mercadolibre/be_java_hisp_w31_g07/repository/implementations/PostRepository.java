@@ -28,10 +28,15 @@ public class PostRepository implements IPostRepository {
         List<Post> posts;
 
         file = ResourceUtils.getFile("classpath:post.json");
-        posts = objectMapper.readValue(file, new TypeReference<List<Post>>() {
+        posts = objectMapper.readValue(file, new TypeReference<>() {
         });
 
         postList = posts;
+    }
+
+    @Override
+    public List<Post> findAll() {
+        return postList;
     }
 
     @Override

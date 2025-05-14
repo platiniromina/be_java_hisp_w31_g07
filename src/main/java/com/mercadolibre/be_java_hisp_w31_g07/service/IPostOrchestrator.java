@@ -37,7 +37,7 @@ public interface IPostOrchestrator {
      * @param userId the ID of the seller
      * @return a DTO with seller ID, name, and average price
      */
-    SellerAveragePrice findPricePerPostsBySellerId(UUID userId);
+    SellerAveragePriceDto findPricePerPostsBySellerId(UUID userId);
 
     /**
      * Retrieves a single post by its ID.

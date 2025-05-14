@@ -3,10 +3,12 @@ package com.mercadolibre.be_java_hisp_w31_g07.service.implementations;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.PostDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.request.UserDto;
 import com.mercadolibre.be_java_hisp_w31_g07.dto.response.*;
+import com.mercadolibre.be_java_hisp_w31_g07.exception.BadRequest;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Post;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Product;
 import com.mercadolibre.be_java_hisp_w31_g07.model.Seller;
 import com.mercadolibre.be_java_hisp_w31_g07.service.*;
+import com.mercadolibre.be_java_hisp_w31_g07.util.ErrorMessagesUtil;
 import com.mercadolibre.be_java_hisp_w31_g07.util.PostMapper;
 import com.mercadolibre.be_java_hisp_w31_g07.util.SortUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +39,9 @@ public class PostOrchestrator implements IPostOrchestrator {
 
     @Override
     public UserPostResponseDto findUserPromoPosts(UUID userId) {
+        UserDto user = userService.findById(userId);
         List<Post> postList = postService.findUserPromoPosts(userId);
         List<PostResponseDto> postResponseDtoList = postMapper.fromPostListToPostResponseDtoList(postList);
-        UserDto user = userService.findById(userId);
         return new UserPostResponseDto(
                 user.getId(),
                 user.getUserName(),
@@ -58,10 +60,10 @@ public class PostOrchestrator implements IPostOrchestrator {
     }
 
     @Override
-    public SellerAveragePrice findPricePerPostsBySellerId(UUID userId) {
-        Double averagePrice = postService.findAveragePriceBySellerId(userId);
+    public SellerAveragePriceDto findPricePerPostsBySellerId(UUID userId) {
         UserDto user = userService.findById(userId);
-        return new SellerAveragePrice(
+        Double averagePrice = postService.findAveragePriceBySellerId(userId);
+        return new SellerAveragePriceDto(
                 userId,
                 user.getUserName(),
                 averagePrice);
@@ -76,6 +78,11 @@ public class PostOrchestrator implements IPostOrchestrator {
     @Override
     public FollowersPostsResponseDto findLatestPostsFromSellers(UUID userId) {
         List<Seller> sellers = buyerService.findBuyerById(userId).getFollowed();
+
+        if (sellers.isEmpty()) {
+            throw new BadRequest(ErrorMessagesUtil.buyerIsNotFollowingAnySellers(userId));
+        }
+
         Set<UUID> sellerIds = sellers.stream().map(Seller::getId).collect(Collectors.toSet());
 
         List<Post> posts = postService.findLatestPostsFromSellers(sellerIds);

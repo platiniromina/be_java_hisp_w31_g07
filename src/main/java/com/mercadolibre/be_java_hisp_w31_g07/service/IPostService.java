@@ -44,7 +44,7 @@ public interface IPostService {
      * @throws BadRequest if the seller has no posts or no valid prices
      */
     Double findAveragePriceBySellerId(UUID sellerId);
-
+    
     /**
      * Finds the latest posts from a set of seller IDs.
      *

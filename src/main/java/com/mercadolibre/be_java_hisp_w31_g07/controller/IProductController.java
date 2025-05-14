@@ -63,5 +63,5 @@ public interface IProductController {
     ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId);
 
     @GetMapping("/users/{userId}/average-post-price")
-    ResponseEntity<SellerAveragePrice> getAveragePricePerPostsBySellerId(@PathVariable UUID userId);
+    ResponseEntity<SellerAveragePriceDto> getAveragePrice(@PathVariable UUID userId);
 }

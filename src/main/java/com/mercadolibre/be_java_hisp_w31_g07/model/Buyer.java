@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class Buyer {
     @JsonProperty("user_id")
     private UUID id;
-    private List<Seller> followed;
+    private List<Seller> followed = new ArrayList<>();
 
     public void addFollowedSeller(Seller seller) {
         this.followed.add(seller);

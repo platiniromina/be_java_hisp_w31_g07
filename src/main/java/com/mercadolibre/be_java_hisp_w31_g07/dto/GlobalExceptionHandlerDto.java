@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GlobalExceptioHandlerDto {
+public class GlobalExceptionHandlerDto {
     private String message;
 }

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BuyerServiceTest {
-    
+
     @InjectMocks
     private BuyerService buyerService;
 
@@ -35,7 +35,7 @@ class BuyerServiceTest {
 
     @BeforeEach
     void setUp() {
-        buyer = BuyerFactory.createBuyer();
+        buyer = BuyerFactory.createBuyer(null);
         buyerId = buyer.getId();
     }
 

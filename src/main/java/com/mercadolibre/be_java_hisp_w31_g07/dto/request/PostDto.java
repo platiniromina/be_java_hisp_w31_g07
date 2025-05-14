@@ -3,7 +3,10 @@ package com.mercadolibre.be_java_hisp_w31_g07.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +21,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PostDto {
     @JsonFormat(pattern = "dd-MM-yyyy")
-    @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$", message = "Date format must be dd-MM-yyyy")
     @NotNull(message = "Date cannot be null")
     @PastOrPresent(message = "Date cannot be future")
     private LocalDate date;
