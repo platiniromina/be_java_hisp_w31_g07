@@ -43,24 +43,20 @@ public class ErrorMessagesUtil {
         return "Buyer " + buyerId + " and seller " + sellerId + " are the same";
     }
 
-    public static String noPromotionPostFound(UUID userId) {
-        return "No promotional posts found for user: " + userId;
-    }
-
     public static String noPurchasesForProduct(String product) {
         return "No purchases found for product " + product;
     }
 
+    public static String noPromoPostForUser(UUID userId) {
+        return "No promotional posts found for user: " + userId;
+    }
+    
     public static String userHasNotPosts(UUID sellerId) {
         return "User " + sellerId + " has no posts.";
-    }
-
-    public static String noPromotionalPostUser(UUID userId) {
-        return "No promotional posts found for user: " + userId;
     }
 
     public static String noValidParameter(String param) {
         return "Parameter '" + param + "' is invalid.";
     }
-    
+
 }

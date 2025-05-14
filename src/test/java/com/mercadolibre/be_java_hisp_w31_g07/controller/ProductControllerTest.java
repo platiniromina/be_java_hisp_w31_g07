@@ -207,7 +207,7 @@ class ProductControllerTest {
                 Map.of("user_id", sellerId.toString())
         );
 
-        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromotionPostFound(sellerId));
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.noPromoPostForUser(sellerId));
     }
 
     @Test
@@ -221,7 +221,7 @@ class ProductControllerTest {
                 Map.of("user_id", nonExistentSellerId.toString())
         );
 
-        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentSellerId));
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(nonExistentSellerId));
     }
 
 
@@ -405,7 +405,7 @@ class ProductControllerTest {
                 Map.of("userId", nonExistentPostId.toString())
         );
 
-        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.sellerNotFound(nonExistentPostId));
+        assertBadRequestWithMessage(resultActions, ErrorMessagesUtil.userNotFound(nonExistentPostId));
     }
 
 

@@ -66,7 +66,7 @@ public class PostRepository implements IPostRepository {
     }
 
     @Override
-    public List<Post> findLatestPostsFromSellers(List<UUID> sellers) {
+    public List<Post> findLatestPostsFromSellers(Set<UUID> sellers) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
 
         return postList.stream()
@@ -82,5 +82,5 @@ public class PostRepository implements IPostRepository {
                 .filter(post -> post.getSellerId().equals(userId))
                 .toList();
     }
-    
+
 }
