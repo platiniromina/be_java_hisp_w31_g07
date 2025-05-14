@@ -116,9 +116,10 @@ class PostOrchestratorServiceTest {
         doThrow(new BadRequest(ErrorMessagesUtil.sellerNotFound(sellerId)))
                 .when(sellerService).findSellerById(sellerId);
 
-        assertThrows(BadRequest.class, () ->
+        Exception exception = assertThrows(BadRequest.class, () ->
                 postOrchestrator.createPost(postDto));
 
+        assertEquals(ErrorMessagesUtil.sellerNotFound(sellerId), exception.getMessage());
         verifyNoMoreInteractions(sellerService, postService, productService, mapper);
     }
 
